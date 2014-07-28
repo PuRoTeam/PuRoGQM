@@ -24,10 +24,44 @@ public class MGOGRelationshipPK implements Serializable {
 	public Goal getOg() {
 		return og;
 	}
+	
 	public void setOg(Goal og) {
 		this.og = og;
 	}
 	
-	//TODO hash, equals, toString
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mg == null) ? 0 : mg.hashCode());
+		result = prime * result + ((og == null) ? 0 : og.hashCode());
+		return result;
+	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MGOGRelationshipPK other = (MGOGRelationshipPK) obj;
+		if (mg == null) {
+			if (other.mg != null)
+				return false;
+		} else if (!mg.equals(other.mg))
+			return false;
+		if (og == null) {
+			if (other.og != null)
+				return false;
+		} else if (!og.equals(other.og))
+			return false;
+		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return "MGOGRelationshipPK [mg=" + mg + ", og=" + og + "]";
+	}	
 }
