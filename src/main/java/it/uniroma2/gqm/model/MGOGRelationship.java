@@ -18,21 +18,34 @@ public class MGOGRelationship extends BaseObject {
 	}
 
 	@Override
-	public boolean equals(Object arg0) {
-		// TODO Auto-generated method stub
-		return false;
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((pk == null) ? 0 : pk.hashCode());
+		return result;
 	}
 
 	@Override
-	public int hashCode() {
-		// TODO Auto-generated method stub
-		return 0;
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		MGOGRelationship other = (MGOGRelationship) obj;
+		if (pk == null) {
+			if (other.pk != null)
+				return false;
+		} else if (!pk.equals(other.pk))
+			return false;
+		return true;
 	}
 
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return null;
+		return "MGOGRelationship [pk=" + pk + "]";
 	}
+
 
 }
