@@ -1,9 +1,18 @@
 package it.uniroma2.gqm.model;
 
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.Table;
 
 import org.appfuse.model.BaseObject;
 
+@Entity
+@Table(name = "mg_og_relationship")
+@AssociationOverrides({ @AssociationOverride(name = "pk.mg", joinColumns = @JoinColumn(name = "mg_id")),
+						@AssociationOverride(name = "pk.og", joinColumns = @JoinColumn(name = "og_id")) })
 public class MGOGRelationship extends BaseObject {
 
 	private MGOGRelationshipPK pk;
