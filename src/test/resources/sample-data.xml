@@ -292,7 +292,7 @@
             <value description="account_expired">0</value>
             <value description="account_locked">0</value>
             <value description="credentials_expired">0</value>
-        </row>                                          
+        </row>                                 
     </table>
     <table name="role">
         <column>id</column>
@@ -382,7 +382,7 @@
         <column>name</column>
         <column>description</column>
         <column>po_id</column>
-        <row>
+        <!--<row>
             <value description="project_id">-1</value>
             <value description="name">Trenitalia</value>
             <value description="description"><![CDATA[Trenitalia is the primary train operator in Italy]]></value>
@@ -399,7 +399,7 @@
             <value description="name">Application replacement</value>
             <value description="description"><![CDATA[Replacement of the management software of beds developed by Cineca. Cineca is a non profit Consortium, made up of 56 Italian universities, and 3 Institutions.]]></value>
             <value description="po_id">1</value>
-        </row>              
+        </row>-->              
     </table> 
     <table name="strategy">
         <column>strategy_id</column>
@@ -407,7 +407,7 @@
         <column>name</column>
         <column>assumption</column>
         <column>so_id</column>        
-        <row>
+        <!--<row>
             <value description="strategy_id">-1</value>
             <value description="project_id">-1</value>
             <value description="name"><![CDATA[Improve customer interaction process]]></value>
@@ -455,12 +455,12 @@
             <value description="name"><![CDATA[Improve the testing process]]></value>
             <value description="assumption"><![CDATA[Increasing the test module and the functional test, you will produce software with fewer bugs]]></value>
             <value description="so_id">2</value>                        
-        </row>                                
+        </row>  -->                             
     </table>        
     <table name="project_pm">
         <column>project_id</column>
         <column>user_id</column>
-        <row>
+        <!--  <row>
             <value description="project_id">-1</value>
             <value description="user_id">1</value>
         </row>
@@ -475,12 +475,12 @@
         <row>
             <value description="project_id">1</value>
             <value description="user_id">2</value>
-        </row>        
+        </row>    -->    
     </table>
     <table name="project_team">
         <column>project_id</column>
         <column>user_id</column>
-        <row>
+        <!--<row>
             <value description="project_id">-1</value>
             <value description="user_id">1</value>
         </row>
@@ -511,12 +511,12 @@
         <row>
             <value description="project_id">1</value>
             <value description="user_id">4</value>
-        </row>          
+        </row>-->   
     </table>
     <table name="project_gqm">
         <column>project_id</column>
         <column>user_id</column>
-        <row>
+        <!--<row>
             <value description="project_id">-1</value>
             <value description="user_id">5</value>
         </row>
@@ -563,7 +563,7 @@
         <row>
             <value description="project_id">1</value>
             <value description="user_id">10</value>
-        </row>                                                                                
+        </row>-->                                                                             
     </table>         
     <table name="goal">
         <column>goal_id</column>
@@ -576,7 +576,7 @@
 		<column>context</column>
 		<column>viewpoint</column>
 		<column>impact_of_variation</column>
-		<column>interpretation_model</column>
+		<!--<column>interpretation_model</column>-->
 		<column>status</column>
 		<column>go_id</column>
 		<column>ge_id</column>
@@ -589,7 +589,7 @@
 		<column>constraints</column>
 		<column>relations</column>
 		<column>parent_id</column>	
-        <row>
+        <!--<row>
             <value description="goal_id">-1</value>
             <value description="project_id">-1</value>
             <value description="description"><![CDATA[Travel time]]></value>
@@ -859,12 +859,12 @@
 		<row>
             <value description="goal_id">4</value>
             <value description="user_id">7</value>
-        </row>          
+        </row>-->          
     </table>  
     <table name="goal_mmdm">
         <column>goal_id</column>
         <column>user_id</column>
-        <row>
+        <!--<row>
             <value description="goal_id">-3</value>
             <value description="user_id">9</value>
         </row>
@@ -903,12 +903,12 @@
 		<row>
             <value description="goal_id">4</value>
             <value description="user_id">9</value>
-        </row>                      
+        </row>-->                      
     </table>    
     <table name="goal_vote">
         <column>goal_id</column>
         <column>user_id</column>
-        <row>
+        <!--<row>
             <value description="goal_id">-2</value>
             <value description="user_id">2</value>
         </row>   
@@ -927,7 +927,7 @@
         <row>
             <value description="goal_id">3</value>
             <value description="user_id">2</value>
-        </row>                     
+        </row>-->                     
     </table>
 	<table name="question">
         <column>question_id</column>
@@ -935,7 +935,7 @@
         <column>text</column>
         <column>project_id</column>
         <column>qso_id</column>
-        <row>
+        <!--<row>
             <value description="question_id">-1</value>
             <value description="name"><![CDATA[Number of train]]></value>
             <value description="text"><![CDATA[How many trains run from 7 to 10?]]></value>
@@ -1004,13 +1004,13 @@
             <value description="text"><![CDATA[how many weeks are required to implement a new test process?]]></value>
             <value description="project_id">1</value>
             <value description="qso_id">7</value>
-        </row>              
+        </row>-->              
     </table>
     <table name="goal_question">
         <column>question_id</column>
         <column>goal_id</column>
         <column>status</column>
-        <row>
+        <!--<row>
             <value description="question_id">-1</value>
             <value description="goal_id">-5</value>
             <value description="status">PROPOSED</value>                       
@@ -1054,7 +1054,7 @@
             <value description="question_id">5</value>
             <value description="goal_id">3</value>
             <value description="status">APPROVED</value>
-        </row>                           
+        </row>-->                           
     </table>
     <table name="unit">
         <column>unit_id</column>
@@ -1063,7 +1063,7 @@
         <column>physical</column>
         <column>base_unit</column>
         <column>multiples</column>        
-        <row>
+        <!--<row>
             <value description="unit_id">-1</value>
             <value description="name">Radial</value>                       
             <value description="symbol">rad</value>
@@ -1150,7 +1150,7 @@
             <value description="physical">time</value>
             <value description="base_unit">F</value>
             <value description="multiples">86400</value>
-        </row>                                                                      
+        </row>-->                                                                      
 	</table>
     <table name="scale">
         <column>scale_id</column>
@@ -1159,7 +1159,7 @@
         <column>type</column>
         <column>examples</column>
         <column>operations</column>
-        <row>
+        <!--<row>
             <value description="scale_id">-1</value>
             <value description="name">Nominal</value>
             <value description="type"><![CDATA[Qualitative]]></value>                       
@@ -1203,7 +1203,7 @@
             <value description="exaxmples"><![CDATA[
             	 Age (from 0  to 99 years)]]></value>
             <value description="operations"><![CDATA[=;!=;>;<;+;-;*;/]]></value>
-        </row>                        
+        </row>-->                        
 	</table>
 	<table name="metric">
         <column>metric_id</column>
@@ -1222,7 +1222,7 @@
         <column>collecting_type</column>
         <column>satisfying_condition_peration</column>
         <column>satisfying_condition_value</column>                
-        <row>
+        <!--<row>
             <value description="metric_id">1</value>
             <value description="project_id">1</value>
             <value description="code">DEVTIME</value>
@@ -1307,13 +1307,13 @@
             <value description="collecting_type">MULTIPLE_VALUE</value>
             <value description="satisfying_condition_peration">GREATER_OR_EQUAL</value>
             <value description="satisfying_condition_value">190</value>                        
-        </row>            
+        </row>-->            
     </table>	              
     <table name="question_metric">
         <column>metric_id</column>
         <column>question_id</column>
         <column>status</column>
-        <row>
+        <!--<row>
             <value description="metric_id">1</value>
             <value description="question_id">1</value>
             <value description="status">APPROVED</value>
@@ -1347,7 +1347,7 @@
             <value description="metric_id">5</value>
             <value description="question_id">2</value>
             <value description="status">APPROVED</value>
-        </row>                            
+        </row>-->                            
     </table>
 	<table name="measurement">
         <column>measurement_id</column>
@@ -1357,7 +1357,7 @@
         <column>collecting_t</column>
         <column>ts</column>
         <column>measuremento_id</column>        
-        <row>
+        <!--<row>
             <value description="measurement_id">1</value>
             <value description="metric_id">2</value>
             <value description="value"><![CDATA[12]]></value>
@@ -1446,6 +1446,10 @@
             <value description="collecting_t"><![CDATA[09:00:00]]></value>
             <value description="ts"><![CDATA[2013-06-22 23:59:20]]></value>
             <value description="measuremento_id">9</value>            
-        </row>            
-	</table>        
+        </row>-->            
+	</table>
+    <table name="mg_og_relationship">
+        <column>mg_id</column>
+        <column>og_id</column>                       
+    </table>    
 </dataset>
