@@ -36,38 +36,45 @@ import javax.persistence.*;
     )
 })
 public class Goal extends BaseObject {
-	private Long id;
-	private Project project;	
-	private String description;
-	private String subject;
+
+	//Common fields
+	private String description;	
+	private Integer type;
 	private String scope;
 	private String focus;
-	private String context;
-	private String viewpoint;
-	private String type;
-	private String impactOfVariation;
-	private Integer interpretationModel;
+	private Goal parent;
 	private User goalOwner;
-	private Set<User> QSMembers = new HashSet<User>();
-	private Set<User> MMDMMembers = new HashSet<User>();
 	private User goalEnactor;
 	private GoalStatus status;
-	private String refinement;
+	private Long id;
+	private Project project;		
+	private Set<User> QSMembers = new HashSet<User>();
+	private Set<User> MMDMMembers = new HashSet<User>();
+	private Set<GoalQuestion> questions = new HashSet<GoalQuestion>();	
 	private Set<User> votes = new HashSet<User>();
 	private Set<Goal> children = new HashSet<Goal>();
-	private Goal parent;
-	private Set<GoalQuestion> questions = new HashSet<GoalQuestion>();
-	private Strategy strategy;	
+	private String refinement;
+	
+	//OG fields
 	private String activity;
 	private String object;
 	private String magnitude;
 	private String timeframe;
 	private String constraints;
 	private String relations;
+	private Strategy strategy;
 	
+	//MG fields
+	private String subject;
+	private String context;
+	private String viewpoint;
+	private String impactOfVariation;	
+
+	//private String type;
+	//private Integer interpretationModel;	
 	
 	public Goal() {
-		;
+		
 	}
 
 	public Goal(Long id) {
@@ -94,13 +101,12 @@ public class Goal extends BaseObject {
 		this.description = description;
 	}
 
-	
 	@Column(name = "type", length = 255, nullable = false)
-	public String getType() {
+	public Integer getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(Integer type) {
 		this.type = type;
 	}
 
@@ -158,6 +164,16 @@ public class Goal extends BaseObject {
 		this.impactOfVariation = impactOfVariation;
 	}
 
+	/*	
+	@Column(name = "type", length = 255, nullable = false)
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+	
 	@Column(name = "interpretation_model", length = 255)
 	public Integer getInterpretationModel() {
 		return interpretationModel;
@@ -178,7 +194,7 @@ public class Goal extends BaseObject {
 		} else {
 			return "Not specified";
 		}
-	}
+	}*/
 
 	@Override
 	public int hashCode() {
