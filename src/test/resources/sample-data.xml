@@ -382,7 +382,7 @@
         <column>name</column>
         <column>description</column>
         <column>po_id</column>
-        <!--<row>
+        <row>
             <value description="project_id">-1</value>
             <value description="name">Trenitalia</value>
             <value description="description"><![CDATA[Trenitalia is the primary train operator in Italy]]></value>
@@ -399,7 +399,7 @@
             <value description="name">Application replacement</value>
             <value description="description"><![CDATA[Replacement of the management software of beds developed by Cineca. Cineca is a non profit Consortium, made up of 56 Italian universities, and 3 Institutions.]]></value>
             <value description="po_id">1</value>
-        </row>-->              
+        </row>              
     </table> 
     <table name="strategy">
         <column>strategy_id</column>
