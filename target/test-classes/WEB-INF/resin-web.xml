@@ -6,7 +6,7 @@
         <driver type="com.mysql.jdbc.Driver">
             <url>jdbc:mysql://localhost/GQM_Blind?createDatabaseIfNotExist=true&amp;useUnicode=true&amp;characterEncoding=utf-8&amp;autoReconnect=true</url>
             <user>root</user>
-            <password>stealer</password>
+            <password>root</password>
         </driver>
     </database-->
 </web-app>
