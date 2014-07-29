@@ -17,4 +17,8 @@ public enum GoalType {
 	public String toString() {
 		return Integer.toString(id);
 	}
+	
+	public static boolean isMG(Goal g) {
+		return g.getType() == GoalType.MG.getId();
+	}
 }

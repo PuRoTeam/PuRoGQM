@@ -45,34 +45,6 @@
             <form:errors path="description" cssClass="help-inline"/>
         </div>
     </div>
-
-	<!--
-    <spring:bind path="goal.type">
-    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-    </spring:bind>
-        <appfuse:label styleClass="control-label" key="goal.type"/>
-        <div class="controls">
-            <form:input path="type" id="type" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-            <form:errors path="type" cssClass="help-inline"/>
-        </div>
-    </div>
-            
-    <spring:bind path="goal.interpretationModel">
-    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-    </spring:bind>
-        <appfuse:label styleClass="control-label" key="goal.interpretationModel"/>
-        <div class="controls">
-        	<form:select path="interpretationModel" 
-        		onchange="if(this.form.interpretationModel.value != 2) {document.getElementById('divGQMStrategy').style.display='none';document.getElementById('divGQM').style.display='block';} else {document.getElementById('divGQMStrategy').style.display='block';document.getElementById('divGQM').style.display='none';}"  
-        			disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}">
-        		<form:option value="" label="-- Select item --"/>
-				<form:option value="1" label="GQM"/>
-				<form:option value="2" label="GQM+Strategies"/>								
-			</form:select>
-            <form:errors path="interpretationModel" cssClass="help-inline"/>
-        </div>
-    </div>
-	-->
 	
     <spring:bind path="goal.type">
     <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">

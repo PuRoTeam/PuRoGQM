@@ -1,6 +1,7 @@
 package it.uniroma2.gqm.webapp.controller;
 
 import it.uniroma2.gqm.model.Goal;
+import it.uniroma2.gqm.model.GoalType;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -30,7 +31,7 @@ public class GoalValidator implements Validator {
 	@Override
 	public void validate(Object arg0, Errors errors) {
 		Goal g = (Goal) arg0;  
-		if(!"GQM+Strategies".equalsIgnoreCase(g.getInterpretationModelAsString())){
+		if(GoalType.isMG(g)){
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "subject","subject", "Subject is a required field if an interpretation model different from GQM+Strategies is selected.");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "context","context", "Context is a required field if an interpretation model different from GQM+Strategies is selected.");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "viewpoint","viewpoint", "Viewpoint is a required field if an interpretation model different from GQM+Strategies is selected.");
