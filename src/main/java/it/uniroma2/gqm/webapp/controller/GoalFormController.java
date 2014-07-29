@@ -93,7 +93,7 @@ public class GoalFormController extends BaseFormController {
         List<String> availableStatus = goalManager.getAvailableStatus(ret,currentUser);
         
 		// header data is modificable only if te current user is the GO and the
-		// status is PROPOSED or we are make a new Goal...
+		// status is PROPOSED or we are making a new Goal...
 		boolean modificableHeader = ( (ret.getStatus() == GoalStatus.DRAFT || ret.getStatus() == GoalStatus.FOR_REVIEW) &&  
 									 currentUser.equals(ret.getGoalOwner()));
 		

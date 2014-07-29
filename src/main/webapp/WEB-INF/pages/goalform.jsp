@@ -46,6 +46,7 @@
         </div>
     </div>
 
+	<!--
     <spring:bind path="goal.type">
     <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
     </spring:bind>
@@ -54,7 +55,7 @@
             <form:input path="type" id="type" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
             <form:errors path="type" cssClass="help-inline"/>
         </div>
-    </div>     
+    </div>
             
     <spring:bind path="goal.interpretationModel">
     <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
@@ -69,6 +70,22 @@
 				<form:option value="2" label="GQM+Strategies"/>								
 			</form:select>
             <form:errors path="interpretationModel" cssClass="help-inline"/>
+        </div>
+    </div>
+	-->
+	
+    <spring:bind path="goal.type">
+    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+    </spring:bind>
+        <appfuse:label styleClass="control-label" key="goal.type"/>
+        <div class="controls">
+        	<form:select path="type"
+        		onchange="if(this.form.type.value != 0) {document.getElementById('divGQMStrategy').style.display='none';document.getElementById('divGQM').style.display='block';} else {document.getElementById('divGQMStrategy').style.display='block';document.getElementById('divGQM').style.display='none';}"
+        		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}">
+        	    <form:option value="" label="-- Select item --"/>
+				<form:option value="0" label="OG"/>
+				<form:option value="1" label="MG"/>		
+        	</form:select>
         </div>
     </div>
 
@@ -92,7 +109,7 @@
         </div>
     </div>
 	<c:choose>
-    	<c:when test="${goal.interpretationModel ne 2}">
+    	<c:when test="${goal.type ne 0}">
     		<div id="divGQM" >
 		</c:when>
 		<c:otherwise>
@@ -144,7 +161,7 @@
 </div>
 
 	<c:choose>
-    	<c:when test="${goal.interpretationModel eq 2}">
+    	<c:when test="${goal.type eq 2}">
     		<div id="divGQMStrategy" >
 		</c:when>
 		<c:otherwise>
@@ -346,7 +363,7 @@
 </div>
 
 
-<c:if test="${(goal.interpretationModel eq 2) && (goal.status eq 'ACCEPTED') && (goal.goalEnactor eq currentUser)}">
+<c:if test="${(goal.type eq 0) && (goal.status eq 'ACCEPTED') && (goal.goalEnactor eq currentUser)}">
 	<div class="span2">
 	    <h2><fmt:message key="goal.splitting"/></h2>
 	    <form:form commandName="goal" method="post" action="goalsplit" id="goalsplit"

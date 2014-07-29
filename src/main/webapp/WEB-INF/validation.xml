@@ -84,9 +84,11 @@
             <field property="focus" depends="required">
                 <arg key="goal.focus"/>
             </field>                        
+			<!--
 			<field property="interpretationModel" depends="required">
                 <arg key="goal.interpretationModel"/>
-            </field>                            
+            </field>
+            -->                            
             <field property="goalOwner" depends="required">
                 <arg key="goal.goalOwner"/>
             </field>
