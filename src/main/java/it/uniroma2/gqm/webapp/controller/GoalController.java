@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class GoalController {
 	
 	private GoalManager goalManager;
+	//Ciaociao
 
 	@Autowired
 	public void setGoalManager(@Qualifier("goalManager") GoalManager goalManager) {
