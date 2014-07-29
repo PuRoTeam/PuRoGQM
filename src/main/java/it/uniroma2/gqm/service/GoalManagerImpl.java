@@ -88,7 +88,6 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     		
     		temp.setDescription(goal.getDescription().concat(" [").concat(String.valueOf(i)).concat("]"));
     		System.out.println("----------> " + temp.getDescription());
-    		temp.setInterpretationModel(goal.getInterpretationModel());
     		temp.setType(goal.getType());
     		temp.setParent(goal); // set current goal parent...
     		

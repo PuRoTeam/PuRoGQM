@@ -1,7 +1,6 @@
 package it.uniroma2.gqm.service;
 
 import it.uniroma2.gqm.model.Goal;
-import it.uniroma2.gqm.model.GoalStatus;
 import it.uniroma2.gqm.model.Metric;
 import it.uniroma2.gqm.model.Project;
 

@@ -9,7 +9,6 @@ import javax.servlet.http.HttpSession;
 
 import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.GoalQuestion;
-import it.uniroma2.gqm.model.GoalStatus;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.model.Question;
 import it.uniroma2.gqm.service.GoalManager;
