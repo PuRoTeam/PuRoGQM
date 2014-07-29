@@ -1,9 +1,7 @@
 package it.uniroma2.gqm.dao.hibernate;
 
 import it.uniroma2.gqm.dao.GoalQuestionDao;
-import it.uniroma2.gqm.dao.QuestionDao;
 import it.uniroma2.gqm.model.GoalQuestion;
-import it.uniroma2.gqm.model.Question;
 
 import java.util.List;
 

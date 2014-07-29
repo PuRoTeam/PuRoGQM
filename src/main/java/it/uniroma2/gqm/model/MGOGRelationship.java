@@ -5,6 +5,8 @@ import javax.persistence.AssociationOverrides;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.appfuse.model.BaseObject;
@@ -13,6 +15,12 @@ import org.appfuse.model.BaseObject;
 @Table(name = "mg_og_relationship")
 @AssociationOverrides({ @AssociationOverride(name = "pk.mg", joinColumns = @JoinColumn(name = "mg_id")),
 						@AssociationOverride(name = "pk.og", joinColumns = @JoinColumn(name = "og_id")) })
+@NamedQueries({
+    @NamedQuery(
+            name = "findMGOGRelationship",
+            query = "select mgog from MGOGRelationship mgog  where mgog.pk.mg.id= :mg_id and  mgog.pk.og.id = :og_id"
+    )
+})
 public class MGOGRelationship extends BaseObject {
 
 	private MGOGRelationshipPK pk;
