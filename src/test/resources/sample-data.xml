@@ -399,7 +399,7 @@
             <value description="name">Application replacement</value>
             <value description="description"><![CDATA[Replacement of the management software of beds developed by Cineca. Cineca is a non profit Consortium, made up of 56 Italian universities, and 3 Institutions.]]></value>
             <value description="po_id">1</value>
-        </row>              
+        </row>
     </table> 
     <table name="strategy">
         <column>strategy_id</column>
@@ -460,7 +460,7 @@
     <table name="project_pm">
         <column>project_id</column>
         <column>user_id</column>
-        <!--  <row>
+        <row>
             <value description="project_id">-1</value>
             <value description="user_id">1</value>
         </row>
@@ -475,12 +475,12 @@
         <row>
             <value description="project_id">1</value>
             <value description="user_id">2</value>
-        </row>    -->    
+        </row>
     </table>
     <table name="project_team">
         <column>project_id</column>
         <column>user_id</column>
-        <!--<row>
+        <row>
             <value description="project_id">-1</value>
             <value description="user_id">1</value>
         </row>
@@ -511,12 +511,12 @@
         <row>
             <value description="project_id">1</value>
             <value description="user_id">4</value>
-        </row>-->   
+        </row>
     </table>
     <table name="project_gqm">
         <column>project_id</column>
         <column>user_id</column>
-        <!--<row>
+        <row>
             <value description="project_id">-1</value>
             <value description="user_id">5</value>
         </row>
@@ -563,7 +563,7 @@
         <row>
             <value description="project_id">1</value>
             <value description="user_id">10</value>
-        </row>-->                                                                             
+        </row>                                                                           
     </table>         
     <table name="goal">
         <column>goal_id</column>
@@ -815,12 +815,12 @@
 		    <null/>	
             <null/>
             <value description="parent_id">2</value>        
-        </row>               
+        </row>-->              
     </table>   
     <table name="goal_qs">
         <column>goal_id</column>
         <column>user_id</column>
-        <row>
+        <!--<row>
             <value description="goal_id">-3</value>
             <value description="user_id">7</value>
         </row>
@@ -1451,5 +1451,5 @@
     <table name="mg_og_relationship">
         <column>mg_id</column>
         <column>og_id</column>                       
-    </table>    
+    </table>       
 </dataset>

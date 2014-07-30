@@ -23,7 +23,7 @@
         <display:column property="strategy.name" sortable="true" titleKey="goal.strategy"/>
         <display:column property="goalOwner.fullName" sortable="true" titleKey="goal.go"/>
         <display:column property="goalEnactor.fullName" sortable="true" titleKey="goal.ge"/>
-        <display:column property="interpretationModelAsString" sortable="true" titleKey="goal.interpretationModel"/>        
+        <display:column property="typeAsString" sortable="true" titleKey="goal.type"/>        
         <display:column property="status" sortable="true" titleKey="goal.status"/>	    
         <display:setProperty name="paging.banner.item_name"><fmt:message key="goalList.goal"/></display:setProperty>
         <display:setProperty name="paging.banner.items_name"><fmt:message key="goalList.goals"/></display:setProperty>

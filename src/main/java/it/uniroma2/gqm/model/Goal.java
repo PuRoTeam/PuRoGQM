@@ -68,10 +68,7 @@ public class Goal extends BaseObject {
 	private String subject;
 	private String context;
 	private String viewpoint;
-	private String impactOfVariation;	
-
-	//private String type;
-	//private Integer interpretationModel;	
+	private String impactOfVariation;
 	
 	public Goal() {
 		
@@ -164,25 +161,15 @@ public class Goal extends BaseObject {
 		this.impactOfVariation = impactOfVariation;
 	}
 
-	/*	
-	@Column(name = "type", length = 255, nullable = false)
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
+	@Transient
+	public String getTypeAsString() {
+		if(GoalType.isMG(this))
+			return GoalType.MG.getString();
+		else
+			return GoalType.OG.getString();
 	}
 	
-	@Column(name = "interpretation_model", length = 255)
-	public Integer getInterpretationModel() {
-		return interpretationModel;
-	}
-
-	public void setInterpretationModel(Integer interpretationModel) {
-		this.interpretationModel = interpretationModel;
-	}
-
+	/*
 	@Transient
 	public String getInterpretationModelAsString() {
 		if(this.interpretationModel == null)

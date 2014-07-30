@@ -14,6 +14,13 @@ public enum GoalType {
 		return id;
 	}
 	
+	public String getString() {
+		if(id == 0)
+			return "Organizational Goal";
+		else
+			return "Measurement Goal";
+	}
+	
 	public String toString() {
 		return Integer.toString(id);
 	}
