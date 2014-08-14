@@ -54,9 +54,8 @@
         	<form:select path="type"
         		onchange="if(this.form.type.value != 0) {document.getElementById('divGQMStrategy').style.display='none';document.getElementById('divGQM').style.display='block';} else {document.getElementById('divGQMStrategy').style.display='block';document.getElementById('divGQM').style.display='none';}"
         		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}">
-        	    <form:option value="" label="-- Select item --"/>
-				<form:option value="0" label="OG"/>
-				<form:option value="1" label="MG"/>		
+        	    <form:option value="0" label="Organizational Goal"/>
+				<form:option value="1" label="Measurement Goal"/>		
         	</form:select>
         </div>
     </div>
@@ -80,60 +79,9 @@
             <form:errors path="focus" cssClass="help-inline"/>
         </div>
     </div>
-	<c:choose>
-    	<c:when test="${goal.type ne 0}">
-    		<div id="divGQM" >
-		</c:when>
-		<c:otherwise>
-			<div id="divGQM" hidden="true">
-		</c:otherwise>
-    </c:choose>	    
     
-    <spring:bind path="goal.subject">
-    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-    </spring:bind>
-        <appfuse:label styleClass="control-label" key="goal.subject"/>
-        <div class="controls">
-            <form:input path="subject" id="subject" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-            <form:errors path="subject" cssClass="help-inline"/>
-        </div>
-    </div>
-
-
-    <spring:bind path="goal.context">
-    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-    </spring:bind>
-        <appfuse:label styleClass="control-label" key="goal.context"/>
-        <div class="controls">
-            <form:input path="context" id="context" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-            <form:errors path="context" cssClass="help-inline"/>
-        </div>
-    </div>
-
-    <spring:bind path="goal.viewpoint">
-    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-    </spring:bind>
-        <appfuse:label styleClass="control-label" key="goal.viewpoint"/>
-        <div class="controls">
-            <form:input path="viewpoint" id="viewpoint" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-            <form:errors path="viewpoint" cssClass="help-inline"/>
-        </div>
-    </div>
-
-    <spring:bind path="goal.impactOfVariation">
-    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-    </spring:bind>
-        <appfuse:label styleClass="control-label" key="goal.impactOfVariation"/>
-        <div class="controls">
-            <form:input path="impactOfVariation" id="impactOfVariation" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-            <form:errors path="impactOfVariation" cssClass="help-inline"/>
-        </div>
-    </div>
-		     
-</div>
-
-	<c:choose>
-    	<c:when test="${goal.type eq 2}">
+    	<c:choose>
+    	<c:when test="${goal.type ne 1}">
     		<div id="divGQMStrategy" >
 		</c:when>
 		<c:otherwise>
@@ -141,80 +89,157 @@
 		</c:otherwise>
     </c:choose>	
     
-	        <spring:bind path="goal.activity">
-		    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-		    </spring:bind>
-		        <appfuse:label styleClass="control-label" key="goal.activity"/>
-		        <div class="controls">
-		            <form:input path="activity" id="activity" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-		            <form:errors path="activity" cssClass="help-inline"/>
+    		    <div class="control-group">
+					<appfuse:label styleClass="control-label" key="goal.measurement"/>
+					<div class="controls">
+						<form:select path="associatedGoal" onchange="" 
+								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
+								cssStyle="width:400px">
+							<form:option value="">None</form:option>
+			            	<form:options items="${mGoals}" itemValue="id" itemLabel="description"   />
+						</form:select>
+					</div>
+				</div>
+    
+		        <spring:bind path="goal.activity">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.activity"/>
+			        <div class="controls">
+			            <form:input path="activity" id="activity" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="activity" cssClass="help-inline"/>
+			        </div>
+			    </div>
+	 
+	 	        <spring:bind path="goal.object">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.object"/>
+			        <div class="controls">
+			            <form:input path="object" id="object" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="object" cssClass="help-inline"/>
+			        </div>
+			    </div>   
+	
+	
+	 	        <spring:bind path="goal.magnitude">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.magnitude"/>
+			        <div class="controls">
+			            <form:input path="magnitude" id="magnitude" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="magnitude" cssClass="help-inline"/>
+			        </div>
+			    </div>  
+	
+	 	        <spring:bind path="goal.timeframe">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.timeframe"/>
+			        <div class="controls">
+			            <form:input path="timeframe" id="timeframe" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="timeframe" cssClass="help-inline"/>
+			        </div>
+			    </div> 		
+			    
+	 	        <spring:bind path="goal.constraints">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.constraints"/>
+			        <div class="controls">
+			            <form:input path="constraints" id="constraints" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="constraints" cssClass="help-inline"/>
+			        </div>
+			    </div> 	
+	
+	 	        <spring:bind path="goal.relations">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.relations"/>
+			        <div class="controls">
+			            <form:input path="relations" id="relations" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="relations" cssClass="help-inline"/>
+			        </div>
+			    </div> 	
+			    		            
+				<div class="control-group" id="divStrategy" >
+		        <appfuse:label styleClass="control-label" key="goal.strategy"/>
+		        <div class="controls">      
+		            <form:select id="strategy"  path="strategy.id" onchange="" disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
+		            				cssStyle="width:400px" >
+		            	<form:option value="">None</form:option>
+		            	<form:options items="${strategies}" itemValue="id" itemLabel="name"   />
+					</form:select>            	
+		            <form:errors path="strategy" cssClass="help-inline"/>
 		        </div>
-		    </div>
- 
- 	        <spring:bind path="goal.object">
-		    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-		    </spring:bind>
-		        <appfuse:label styleClass="control-label" key="goal.object"/>
-		        <div class="controls">
-		            <form:input path="object" id="object" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-		            <form:errors path="object" cssClass="help-inline"/>
-		        </div>
-		    </div>   
+		    	</div> 
 
-
- 	        <spring:bind path="goal.magnitude">
-		    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-		    </spring:bind>
-		        <appfuse:label styleClass="control-label" key="goal.magnitude"/>
-		        <div class="controls">
-		            <form:input path="magnitude" id="magnitude" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-		            <form:errors path="magnitude" cssClass="help-inline"/>
-		        </div>
-		    </div>  
-
- 	        <spring:bind path="goal.timeframe">
-		    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-		    </spring:bind>
-		        <appfuse:label styleClass="control-label" key="goal.timeframe"/>
-		        <div class="controls">
-		            <form:input path="timeframe" id="timeframe" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-		            <form:errors path="timeframe" cssClass="help-inline"/>
-		        </div>
-		    </div> 		
-		    
- 	        <spring:bind path="goal.constraints">
-		    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-		    </spring:bind>
-		        <appfuse:label styleClass="control-label" key="goal.constraints"/>
-		        <div class="controls">
-		            <form:input path="constraints" id="constraints" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-		            <form:errors path="constraints" cssClass="help-inline"/>
-		        </div>
-		    </div> 	
-
- 	        <spring:bind path="goal.relations">
-		    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-		    </spring:bind>
-		        <appfuse:label styleClass="control-label" key="goal.relations"/>
-		        <div class="controls">
-		            <form:input path="relations" id="relations" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-		            <form:errors path="relations" cssClass="help-inline"/>
-		        </div>
-		    </div> 	
-		    		            
-			<div class="control-group" id="divStrategy" >
-	        <appfuse:label styleClass="control-label" key="goal.strategy"/>
-	        <div class="controls">      
-	            <form:select id="strategy"  path="strategy.id" onchange="" disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
-	            				cssStyle="width:400px" >
-	            	<form:option value="">None</form:option>
-	            	<form:options items="${strategies}" itemValue="id" itemLabel="name"   />
-				</form:select>            	
-	            <form:errors path="strategy" cssClass="help-inline"/>
-	        </div>
-	    </div> 
-
-		</div>
+			</div>
+    
+    
+	<c:choose>
+    	<c:when test="${goal.type eq 1}">
+    		<div id="divGQM" >
+		</c:when>
+		<c:otherwise>
+			<div id="divGQM" hidden="true">
+		</c:otherwise>
+    </c:choose>	    
+    		    	
+    		    <div class="control-group">
+					<appfuse:label styleClass="control-label" key="goal.organizational"/>
+					<div class="controls">
+						<form:select path="associatedGoal" onchange="" 
+								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
+								cssStyle="width:400px">
+							<form:option value="">None</form:option>
+			            	<form:options items="${oGoals}" itemValue="id" itemLabel="description"   />
+						</form:select>
+					</div>
+				</div>
+    
+			    <spring:bind path="goal.subject">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.subject"/>
+			        <div class="controls">
+			            <form:input path="subject" id="subject" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="subject" cssClass="help-inline"/>
+			        </div>
+			    </div>
+			
+			
+			    <spring:bind path="goal.context">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.context"/>
+			        <div class="controls">
+			            <form:input path="context" id="context" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="context" cssClass="help-inline"/>
+			        </div>
+			    </div>
+			
+			    <spring:bind path="goal.viewpoint">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.viewpoint"/>
+			        <div class="controls">
+			            <form:input path="viewpoint" id="viewpoint" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="viewpoint" cssClass="help-inline"/>
+			        </div>
+			    </div>
+			
+			    <spring:bind path="goal.impactOfVariation">
+			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+			    </spring:bind>
+			        <appfuse:label styleClass="control-label" key="goal.impactOfVariation"/>
+			        <div class="controls">
+			            <form:input path="impactOfVariation" id="impactOfVariation" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
+			            <form:errors path="impactOfVariation" cssClass="help-inline"/>
+			        </div>
+			    </div>
+		     
+			</div>
 
 	<div class="control-group">
         <appfuse:label styleClass="control-label" key="goal.parent"/>

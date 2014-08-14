@@ -55,6 +55,8 @@ public class Goal extends BaseObject {
 	private Set<Goal> children = new HashSet<Goal>();
 	private String refinement;
 	
+	private Goal associatedGoal;
+	
 	//OG fields
 	private String activity;
 	private String object;
@@ -333,6 +335,8 @@ public class Goal extends BaseObject {
 		this.parent = parent;
 	}
 	
+	
+	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.goal")
 	public Set<GoalQuestion>  getQuestions() {
 		return questions;
@@ -396,5 +400,13 @@ public class Goal extends BaseObject {
 	public void setRelations(String relations) {
 		this.relations = relations;
 	}
-		
+			
+	@Transient
+	public Goal getAssociatedGoal() {
+		return associatedGoal;
+	}
+
+	public void setAssociatedGoal(Goal associatedGoal) {
+		this.associatedGoal = associatedGoal;
+	}
 }

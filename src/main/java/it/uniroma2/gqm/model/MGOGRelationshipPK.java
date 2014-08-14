@@ -19,7 +19,7 @@ public class MGOGRelationshipPK implements Serializable {
 	public void setMg(Goal mg) {
 		this.mg = mg;
 	}
-	
+	 
 	@ManyToOne
 	public Goal getOg() {
 		return og;

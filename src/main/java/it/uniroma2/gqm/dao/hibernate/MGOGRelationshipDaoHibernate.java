@@ -2,6 +2,7 @@ package it.uniroma2.gqm.dao.hibernate;
 
 import it.uniroma2.gqm.dao.MGOGRelationshipDao;
 import it.uniroma2.gqm.model.MGOGRelationship;
+import it.uniroma2.gqm.model.MGOGRelationshipPK;
 
 import java.util.List;
 
@@ -11,10 +12,9 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository("mgogRelationshipDao")
-public class MGOGRelationshipDaoHibernate extends GenericDaoHibernate<MGOGRelationship, Long> implements MGOGRelationshipDao{
-
+public class MGOGRelationshipDaoHibernate extends GenericDaoHibernate<MGOGRelationship, MGOGRelationshipPK> implements MGOGRelationshipDao{
 	
-	public MGOGRelationshipDaoHibernate(Class<MGOGRelationship> persistentClass) {
+	public MGOGRelationshipDaoHibernate() {
 		super(MGOGRelationship.class);
 	}
 	

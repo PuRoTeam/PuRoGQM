@@ -4,7 +4,6 @@ import org.apache.commons.lang.StringUtils;
 import org.appfuse.model.User;
 import org.appfuse.service.GenericManager;
 import org.appfuse.service.UserManager;
- 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
@@ -19,7 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
- 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -32,6 +31,7 @@ import java.util.Set;
 
 import it.uniroma2.gqm.model.*;
 import it.uniroma2.gqm.service.GoalManager;
+import it.uniroma2.gqm.service.MGOGRelationshipManager;
 import it.uniroma2.gqm.service.StrategyManager;
 import it.uniroma2.gqm.webapp.util.RequestUtil;
 
@@ -50,7 +50,14 @@ public class GoalFormController extends BaseFormController {
     @Autowired
     private StrategyManager strategyManager;
 
+    private GenericManager<MGOGRelationship, MGOGRelationshipPK> mgogRelationshipManager;
+    
     @Autowired
+	public void setMgogRelationshipManager(@Qualifier("mgogRelationshipManager") GenericManager<MGOGRelationship, MGOGRelationshipPK>  mgogRelationshipManager) {
+		this.mgogRelationshipManager = mgogRelationshipManager;
+	}
+
+	@Autowired
     public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
         this.projectManager = projectManager;
     }
@@ -101,11 +108,24 @@ public class GoalFormController extends BaseFormController {
 		boolean visibleGESection = !(ret.getStatus() == GoalStatus.DRAFT || 
 					ret.getStatus() == GoalStatus.PROPOSED);
 		
+		List<Goal> allGoals = goalManager.getAll();
+		List<Goal> mGoals = new ArrayList<Goal>();
+		List<Goal> oGoals = new ArrayList<Goal>();
+		
+		for(Goal g: allGoals) {
+			if(GoalType.isMG(g))
+				mGoals.add(g);
+			else
+				oGoals.add(g);
+		}
+		
 		model.addAttribute("currentUser",currentUser);
 		model.addAttribute("visibleGESection",visibleGESection);
 		model.addAttribute("modificableHeader",modificableHeader);
         model.addAttribute("availableStatus",availableStatus);
-        model.addAttribute("availableGoals",goalManager.getAll());
+        model.addAttribute("availableGoals",allGoals);
+        model.addAttribute("mGoals", mGoals);
+        model.addAttribute("oGoals", oGoals);
         model.addAttribute("strategies",strategyManager.findByProject(ret.getProject()));        
         model.addAttribute("availableUsers",ret.getProject().getGQMTeam());
         return ret;

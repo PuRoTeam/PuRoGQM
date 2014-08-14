@@ -3,7 +3,6 @@ package it.uniroma2.gqm.dao.hibernate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.appfuse.dao.UserDao;
 import org.appfuse.dao.hibernate.GenericDaoHibernate;
@@ -11,8 +10,7 @@ import org.appfuse.model.User;
 
 import it.uniroma2.gqm.dao.*;
 import it.uniroma2.gqm.model.*;
- 
-import org.hibernate.LockMode;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
