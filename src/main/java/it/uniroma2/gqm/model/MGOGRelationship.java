@@ -13,11 +13,11 @@ import org.appfuse.model.BaseObject;
 @Entity
 @Table(name = "mg_og_relationship")
 @NamedQueries({
-	@NamedQuery(
+	/*@NamedQuery(
 			name = "findMGOGRelationship",
 			query = "select mgog from MGOGRelationship mgog " +
 					"where mgog.pk.mgID = :mg_id and mgog.pk.ogID = :og_id"
-	)
+	)*/
 })
 public class MGOGRelationship extends BaseObject {
 

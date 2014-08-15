@@ -1,6 +1,8 @@
 package it.uniroma2.gqm.service;
 
 import it.uniroma2.gqm.dao.MGOGRelationshipDao;
+import it.uniroma2.gqm.model.Goal;
+import it.uniroma2.gqm.model.GoalType;
 import it.uniroma2.gqm.model.MGOGRelationship;
 import it.uniroma2.gqm.model.MGOGRelationshipPK;
 
@@ -18,4 +20,121 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 		this.mgogRelationshipDao = mgogRelationshipDao;
 	}
 
+	@Override
+	public MGOGRelationship getMGOGRelationship(Long mgId, Long ogId) {
+		return mgogRelationshipDao.get(mgId, ogId);
+	}
+
+	@Override
+	public MGOGRelationship getMGOGRelationship(Goal goal1, Goal goal2) {		
+		if(goal1 == null || goal2 == null)
+			return null;
+		
+		boolean g1MG_g2OG = true;		
+		try {
+			g1MG_g2OG = isMGOG(goal1, goal2);
+		}
+		catch(Exception e) {
+			return null;
+		}
+		
+		MGOGRelationship rel = g1MG_g2OG ? 
+    			getMGOGRelationship(goal1.getId(), goal2.getId()) : 
+    			getMGOGRelationship(goal2.getId(), goal1.getId());  
+    	
+		return rel;
+	}
+
+	@Override
+	public MGOGRelationship save(Goal goal1, Goal goal2) {
+		if(goal1 == null || goal2 == null)
+			return null;
+		
+		boolean g1MG_g2OG = true;		
+		try {
+			g1MG_g2OG = isMGOG(goal1, goal2);
+		}
+		catch(Exception e) {
+			return null;
+		}
+		
+		Goal mg = g1MG_g2OG ? goal1 : goal2;
+		Goal og = g1MG_g2OG ? goal2 : goal1;
+		
+		MGOGRelationship rel = new MGOGRelationship();
+		rel.setMg(mg);
+		rel.setOg(og);
+		return save(rel);
+	}
+	
+	@Override
+	public void remove(Goal goal1, Goal goal2) {
+		if(goal1 == null || goal2 == null)
+			return;
+		
+		boolean g1MG_g2OG = true;		
+		try {
+			g1MG_g2OG = isMGOG(goal1, goal2);
+		}
+		catch(Exception e) {
+			return;
+		}
+		
+		if(g1MG_g2OG)
+			mgogRelationshipDao.remove(goal1.getId(), goal2.getId());
+		else
+			mgogRelationshipDao.remove(goal2.getId(), goal1.getId());
+	}
+	
+	@Override
+	public MGOGRelationship change(Goal goal, Goal oldAssociatedGoal, Goal newGoalToAssociate) {
+
+		if(goal == null)
+			return null;
+		
+		if(oldAssociatedGoal == null && newGoalToAssociate == null) { //nulla da fare
+			return null;	
+		}	
+		else if(oldAssociatedGoal == null && newGoalToAssociate != null) { //nessuna relazione, creane una nuova
+			try {
+				isMGOG(goal, newGoalToAssociate); //tipo di goal coerente?
+				return save(goal, newGoalToAssociate);
+			}
+			catch(Exception e) {
+				return null;
+			}
+		}	
+		else if(oldAssociatedGoal != null && newGoalToAssociate == null) { //elimina la vecchia relazione
+			remove(goal, oldAssociatedGoal);
+		}
+		else if(oldAssociatedGoal != null && newGoalToAssociate != null) { //elimina la vecchia relazione e creane una nuova
+			try {
+				isMGOG(goal, newGoalToAssociate); //tipo di goal coerente?
+				remove(goal, oldAssociatedGoal);
+				return save(goal, newGoalToAssociate);
+			}
+			catch(Exception e) {
+				return null;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Verifica il tipo di goal
+	 * 
+	 * @param goal1
+	 * @param goal2
+	 * @return true se goal1 MG, goal2MG e false in caso contrario
+	 * @throws Exception Quando lo stato dei goal è inconsistente (due MG o due OG)
+	 */
+	private boolean isMGOG(Goal goal1, Goal goal2) throws Exception {
+		if(GoalType.isMG(goal1) && GoalType.isOG(goal2)) //goal1 MG, goal2 OG
+			return true;
+		else if(GoalType.isOG(goal1) && GoalType.isMG(goal2)) //goal1 OG, goal2 MG  
+			return false;
+		else
+			throw new Exception("Stato dei goal incoerenti (due OG o due MG)");
+	}
 }

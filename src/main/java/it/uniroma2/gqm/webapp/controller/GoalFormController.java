@@ -50,10 +50,10 @@ public class GoalFormController extends BaseFormController {
     @Autowired
     private StrategyManager strategyManager;
 
-    private GenericManager<MGOGRelationship, MGOGRelationshipPK> mgogRelationshipManager;
+    private MGOGRelationshipManager mgogRelationshipManager;
     
     @Autowired
-	public void setMgogRelationshipManager(@Qualifier("mgogRelationshipManager") GenericManager<MGOGRelationship, MGOGRelationshipPK>  mgogRelationshipManager) {
+	public void setMgogRelationshipManager(@Qualifier("mgogRelationshipManager") MGOGRelationshipManager  mgogRelationshipManager) {
 		this.mgogRelationshipManager = mgogRelationshipManager;
 	}
 
@@ -155,10 +155,23 @@ public class GoalFormController extends BaseFormController {
         boolean isNew = (goal.getId() == null);
          Locale locale = request.getLocale();
  
-        if (request.getParameter("delete") != null) {
+        if (request.getParameter("delete") != null) {        	
+        	Goal associatedGoal = goal.getAssociatedGoal();      	
+        	mgogRelationshipManager.remove(goal, associatedGoal);
+        	
             goalManager.remove(goal.getId());
             saveMessage(request, getText("goal.deleted", locale));
         } else {
+        	
+        	Goal associatedGoal = goal.getAssociatedGoal(); //se null, se ne occupano le funzioni del manager
+        	
+        	if(isNew) {
+        		mgogRelationshipManager.save(goal, associatedGoal);
+        	}
+        	else if(!isNew){
+        		Goal oldAssociatedGoal = goalManager.get(goal.getId()).getAssociatedGoal(); //nel db è presente il goal senza nuove modifiche
+        		mgogRelationshipManager.change(goal, oldAssociatedGoal, goal.getAssociatedGoal());
+        	}
         	
         	goal.setGoalOwner(userManager.get(goal.getGoalOwner().getId()));
         	goal.setGoalEnactor(userManager.get(goal.getGoalEnactor().getId()));

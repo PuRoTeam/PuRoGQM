@@ -4,10 +4,7 @@ import it.uniroma2.gqm.dao.MGOGRelationshipDao;
 import it.uniroma2.gqm.model.MGOGRelationship;
 import it.uniroma2.gqm.model.MGOGRelationshipPK;
 
-import java.util.List;
-
 import org.appfuse.dao.hibernate.GenericDaoHibernate;
-import org.hibernate.Query;
 import org.springframework.stereotype.Repository;
 
 
@@ -18,13 +15,18 @@ public class MGOGRelationshipDaoHibernate extends GenericDaoHibernate<MGOGRelati
 		super(MGOGRelationship.class);
 	}
 	
-
-    @SuppressWarnings("unchecked")
-	public MGOGRelationship getMGOGRelationship(Long mgId, Long ogId) {
-    	List<MGOGRelationship> mgogs;
-    	Query q =  getSession().getNamedQuery("findMGOGRelationship").setLong("mg_id", mgId).setLong("og_id", ogId);
-    	mgogs = q.list();
-    	return (mgogs!=null && mgogs.size()>0) ? mgogs.get(0) : null;
+	public MGOGRelationship get(Long mgId, Long ogId) {
+    	MGOGRelationshipPK id = new MGOGRelationshipPK();
+    	id.setMgID(mgId);
+    	id.setOgID(ogId);
+    	return get(id);
 	}
 
+	@Override
+	public void remove(Long mgId, Long ogId) {
+    	MGOGRelationshipPK id = new MGOGRelationshipPK();
+    	id.setMgID(mgId);
+    	id.setOgID(ogId);
+    	remove(id);
+	}	
 }
