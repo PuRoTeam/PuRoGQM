@@ -1,10 +1,10 @@
 package it.uniroma2.gqm.model;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -12,13 +12,6 @@ import org.appfuse.model.BaseObject;
 
 @Entity
 @Table(name = "mg_og_relationship")
-@NamedQueries({
-	/*@NamedQuery(
-			name = "findMGOGRelationship",
-			query = "select mgog from MGOGRelationship mgog " +
-					"where mgog.pk.mgID = :mg_id and mgog.pk.ogID = :og_id"
-	)*/
-})
 public class MGOGRelationship extends BaseObject {
 
 	private static final long serialVersionUID = 6535760101622612386L;
@@ -38,8 +31,9 @@ public class MGOGRelationship extends BaseObject {
 	}
 
 	//associazione unidirezionale (in Goal non sono presenti riferimenti a questa entità)
-	@MapsId("mgID")
+	//@MapsId("mgID")
 	@OneToOne
+	@JoinColumn(name="mgID", insertable=false, updatable=false)
 	public Goal getMg() {
 		return mg;
 	}
@@ -49,8 +43,9 @@ public class MGOGRelationship extends BaseObject {
 	}
 
 	//associazione unidirezionale (in Goal non sono presenti riferimenti a questa entità)
-	@MapsId("ogID")
+	//@MapsId("ogID")
 	@OneToOne
+	@JoinColumn(name="ogID", insertable=false, updatable=false)
 	public Goal getOg() {
 		return og;
 	}

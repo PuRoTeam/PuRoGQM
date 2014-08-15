@@ -162,17 +162,11 @@ public class GoalFormController extends BaseFormController {
         	
             goalManager.remove(goal.getId());
             saveMessage(request, getText("goal.deleted", locale));
-        } else {
-        	
-        	Goal associatedGoal = goal.getAssociatedGoal(); //se null, se ne occupano le funzioni del manager
-        	
-        	if(isNew) {
-        		mgogRelationshipManager.save(goal, associatedGoal);
-        	}
-        	else if(!isNew){
-        		Goal oldAssociatedGoal = goalManager.get(goal.getId()).getAssociatedGoal(); //nel db è presente il goal senza nuove modifiche
-        		mgogRelationshipManager.change(goal, oldAssociatedGoal, goal.getAssociatedGoal());
-        	}
+        } else {        	
+        	Goal oldAssociatedGoal = null;
+        	if(!isNew)
+        		oldAssociatedGoal = goalManager.get(goal.getId()).getAssociatedGoal(); //nel db è presente il goal senza nuove modifiche, lo prelevo prima di salvare il goal
+        		
         	
         	goal.setGoalOwner(userManager.get(goal.getGoalOwner().getId()));
         	goal.setGoalEnactor(userManager.get(goal.getGoalEnactor().getId()));
@@ -195,6 +189,19 @@ public class GoalFormController extends BaseFormController {
             saveMessage(request, getText(key, locale));
             
             
+        	Goal associatedGoal = goal.getAssociatedGoal();
+        	
+        	System.out.println("*" + goal);
+        	System.out.println("**" + associatedGoal);
+        	
+        	if(isNew) {        		
+        		mgogRelationshipManager.save(goal, associatedGoal);
+        	}
+        	else if(!isNew) {
+        		mgogRelationshipManager.change(goal, oldAssociatedGoal, goal.getAssociatedGoal());
+        	}
+            
+        	
             if(goal.getId() == null){
 		        try {
 		        	User ge =  userManager.getUserByUsername(goal.getGoalEnactor().getFullName());

@@ -61,9 +61,14 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 		Goal mg = g1MG_g2OG ? goal1 : goal2;
 		Goal og = g1MG_g2OG ? goal2 : goal1;
 		
+		MGOGRelationshipPK relPK = new MGOGRelationshipPK();
+		relPK.setMgID(mg.getId());
+		relPK.setOgID(og.getId());
+		
 		MGOGRelationship rel = new MGOGRelationship();
-		rel.setMg(mg);
-		rel.setOg(og);
+		rel.setPk(relPK);
+		//rel.setMg(mg);
+		//rel.setOg(og);
 		return save(rel);
 	}
 	
