@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -254,6 +255,34 @@ public class GoalFormController extends BaseFormController {
             }
         });
     }    
+    
+    @InitBinder
+    /**
+     * Richiamata quando seleziono un goal associato. Trasform l'id da stringa nel relativo oggeto Goal
+     * ed imposta il campo "associatedGoal" del goal da creare/modificare
+     * @param request
+     * @param binder
+     */
+    protected void initBinder3(HttpServletRequest request, ServletRequestDataBinder binder) {
+    	binder.registerCustomEditor(Goal.class, "associatedGoal", new PropertyEditorSupport() {
+						
+			@Override
+			public void setAsText(String text) throws IllegalArgumentException {				
+				if(text != null) {
+					String [] parts = text.split(","); //al massimo un elemento ha un valore diverso da -1
+					System.out.println("********" + text);
+					for(String curPart : parts) {
+						Long id = new Long(curPart);
+						System.out.println("********" + id);
+						if(id != -1) {
+							Goal associatedGoal = goalManager.get(id);
+							setValue(associatedGoal);	
+						}
+					}
+				}	
+			}			
+		});
+    }
     
     @InitBinder(value="goal")
     protected void initBinder(WebDataBinder binder) {
