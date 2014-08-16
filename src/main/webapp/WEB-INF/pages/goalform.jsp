@@ -45,6 +45,18 @@
             <form:errors path="description" cssClass="help-inline"/>
         </div>
     </div>
+
+	<c:choose>
+    	<c:when test="${goal.type eq 0}"> <%-- Goal esistente e di tipo OG --%>
+    		<c:set var="goalType" value="0" scope="page" />
+		</c:when>
+		<c:when test="${goal.type eq 1} }"> <%-- Goal esistente e di tipo MG --%>
+			<c:set var="goalType" value="1" scope="page" />
+		</c:when>
+    </c:choose>
+	
+	<c:out value="${goalType}"/>
+	
 	
     <spring:bind path="goal.type">
     <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
@@ -52,17 +64,17 @@
         <appfuse:label styleClass="control-label" key="goal.type"/>
         <div class="controls">
         	<form:select path="type"
-        		onchange="if(this.form.type.value == 0) { //ho selezionato OG, mostro divOG, annullo selezione goal associato nel divMG
+        		onchange="if(this.form.type.value == 0) { //ho selezionato OG, mostro divOG, e annullo la selezione del goal associato nel divMG (setto a -1), così associatedGoal ha sempre una coppia di valori [x,-1]
         					document.getElementById('divOG').style.display='block';document.getElementById('divMG').style.display='none';
         				  	document.getElementById('associatedOG').value = '-1';	
         				  } 
-        				  else { //ho selezionato MG, mostro divMG, annullo selezione goal associato nel divOG
+        				  else { //ho selezionato MG, mostro divMG, e annullo la selezione del goal associato nel divOG (setto a -1), così associatedGoal ha sempre una coppia di valori [x,-1]
         				  	document.getElementById('divOG').style.display='none';document.getElementById('divMG').style.display='block';
         				  	document.getElementById('associatedMG').value = '-1';	
         				  }"
         		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}">
-        	    <form:option value="0" label="Organizational Goal"/>
-				<form:option value="1" label="Measurement Goal"/>		
+        		<form:option value="0" selected="${(goalType eq 0)}" label="Organizational Goal"/>
+				<form:option value="1" selected="${(goalType eq 1)}" label="Measurement Goal"/>
         	</form:select>
         </div>
     </div>
