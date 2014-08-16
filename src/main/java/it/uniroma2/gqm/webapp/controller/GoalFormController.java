@@ -92,6 +92,8 @@ public class GoalFormController extends BaseFormController {
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
+        	ret.setAssociatedGoal(mgogRelationshipManager.getAssociatedGoal(ret));
+        	
         }else {
         	ret = new Goal();
         	ret.setStatus(GoalStatus.DRAFT);
@@ -162,12 +164,8 @@ public class GoalFormController extends BaseFormController {
         	
             goalManager.remove(goal.getId());
             saveMessage(request, getText("goal.deleted", locale));
-        } else {        	
-        	Goal oldAssociatedGoal = null;
-        	if(!isNew)
-        		oldAssociatedGoal = goalManager.get(goal.getId()).getAssociatedGoal(); //nel db è presente il goal senza nuove modifiche, lo prelevo prima di salvare il goal
-        		
-        	
+        } else {
+        	        	
         	goal.setGoalOwner(userManager.get(goal.getGoalOwner().getId()));
         	goal.setGoalEnactor(userManager.get(goal.getGoalEnactor().getId()));
         	if(goal.getStrategy().getId() != null)
@@ -190,6 +188,7 @@ public class GoalFormController extends BaseFormController {
             
             
         	Goal associatedGoal = goal.getAssociatedGoal();
+        	Goal oldAssociatedGoal = mgogRelationshipManager.getAssociatedGoal(goal); //non avendo ancora aggiornato la tabella delle relazioni, è salvato ancora il vecchio goal associato
         	
         	System.out.println("*" + goal);
         	System.out.println("**" + associatedGoal);

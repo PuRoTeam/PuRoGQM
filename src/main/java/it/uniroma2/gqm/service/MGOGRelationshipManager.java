@@ -39,4 +39,18 @@ public interface MGOGRelationshipManager extends GenericManager<MGOGRelationship
 	 * @return Un oggetto MGOGRelationship, o null in caso di relazione inesistente o incoerenza nel tipo di goal (due OG, due MG, goal null)
 	 */
 	public MGOGRelationship change(Goal goal, Goal oldAssociatedGoal, Goal newGoalToAssociate);
+	
+	/**
+	 * Recupera La relazione in cui compare il goal, riconoscendone il tipo
+	 * @param goal Il Goal di cui recuperare l'associato
+	 * @return Un oggetto MGOGRelationship corrispondente alla relazione, o null in caso non esistano relazioni
+	 */
+	public MGOGRelationship getAssociatedRelation(Goal goal);
+	
+	/**
+	 * Recupera il goal associato a "goal"
+	 * @param goal Il Goal di cui recuperare l'associato
+	 * @return Il Goal associato a "goal"
+	 */
+	public Goal getAssociatedGoal(Goal goal);
 }

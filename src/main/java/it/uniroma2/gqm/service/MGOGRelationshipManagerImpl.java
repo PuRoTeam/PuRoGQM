@@ -123,6 +123,23 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 		return null;
 	}
 	
+	@Override
+	public MGOGRelationship getAssociatedRelation(Goal goal) {
+		return mgogRelationshipDao.getAssociatedRelation(goal);
+	}
+	
+	@Override
+	public Goal getAssociatedGoal(Goal goal) {
+		if(goal == null)
+			return null;
+		
+		MGOGRelationship relation = getAssociatedRelation(goal);
+		if(relation == null)
+			return null;
+		
+		return GoalType.isMG(goal)? relation.getPk().getOg() : relation.getPk().getMg();
+	}
+	
 	/**
 	 * Verifica il tipo di goal
 	 * 
