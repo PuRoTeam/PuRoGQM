@@ -8,13 +8,6 @@ import org.appfuse.service.GenericManager;
 
 public interface MGOGRelationshipManager extends GenericManager<MGOGRelationship, MGOGRelationshipPK> {
 	/**
-	 * Salva su db un oggetto MGOGRelationship
-	 * @param mgId ID del goal MG
-	 * @param ogId ID del goal OG
-	 * @return Un oggetto MGOGRelationship
-	 */
-	public MGOGRelationship getMGOGRelationship(Long mgId, Long ogId);
-	/**
 	 * Identifica quale sia il goal MG, e quale il goal OG e restituisce l'oggetto MGOGRelationship relativo
 	 * @param goal1 Il primo Goal
 	 * @param goal2 Il secondo Goal

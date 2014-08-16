@@ -19,12 +19,6 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 		super(mgogRelationshipDao);
 		this.mgogRelationshipDao = mgogRelationshipDao;
 	}
-
-	@Override
-	public MGOGRelationship getMGOGRelationship(Long mgId, Long ogId) {
-		return mgogRelationshipDao.get(mgId, ogId);
-	}
-
 	@Override
 	public MGOGRelationship getMGOGRelationship(Goal goal1, Goal goal2) {		
 		if(goal1 == null || goal2 == null)
@@ -39,8 +33,8 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 		}
 		
 		MGOGRelationship rel = g1MG_g2OG ? 
-    			getMGOGRelationship(goal1.getId(), goal2.getId()) : 
-    			getMGOGRelationship(goal2.getId(), goal1.getId());  
+				mgogRelationshipDao.get(goal1, goal2) : 
+					mgogRelationshipDao.get(goal2, goal1);  
     	
 		return rel;
 	}
@@ -61,9 +55,12 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 		Goal mg = g1MG_g2OG ? goal1 : goal2;
 		Goal og = g1MG_g2OG ? goal2 : goal1;
 		
+		//MGOGRelationshipPK relPK = new MGOGRelationshipPK();
+		//relPK.setMgID(mg.getId());
+		//relPK.setOgID(og.getId());
 		MGOGRelationshipPK relPK = new MGOGRelationshipPK();
-		relPK.setMgID(mg.getId());
-		relPK.setOgID(og.getId());
+		relPK.setMg(mg);
+		relPK.setOg(og);
 		
 		MGOGRelationship rel = new MGOGRelationship();
 		rel.setPk(relPK);
@@ -86,9 +83,9 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 		}
 		
 		if(g1MG_g2OG)
-			mgogRelationshipDao.remove(goal1.getId(), goal2.getId());
+			mgogRelationshipDao.remove(goal1, goal2);
 		else
-			mgogRelationshipDao.remove(goal2.getId(), goal1.getId());
+			mgogRelationshipDao.remove(goal2, goal1);
 	}
 	
 	@Override

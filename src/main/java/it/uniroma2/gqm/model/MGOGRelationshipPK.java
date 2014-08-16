@@ -3,36 +3,45 @@ package it.uniroma2.gqm.model;
 import java.io.Serializable;
 
 import javax.persistence.Embeddable;
+import javax.persistence.OneToOne;
 
 @Embeddable
 public class MGOGRelationshipPK implements Serializable {
 
 	private static final long serialVersionUID = -2870344507198161817L;
+		
+	private Goal mg;
+	private Goal og;
 	
-	//chiavi dei due Goal puntati dalle due foreign key
-	private Long mgID;
-	private Long ogID;	
-	
-	public Long getMgID() {
-		return mgID;
+	//associazione unidirezionale (in Goal non sono presenti riferimenti a questa entità)	
+	@OneToOne
+	public Goal getMg() {
+		return mg;
 	}
-	public void setMgID(Long mgID) {
-		this.mgID = mgID;
+
+	public void setMg(Goal mg) {
+		this.mg = mg;
 	}
-	public Long getOgID() {
-		return ogID;
+
+	//associazione unidirezionale (in Goal non sono presenti riferimenti a questa entità)	
+	@OneToOne
+	public Goal getOg() {
+		return og;
 	}
-	public void setOgID(Long ogID) {
-		this.ogID = ogID;
+
+	public void setOg(Goal og) {
+		this.og = og;
 	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((mgID == null) ? 0 : mgID.hashCode());
-		result = prime * result + ((ogID == null) ? 0 : ogID.hashCode());
+		result = prime * result + ((mg == null) ? 0 : mg.hashCode());
+		result = prime * result + ((og == null) ? 0 : og.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -42,21 +51,22 @@ public class MGOGRelationshipPK implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		MGOGRelationshipPK other = (MGOGRelationshipPK) obj;
-		if (mgID == null) {
-			if (other.mgID != null)
+		if (mg == null) {
+			if (other.mg != null)
 				return false;
-		} else if (!mgID.equals(other.mgID))
+		} else if (!mg.equals(other.mg))
 			return false;
-		if (ogID == null) {
-			if (other.ogID != null)
+		if (og == null) {
+			if (other.og != null)
 				return false;
-		} else if (!ogID.equals(other.ogID))
+		} else if (!og.equals(other.og))
 			return false;
 		return true;
 	}
+
 	@Override
 	public String toString() {
-		return "MGOGRelationshipPK [mgID=" + mgID + ", ogID=" + ogID + "]";
+		return "MGOGRelationshipPK [mg=" + mg + ", og=" + og + "]";
 	}
 	
 	

@@ -1,6 +1,7 @@
 package it.uniroma2.gqm.dao.hibernate;
 
 import it.uniroma2.gqm.dao.MGOGRelationshipDao;
+import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.MGOGRelationship;
 import it.uniroma2.gqm.model.MGOGRelationshipPK;
 
@@ -15,18 +16,18 @@ public class MGOGRelationshipDaoHibernate extends GenericDaoHibernate<MGOGRelati
 		super(MGOGRelationship.class);
 	}
 	
-	public MGOGRelationship get(Long mgId, Long ogId) {
+	public MGOGRelationship get(Goal mg, Goal og) {
     	MGOGRelationshipPK id = new MGOGRelationshipPK();
-    	id.setMgID(mgId);
-    	id.setOgID(ogId);
+    	id.setMg(mg);
+    	id.setOg(og);
     	return get(id);
 	}
 
 	@Override
-	public void remove(Long mgId, Long ogId) {
+	public void remove(Goal mg, Goal og) {
     	MGOGRelationshipPK id = new MGOGRelationshipPK();
-    	id.setMgID(mgId);
-    	id.setOgID(ogId);
+    	id.setMg(mg);
+    	id.setOg(og);
     	remove(id);
 	}	
 }
