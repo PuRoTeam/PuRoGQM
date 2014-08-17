@@ -37,6 +37,8 @@ import javax.persistence.*;
 })
 public class Goal extends BaseObject {
 
+	private static final long serialVersionUID = -5289775436595676632L;
+	
 	//Common fields
 	private String description;	
 	private Integer type;
@@ -55,9 +57,9 @@ public class Goal extends BaseObject {
 	private Set<Goal> children = new HashSet<Goal>();
 	private String refinement;
 	
-	private Goal associatedGoal; //non è salvato su db, serve solo per la view di goalform per mostrare una selectbox
-	private MGOGRelationship associatedMG;
-	private MGOGRelationship associatedOG;
+	//private Goal associatedGoal; //necessario per visualizzare il goal associato nella lista di goal
+	private MGOGRelationship relationWithMG;
+	private MGOGRelationship relationWithOG;
 	
 	//OG fields
 	private String activity;
@@ -403,14 +405,61 @@ public class Goal extends BaseObject {
 		this.relations = relations;
 	}
 			
-	@Transient
+	/*@Transient
 	public Goal getAssociatedGoal() {
+		if(GoalType.isMG(this)) {
+			MGOGRelationship relation = getRelationWithOG();
+			if(relation != null) {
+				associatedGoal = relation.getPk().getOg();
+				return associatedGoal;	
+			}				
+		}
+		else if(GoalType.isOG(this)) {
+			MGOGRelationship relation = getRelationWithMG();
+			if(relation != null) {
+				associatedGoal = relation.getPk().getMg();
+				return associatedGoal;
+			}
+		}
+		
 		return associatedGoal;
 	}
 
 	public void setAssociatedGoal(Goal associatedGoal) {
 		this.associatedGoal = associatedGoal;
+		
+		MGOGRelationship newRelation = new MGOGRelationship();
+		MGOGRelationshipPK pk = new MGOGRelationshipPK();
+		
+		if(GoalType.isMG(this) && GoalType.isOG(associatedGoal)) {			
+			pk.setMg(this);
+			pk.setOg(associatedGoal);
+			newRelation.setPk(pk);
+			setRelationWithOG(newRelation);
+		}
+		else if(GoalType.isMG(associatedGoal) && GoalType.isOG(this)) {
+			pk.setMg(associatedGoal);
+			pk.setOg(this);
+			newRelation.setPk(pk);
+			setRelationWithMG(newRelation);
+		}
+	}*/
+
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.mg")
+	public MGOGRelationship getRelationWithMG() {
+		return relationWithMG;
 	}
 
+	public void setRelationWithMG(MGOGRelationship relationWithMG) {
+		this.relationWithMG = relationWithMG;
+	}
 
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.og")
+	public MGOGRelationship getRelationWithOG() {
+		return relationWithOG;
+	}
+
+	public void setRelationWithOG(MGOGRelationship relationWithOG) {
+		this.relationWithOG = relationWithOG;
+	}
 }

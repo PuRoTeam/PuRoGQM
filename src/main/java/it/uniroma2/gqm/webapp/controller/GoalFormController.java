@@ -92,9 +92,6 @@ public class GoalFormController extends BaseFormController {
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
-        	Goal associatedGoal = mgogRelationshipManager.getAssociatedGoal(ret);
-        	System.out.println("SHOWFORM*****" + associatedGoal);
-        	ret.setAssociatedGoal(associatedGoal);
         	
         }else {
         	ret = new Goal();
@@ -118,10 +115,9 @@ public class GoalFormController extends BaseFormController {
 		List<Goal> oGoals = new ArrayList<Goal>();
 		
 		for(Goal g: allGoals) {
-			Goal associatedGoal = mgogRelationshipManager.getAssociatedGoal(g);
-			if(GoalType.isMG(g) && associatedGoal == null)
+			if(GoalType.isMG(g) && g.getRelationWithOG() == null)
 				mGoals.add(g);
-			else if(GoalType.isOG(g) && associatedGoal == null)
+			else if(GoalType.isOG(g) && g.getRelationWithMG() == null)
 				oGoals.add(g);
 		}
 		
@@ -161,14 +157,29 @@ public class GoalFormController extends BaseFormController {
         boolean isNew = (goal.getId() == null);
          Locale locale = request.getLocale();
  
-        if (request.getParameter("delete") != null) {        	
-        	Goal associatedGoal = goal.getAssociatedGoal();      	
-        	mgogRelationshipManager.remove(goal, associatedGoal);
+        if (request.getParameter("delete") != null) {     	
+        	mgogRelationshipManager.remove(goal);
         	
             goalManager.remove(goal.getId());
             saveMessage(request, getText("goal.deleted", locale));
         } else {
         	        	
+        	//in initBinder3.setValue ho impostato solo un goal della relazione
+        	if(GoalType.isMG(goal)) {
+        		MGOGRelationship rel = goal.getRelationWithOG();
+        		if(rel != null) {
+            		MGOGRelationshipPK pk = rel.getPk();
+            		pk.setMg(goal);
+        		}
+        	}
+        	else if(GoalType.isOG(goal)) {
+        		MGOGRelationship rel = goal.getRelationWithOG();
+        		if(rel != null) {
+            		MGOGRelationshipPK pk = rel.getPk();
+            		pk.setOg(goal);	
+        		}
+        	}
+        	
         	goal.setGoalOwner(userManager.get(goal.getGoalOwner().getId()));
         	goal.setGoalEnactor(userManager.get(goal.getGoalEnactor().getId()));
         	if(goal.getStrategy().getId() != null)
@@ -189,17 +200,13 @@ public class GoalFormController extends BaseFormController {
             saveMessage(request, getText(key, locale));
             
             
-        	Goal associatedGoal = goal.getAssociatedGoal();
-        	Goal oldAssociatedGoal = mgogRelationshipManager.getAssociatedGoal(goal); //non avendo ancora aggiornato la tabella delle relazioni, è salvato ancora il vecchio goal associato
-        	
-        	System.out.println("ONSUBMIT*******" + goal);
-        	System.out.println("ONSUBMIT********" + associatedGoal);
-        	
+        	MGOGRelationship newRelation = GoalType.isMG(goal) ? goal.getRelationWithOG() : goal.getRelationWithMG();
+        	        	        	
         	if(isNew) {        		
-        		mgogRelationshipManager.save(goal, associatedGoal);
+        		mgogRelationshipManager.save(newRelation);
         	}
         	else if(!isNew) {
-        		mgogRelationshipManager.change(goal, oldAssociatedGoal, goal.getAssociatedGoal());
+        		mgogRelationshipManager.change(goal, newRelation);
         	}
             
         	
@@ -265,42 +272,67 @@ public class GoalFormController extends BaseFormController {
     }    
     
     @InitBinder
-    /**
-     * Richiamata quando seleziono un goal associato. Trasform l'id da stringa nel relativo oggeto Goal
-     * ed imposta il campo "associatedGoal" del goal da creare/modificare
-     * @param request
-     * @param binder
-     */
     protected void initBinder3(HttpServletRequest request, ServletRequestDataBinder binder) {
-    	binder.registerCustomEditor(Goal.class, "associatedGoal", new PropertyEditorSupport() {
-					
-    		public String getAsText() {
-    			Goal goal = (Goal)getValue();
-    			System.out.println("GETASTEXT*******" + goal);
-    			//return goal != null ? Long.toString(goal.getId()) : null;
-    			return goal != null ? goal.getId() : null;
-    		}
-    		
-			@Override
-			public void setAsText(String text) throws IllegalArgumentException {				
-				if(text != null) {
-					String [] parts = text.split(","); //al massimo un elemento ha un valore diverso da -1
-					System.out.println("SETASTEXT********" + text);
-					for(String curPart : parts) {
-						Long id = new Long(curPart);
-						System.out.println("SETASTEXT********" + id);
-						if(id != -1) {
-							Goal associatedGoal = goalManager.get(id);
-							setValue(associatedGoal);	
-						}
-					}
-				}	
-			}			
-		});
+    	binder.registerCustomEditor(MGOGRelationship.class, "relationWithMG", new AssociatedMGEditorSupport());
+    	binder.registerCustomEditor(MGOGRelationship.class, "relationWithOG", new AssociatedOGEditorSupport());
     }
     
     @InitBinder(value="goal")
     protected void initBinder(WebDataBinder binder) {
         binder.setValidator(new GoalValidator());
+    }
+    
+    private class AssociatedOGEditorSupport extends PropertyEditorSupport {
+		public String getAsText() {
+			MGOGRelationship rel = (MGOGRelationship)getValue();
+			System.out.println("GOG*******" + rel + "****");
+			return rel != null ? Long.toString(rel.getPk().getOg().getId()) : null;
+		}
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {	
+			System.out.println("SOG1******" + text + "******");
+			if(text != null) {
+				String [] parts = text.split(","); //al massimo un elemento ha un valore diverso da -1
+				System.out.println("SOG2********" + text + "******");
+				for(String curPart : parts) {
+					Long id = new Long(curPart);
+					System.out.println("SOG3********" + id + "******");
+					if(id != -1) {
+						MGOGRelationship rel = new MGOGRelationship();
+						MGOGRelationshipPK pk = new MGOGRelationshipPK();
+						pk.setOg(goalManager.get(id));
+						rel.setPk(pk);
+						setValue(rel);	
+					}
+				}
+			}	
+		}
+    }
+    
+    private class AssociatedMGEditorSupport extends PropertyEditorSupport {
+		public String getAsText() {
+			MGOGRelationship rel = (MGOGRelationship)getValue();
+			System.out.println("GMG*******" + rel + "****");
+			return rel != null ? Long.toString(rel.getPk().getMg().getId()) : null;
+		}
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {	
+			System.out.println("SMG1******" + text + "******");
+			if(text != null) {
+				String [] parts = text.split(","); //al massimo un elemento ha un valore diverso da -1
+				System.out.println("SMG2********" + text + "******");
+				for(String curPart : parts) {
+					Long id = new Long(curPart);
+					System.out.println("SMG3********" + id + "******");
+					if(id != -1) {
+						MGOGRelationship rel = new MGOGRelationship();
+						MGOGRelationshipPK pk = new MGOGRelationshipPK();
+						pk.setMg(goalManager.get(id));
+						rel.setPk(pk);
+						setValue(rel);	
+					}
+				}
+			}	
+		}
     }
 }

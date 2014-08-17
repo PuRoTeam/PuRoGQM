@@ -103,11 +103,11 @@
 		<c:otherwise>
 			<div id="divOG" hidden="true">
 		</c:otherwise>
-    </c:choose>            
+    </c:choose>
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_mg"/>
 					<div class="controls">
-						<form:select path="associatedGoal" onchange=""
+						<form:select path="relationWithMG" onchange=""
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedMG">
 							<%-- Quando seleziono il goal dalla lista (e quindi ho selezionato un item con un id di un goal), viene automaticamente popolato l'id dell'associated goal con l'id del goal selezionato --%>
@@ -115,7 +115,7 @@
 			            	<form:options items="${mGoals}" itemValue="id" itemLabel="description"/>
 			            	<%-- Popola questa lista con i goal di mGoals. Il value di ogni item sarà l'id del goal, il testo html mostrato sarà la sua descrizione--%>
 						</form:select>
-						<form:errors path="associatedGoal" cssClass="help-inline"/>
+						<form:errors path="relationWithMG" cssClass="help-inline"/>
 					</div>
 				</div>
 		        
@@ -204,15 +204,15 @@
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_og"/>
 					<div class="controls">
-						<form:select path="associatedGoal" onchange="" 
+						<form:select path="relationWithOG" onchange="" 
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedOG">
 							<form:option value="-1">None</form:option>
 			            	<form:options items="${oGoals}" itemValue="id" itemLabel="description"/>
 						</form:select>
-						<form:errors path="associatedGoal" cssClass="help-inline"/>
+						<form:errors path="relationWithOG" cssClass="help-inline"/>
 					</div>
-				</div>	 
+				</div> 
 			 
 			    <spring:bind path="goal.subject">
 			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
