@@ -277,8 +277,7 @@ public class GoalFormController extends BaseFormController {
     		public String getAsText() {
     			Goal goal = (Goal)getValue();
     			System.out.println("GETASTEXT*******" + goal);
-    			//return goal != null ? Long.toString(goal.getId()) : null;
-    			return goal != null ? goal.getId() : null;
+    			return goal != null ? Long.toString(goal.getId()) : null;
     		}
     		
 			@Override
