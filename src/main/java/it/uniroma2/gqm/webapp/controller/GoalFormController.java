@@ -163,22 +163,6 @@ public class GoalFormController extends BaseFormController {
             goalManager.remove(goal.getId());
             saveMessage(request, getText("goal.deleted", locale));
         } else {
-        	        	
-        	//in initBinder3.setValue ho impostato solo un goal della relazione
-        	if(GoalType.isMG(goal)) {
-        		MGOGRelationship rel = goal.getRelationWithOG();
-        		if(rel != null) {
-            		MGOGRelationshipPK pk = rel.getPk();
-            		pk.setMg(goal);
-        		}
-        	}
-        	else if(GoalType.isOG(goal)) {
-        		MGOGRelationship rel = goal.getRelationWithOG();
-        		if(rel != null) {
-            		MGOGRelationshipPK pk = rel.getPk();
-            		pk.setOg(goal);	
-        		}
-        	}
         	
         	goal.setGoalOwner(userManager.get(goal.getGoalOwner().getId()));
         	goal.setGoalEnactor(userManager.get(goal.getGoalEnactor().getId()));
@@ -199,16 +183,34 @@ public class GoalFormController extends BaseFormController {
             String key = (isNew) ? "goal.added" : "goal.updated";
             saveMessage(request, getText(key, locale));
             
+            System.out.println("Senza Pensieri");
             
-        	MGOGRelationship newRelation = GoalType.isMG(goal) ? goal.getRelationWithOG() : goal.getRelationWithMG();
-        	        	        	
-        	if(isNew) {        		
+            MGOGRelationship newRelation = null;
+            
+        	//in initBinder3.setValue ho impostato solo un goal della relazione
+        	if(GoalType.isMG(goal)) {
+        		newRelation = goal.getRelationWithOG();
+        		if(newRelation != null) {
+            		MGOGRelationshipPK pk = newRelation.getPk();
+            		pk.setMg(goal);
+        		}
+        	}
+        	else if(GoalType.isOG(goal)) {
+        		newRelation = goal.getRelationWithOG();
+        		if(newRelation != null) {
+            		MGOGRelationshipPK pk = newRelation.getPk();
+            		pk.setOg(goal);	
+        		}
+        	}            
+      	
+        	if(isNew && newRelation != null) {        		
         		mgogRelationshipManager.save(newRelation);
         	}
         	else if(!isNew) {
         		mgogRelationshipManager.change(goal, newRelation);
         	}
             
+        	System.out.println("C'arrivi");
         	
             if(goal.getId() == null){
 		        try {
