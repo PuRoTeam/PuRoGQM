@@ -130,7 +130,7 @@ public class QuestionFormController extends BaseFormController {
     private List<Goal> makeAvailableGoals(Question question, User currentUser){
     	List<Goal> ret = new ArrayList<Goal>(); 
     	for(Goal g:question.getProject().getGoals()){
-    		if (g.getQSMembers().contains(currentUser)){
+    		if (g.getQSMembers().contains(currentUser)){ //TODO add goal type deve essere MG
     			ret.add(g);
     		}
     	}    	

@@ -63,7 +63,7 @@ public class Goal extends BaseObject {
 	private String magnitude;
 	private String timeframe;
 	private String constraints;
-	private String relations;
+	//private String relations;
 	private Strategy strategy;
 	
 	//MG fields
@@ -391,7 +391,7 @@ public class Goal extends BaseObject {
 	public void setConstraints(String constraints) {
 		this.constraints = constraints;
 	}
-	
+	/*
 	@Column(name = "relations", length = 255)
 	public String getRelations() {
 		return relations;
@@ -400,7 +400,7 @@ public class Goal extends BaseObject {
 	public void setRelations(String relations) {
 		this.relations = relations;
 	}
-			
+	*/	
 	@Transient
 	public Goal getAssociatedGoal() {
 		return associatedGoal;

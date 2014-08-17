@@ -88,7 +88,7 @@
 			<div id="divGQMStrategy" hidden="true">
 		</c:otherwise>
     </c:choose>	
-    
+    <!-- 
     		    <div class="control-group">
 					<appfuse:label styleClass="control-label" key="goal.measurement"/>
 					<div class="controls">
@@ -100,7 +100,7 @@
 						</form:select>
 					</div>
 				</div>
-    
+     -->
 		        <spring:bind path="goal.activity">
 			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
 			    </spring:bind>
@@ -185,7 +185,7 @@
 			<div id="divGQM" hidden="true">
 		</c:otherwise>
     </c:choose>	    
-    		    	
+    <!-- 
     		    <div class="control-group">
 					<appfuse:label styleClass="control-label" key="goal.organizational"/>
 					<div class="controls">
@@ -197,7 +197,7 @@
 						</form:select>
 					</div>
 				</div>
-    
+     -->
 			    <spring:bind path="goal.subject">
 			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
 			    </spring:bind>
