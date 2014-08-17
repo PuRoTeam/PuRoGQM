@@ -55,7 +55,9 @@ public class Goal extends BaseObject {
 	private Set<Goal> children = new HashSet<Goal>();
 	private String refinement;
 	
-	private Goal associatedGoal;
+	private Goal associatedGoal; //non è salvato su db, serve solo per la view di goalform per mostrare una selectbox
+	private MGOGRelationship associatedMG;
+	private MGOGRelationship associatedOG;
 	
 	//OG fields
 	private String activity;
@@ -409,4 +411,6 @@ public class Goal extends BaseObject {
 	public void setAssociatedGoal(Goal associatedGoal) {
 		this.associatedGoal = associatedGoal;
 	}
+
+
 }

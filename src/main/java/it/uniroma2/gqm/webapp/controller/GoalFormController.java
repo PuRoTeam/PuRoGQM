@@ -92,7 +92,9 @@ public class GoalFormController extends BaseFormController {
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
-        	ret.setAssociatedGoal(mgogRelationshipManager.getAssociatedGoal(ret));
+        	Goal associatedGoal = mgogRelationshipManager.getAssociatedGoal(ret);
+        	System.out.println("SHOWFORM*****" + associatedGoal);
+        	ret.setAssociatedGoal(associatedGoal);
         	
         }else {
         	ret = new Goal();
@@ -112,13 +114,14 @@ public class GoalFormController extends BaseFormController {
 					ret.getStatus() == GoalStatus.PROPOSED);
 		
 		List<Goal> allGoals = goalManager.getAll();
-		List<Goal> mGoals = new ArrayList<Goal>();
+		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal mg non ancora associati ad alcun og
 		List<Goal> oGoals = new ArrayList<Goal>();
 		
 		for(Goal g: allGoals) {
-			if(GoalType.isMG(g))
+			Goal associatedGoal = mgogRelationshipManager.getAssociatedGoal(g);
+			if(GoalType.isMG(g) && associatedGoal == null)
 				mGoals.add(g);
-			else
+			else if(GoalType.isOG(g) && associatedGoal == null)
 				oGoals.add(g);
 		}
 		
@@ -181,7 +184,6 @@ public class GoalFormController extends BaseFormController {
         	if("true".equalsIgnoreCase(request.getParameter("vote"))){
         		goal.getVotes().add(userManager.getUserByUsername(request.getRemoteUser()));
         	}
-        	System.out.println("Goal:" + goal);
             goalManager.save(goal);
             String key = (isNew) ? "goal.added" : "goal.updated";
             saveMessage(request, getText(key, locale));
@@ -190,8 +192,8 @@ public class GoalFormController extends BaseFormController {
         	Goal associatedGoal = goal.getAssociatedGoal();
         	Goal oldAssociatedGoal = mgogRelationshipManager.getAssociatedGoal(goal); //non avendo ancora aggiornato la tabella delle relazioni, è salvato ancora il vecchio goal associato
         	
-        	System.out.println("*" + goal);
-        	System.out.println("**" + associatedGoal);
+        	System.out.println("ONSUBMIT*******" + goal);
+        	System.out.println("ONSUBMIT********" + associatedGoal);
         	
         	if(isNew) {        		
         		mgogRelationshipManager.save(goal, associatedGoal);
@@ -271,15 +273,22 @@ public class GoalFormController extends BaseFormController {
      */
     protected void initBinder3(HttpServletRequest request, ServletRequestDataBinder binder) {
     	binder.registerCustomEditor(Goal.class, "associatedGoal", new PropertyEditorSupport() {
-						
+					
+    		public String getAsText() {
+    			Goal goal = (Goal)getValue();
+    			System.out.println("GETASTEXT*******" + goal);
+    			//return goal != null ? Long.toString(goal.getId()) : null;
+    			return goal != null ? goal.getId() : null;
+    		}
+    		
 			@Override
 			public void setAsText(String text) throws IllegalArgumentException {				
 				if(text != null) {
 					String [] parts = text.split(","); //al massimo un elemento ha un valore diverso da -1
-					System.out.println("********" + text);
+					System.out.println("SETASTEXT********" + text);
 					for(String curPart : parts) {
 						Long id = new Long(curPart);
-						System.out.println("********" + id);
+						System.out.println("SETASTEXT********" + id);
 						if(id != -1) {
 							Goal associatedGoal = goalManager.get(id);
 							setValue(associatedGoal);	
