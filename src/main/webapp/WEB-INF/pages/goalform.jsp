@@ -103,7 +103,7 @@
 		<c:otherwise>
 			<div id="divOG" hidden="true">
 		</c:otherwise>
-    </c:choose>
+    	</c:choose>
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_mg"/>
 					<div class="controls"> 
@@ -111,9 +111,6 @@
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedMG">
 							<form:option value="-1">None</form:option>
-							<%--
-			            	<form:options items="${mGoals}" itemValue="id" itemLabel="description"/>
-			            	--%>
 							<c:forEach var="item" items="${mGoals}">
 								<c:choose>
 									<c:when test="${goal.relationWithMG.pk.mg.id eq item.id}">
@@ -129,7 +126,7 @@
 					</div>
 				</div>
 		        
-				<spring:bind path="goal.activity">
+			    <spring:bind path="goal.activity">
 			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
 			    </spring:bind>
 			        <appfuse:label styleClass="control-label" key="goal.activity"/>
@@ -190,7 +187,7 @@
 			        </div>
 			    </div> 	
 			    		            
-				<div class="control-group" id="divStrategy" >
+			<div class="control-group" id="divStrategy" >
 			       <appfuse:label styleClass="control-label" key="goal.strategy"/>
 			       <div class="controls">      
 			           <form:select id="strategy"  path="strategy.id" onchange="" disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
@@ -210,7 +207,7 @@
 		<c:otherwise>
 			<div id="divMG" hidden="true">
 		</c:otherwise>
-    </c:choose>
+    	</c:choose>
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_og"/>
 					<div class="controls">
@@ -311,7 +308,7 @@
         </div>
     </div>   
     
-	<c:if test="${visibleGESection}">    
+	<c:if test="${visibleGESection}">
 	
 	    <div class="control-group">
 	        <appfuse:label styleClass="control-label" key="goal.qs"/>
