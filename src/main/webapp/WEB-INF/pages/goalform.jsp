@@ -176,16 +176,6 @@
 			            <form:errors path="constraints" cssClass="help-inline"/>
 			        </div>
 			    </div> 	
-			
-			    <spring:bind path="goal.relations">
-			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-			    </spring:bind>
-			        <appfuse:label styleClass="control-label" key="goal.relations"/>
-			        <div class="controls">
-			            <form:input path="relations" id="relations" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
-			            <form:errors path="relations" cssClass="help-inline"/>
-			        </div>
-			    </div> 	
 			    		            
 			<div class="control-group" id="divStrategy" >
 			       <appfuse:label styleClass="control-label" key="goal.strategy"/>

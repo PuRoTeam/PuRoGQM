@@ -19,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.appfuse.model.BaseObject;
@@ -397,15 +398,6 @@ public class Goal extends BaseObject {
 
 	public void setConstraints(String constraints) {
 		this.constraints = constraints;
-	}
-	
-	@Column(name = "relations", length = 255)
-	public String getRelations() {
-		return relations;
-	}
-
-	public void setRelations(String relations) {
-		this.relations = relations;
 	}
 	
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.mg")
