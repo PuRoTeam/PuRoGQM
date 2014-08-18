@@ -9,7 +9,7 @@ import java.util.List;
 import org.appfuse.model.User;
 import org.appfuse.service.GenericManager;
 
-public interface GoalManager extends GenericManager<Goal, Long> {
+public interface GoalManager extends GenericManager<Goal, Long> { 
 	public List<Goal> findByDescription(String description);
 	public List<Goal> findByProject(Project project);
 	

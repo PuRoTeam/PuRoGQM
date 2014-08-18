@@ -89,15 +89,16 @@ public class GoalFormController extends BaseFormController {
         Project currentProject = (Project) session.getAttribute("currentProject");
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
 
+        MGOGRelationship retRelation = null;        
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
-        	MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(ret);
+        	retRelation = mgogRelationshipManager.getAssociatedRelation(ret);
 
         	if(GoalType.isMG(ret))
-        		ret.setRelationWithOG(rel);
+        		ret.setRelationWithOG(retRelation);
         	else if(GoalType.isOG(ret))
-        		ret.setRelationWithMG(rel);
+        		ret.setRelationWithMG(retRelation);
         }else {
         	ret = new Goal();
         	ret.setStatus(GoalStatus.DRAFT);
@@ -121,12 +122,14 @@ public class GoalFormController extends BaseFormController {
 				
 		for(Goal g: allGoals) {			
 			MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
-            
-			//posso eseguire l'associazione solo con goal di tipo opposto non associati a nessuno
-			if(GoalType.isMG(g) && rel == null)
-				mGoals.add(g);
-			else if(GoalType.isOG(g) && rel == null)
-				oGoals.add(g);
+
+			//mostro solo i goal non associati, più il goal già associato con quello correntemente visualizzato
+			if(rel == null || (retRelation != null && rel.equals(retRelation))) {
+				if(GoalType.isMG(g))
+					mGoals.add(g);
+				else if(GoalType.isOG(g))
+					oGoals.add(g);
+			}
 		}
 		
 		model.addAttribute("currentUser",currentUser);
@@ -246,7 +249,7 @@ public class GoalFormController extends BaseFormController {
                 success = "redirect:goalform?id=" + goal.getId();
             }*/
         }
- 
+        
         return getSuccessView();
     }
 
@@ -289,10 +292,10 @@ public class GoalFormController extends BaseFormController {
     }
     
     private class AssociatedOGEditorSupport extends PropertyEditorSupport {
-		public String getAsText() {
+		/*public String getAsText() {
 			MGOGRelationship rel = (MGOGRelationship)getValue();
 			return rel != null ? Long.toString(rel.getPk().getOg().getId()) : null;
-		}
+		}*/
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {
 			if(text != null) {			
@@ -311,10 +314,10 @@ public class GoalFormController extends BaseFormController {
     }
     
     private class AssociatedMGEditorSupport extends PropertyEditorSupport {
-		public String getAsText() {
+		/*public String getAsText() {
 			MGOGRelationship rel = (MGOGRelationship)getValue();
 			return rel != null ? Long.toString(rel.getPk().getMg().getId()) : null;
-		}
+		}*/
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {
 			if(text != null) {

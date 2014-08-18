@@ -104,6 +104,7 @@
 			<div id="divOG" hidden="true">
 		</c:otherwise>
     	</c:choose>
+    	
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_mg"/>
 					<div class="controls"> 
