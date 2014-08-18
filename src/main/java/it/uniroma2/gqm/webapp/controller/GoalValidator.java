@@ -42,7 +42,7 @@ public class GoalValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "magnitude","magnitude", "Magnitude is a required field for an Organizational Goal.");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "timeframe","timeframe", "Timeframe is a required field for an Organizational Goal.");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "constraints","constraints", "Constraints is a required for an Organizational Goal.");
-			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "relations","relations", "Relations is a required field for an Organizational Goal.");
+			//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "relations","relations", "Relations is a required field for an Organizational Goal.");
 		}
 	}  
 }

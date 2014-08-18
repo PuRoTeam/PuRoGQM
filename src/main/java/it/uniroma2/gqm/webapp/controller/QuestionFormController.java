@@ -19,11 +19,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
  
+
 import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.GoalQuestion;
 import it.uniroma2.gqm.model.GoalQuestionPK;
 import it.uniroma2.gqm.model.GoalQuestionStatus;
 import it.uniroma2.gqm.model.GoalStatus;
+import it.uniroma2.gqm.model.GoalType;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.model.Question;
 import it.uniroma2.gqm.service.GoalManager;
@@ -130,7 +132,7 @@ public class QuestionFormController extends BaseFormController {
     private List<Goal> makeAvailableGoals(Question question, User currentUser){
     	List<Goal> ret = new ArrayList<Goal>(); 
     	for(Goal g:question.getProject().getGoals()){
-    		if (g.getQSMembers().contains(currentUser)){ //TODO add goal type deve essere MG
+    		if (g.getQSMembers().contains(currentUser) && GoalType.isMG(g)){
     			ret.add(g);
     		}
     	}    	
