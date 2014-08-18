@@ -197,7 +197,7 @@
 		<c:otherwise>
 			<div id="divMG" hidden="true">
 		</c:otherwise>
-    	</c:choose>
+    </c:choose>
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_og"/>
 					<div class="controls">
@@ -264,18 +264,25 @@
 			        </div>
 			    </div>		     
 			</div>
-
-	<div class="control-group">
-        <appfuse:label styleClass="control-label" key="goal.parent"/>
-        <div class="controls">      
-            <form:select path="parent.id" onchange="" disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
-            				cssStyle="width:400px">
-            	<form:option value="">None</form:option>
-            	<form:options items="${availableGoals}" itemValue="id" itemLabel="description"   />
-			</form:select>            	
-            <form:errors path="parent" cssClass="help-inline"/>
-        </div>
-    </div>  
+	
+	<c:choose>
+	<c:when test="${oGoalsAll.size() > 0}">
+		<div class="control-group">
+	</c:when>
+	<c:otherwise>
+		<div class="control-group" hidden=true>
+	</c:otherwise>
+	</c:choose>
+	        <appfuse:label styleClass="control-label" key="goal.parent"/>
+	        <div class="controls">      
+	            <form:select path="parent.id" onchange="" disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
+	            				cssStyle="width:400px">
+	            	<%-- <form:option value="">None</form:option> --%>
+	            	<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"   />
+				</form:select>            	
+	            <form:errors path="parent" cssClass="help-inline"/>
+	        </div>
+	    </div>  
 	                         
     <div class="control-group">
         <appfuse:label styleClass="control-label" key="goal.go"/>

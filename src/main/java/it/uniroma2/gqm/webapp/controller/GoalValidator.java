@@ -2,7 +2,10 @@ package it.uniroma2.gqm.webapp.controller;
 
 import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.GoalType;
+import it.uniroma2.gqm.service.GoalManager;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -11,7 +14,8 @@ import org.springframework.validation.Validator;
 
 @Component(value="goalValidator")
 public class GoalValidator implements Validator {  
-	  /** 
+	  
+	/** 
 	   * Return true if this object can validate objects of the given class. This is cargo-cult 
 	   * code: all implementations are the same and can be cut 'n' pasted from earlier examples. 
 	   */  
@@ -44,5 +48,7 @@ public class GoalValidator implements Validator {
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "constraints","constraints", "Constraints is a required for an Organizational Goal.");
 			//ValidationUtils.rejectIfEmptyOrWhitespace(errors, "relations","relations", "Relations is a required field for an Organizational Goal.");
 		}
+
 	}  
+	
 }
