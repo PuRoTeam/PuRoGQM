@@ -14,7 +14,7 @@ public interface MGOGRelationshipDao extends GenericDao<MGOGRelationship, MGOGRe
 	 * @param og Goal OG
 	 * @return Un oggetto MGOGRelationship
 	 */
-	public MGOGRelationship get(Goal mg, Goal og);
+	//public MGOGRelationship get(Goal mg, Goal og);
 	
 	/**
 	 * Recupera La relazione in cui compare il goal, riconoscendone il tipo
@@ -28,5 +28,5 @@ public interface MGOGRelationshipDao extends GenericDao<MGOGRelationship, MGOGRe
 	 * @param mgId Goal MG
 	 * @param ogId Goal OG
 	 */
-	public void remove(Goal mg, Goal og);
+	//public void remove(Goal mg, Goal og);
 }

@@ -173,13 +173,12 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 			mgogRelationshipDao.remove(goal.getRelationWithMG());
 	}
 	
-	/*
 	@Override
 	public MGOGRelationship getAssociatedRelation(Goal goal) {
 		return mgogRelationshipDao.getAssociatedRelation(goal);
 	}
 	
-	@Override
+	/*@Override
 	public Goal getAssociatedGoal(Goal goal) {
 		if(goal == null)
 			return null;

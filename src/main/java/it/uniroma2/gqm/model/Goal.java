@@ -404,47 +404,7 @@ public class Goal extends BaseObject {
 	public void setRelations(String relations) {
 		this.relations = relations;
 	}
-			
-	/*@Transient
-	public Goal getAssociatedGoal() {
-		if(GoalType.isMG(this)) {
-			MGOGRelationship relation = getRelationWithOG();
-			if(relation != null) {
-				associatedGoal = relation.getPk().getOg();
-				return associatedGoal;	
-			}				
-		}
-		else if(GoalType.isOG(this)) {
-			MGOGRelationship relation = getRelationWithMG();
-			if(relation != null) {
-				associatedGoal = relation.getPk().getMg();
-				return associatedGoal;
-			}
-		}
-		
-		return associatedGoal;
-	}
-
-	public void setAssociatedGoal(Goal associatedGoal) {
-		this.associatedGoal = associatedGoal;
-		
-		MGOGRelationship newRelation = new MGOGRelationship();
-		MGOGRelationshipPK pk = new MGOGRelationshipPK();
-		
-		if(GoalType.isMG(this) && GoalType.isOG(associatedGoal)) {			
-			pk.setMg(this);
-			pk.setOg(associatedGoal);
-			newRelation.setPk(pk);
-			setRelationWithOG(newRelation);
-		}
-		else if(GoalType.isMG(associatedGoal) && GoalType.isOG(this)) {
-			pk.setMg(associatedGoal);
-			pk.setOg(this);
-			newRelation.setPk(pk);
-			setRelationWithMG(newRelation);
-		}
-	}*/
-
+	
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.mg")
 	public MGOGRelationship getRelationWithMG() {
 		return relationWithMG;

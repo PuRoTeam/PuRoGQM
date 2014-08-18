@@ -92,7 +92,11 @@ public class GoalFormController extends BaseFormController {
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
-        	
+        	MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(ret);
+        	if(GoalType.isMG(ret))
+        		ret.setRelationWithOG(rel);
+        	else if(GoalType.isOG(ret))
+        		ret.setRelationWithMG(rel);
         }else {
         	ret = new Goal();
         	ret.setStatus(GoalStatus.DRAFT);
@@ -113,12 +117,17 @@ public class GoalFormController extends BaseFormController {
 		List<Goal> allGoals = goalManager.getAll();
 		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal mg non ancora associati ad alcun og
 		List<Goal> oGoals = new ArrayList<Goal>();
-		
+				
 		for(Goal g: allGoals) {
-			if(GoalType.isMG(g) && g.getRelationWithOG() == null)
+			
+			MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
+						
+			if(GoalType.isMG(g) && rel == null) {
 				mGoals.add(g);
-			else if(GoalType.isOG(g) && g.getRelationWithMG() == null)
+			}				
+			else if(GoalType.isOG(g) && rel == null) {
 				oGoals.add(g);
+			}			
 		}
 		
 		model.addAttribute("currentUser",currentUser);
@@ -294,19 +303,17 @@ public class GoalFormController extends BaseFormController {
 		public void setAsText(String text) throws IllegalArgumentException {	
 			System.out.println("SOG1******" + text + "******");
 			if(text != null) {
-				String [] parts = text.split(","); //al massimo un elemento ha un valore diverso da -1
-				System.out.println("SOG2********" + text + "******");
-				for(String curPart : parts) {
-					Long id = new Long(curPart);
-					System.out.println("SOG3********" + id + "******");
-					if(id != -1) {
-						MGOGRelationship rel = new MGOGRelationship();
-						MGOGRelationshipPK pk = new MGOGRelationshipPK();
-						pk.setOg(goalManager.get(id));
-						rel.setPk(pk);
-						setValue(rel);	
-					}
+				System.out.println("SOG2********" + text + "******");				
+				Long id = new Long(text);
+				System.out.println("SOG3********" + id + "******");
+				if(id != -1) {
+					MGOGRelationship rel = new MGOGRelationship();
+					MGOGRelationshipPK pk = new MGOGRelationshipPK();
+					pk.setOg(goalManager.get(id));
+					rel.setPk(pk);
+					setValue(rel);	
 				}
+				
 			}	
 		}
     }
@@ -321,18 +328,15 @@ public class GoalFormController extends BaseFormController {
 		public void setAsText(String text) throws IllegalArgumentException {	
 			System.out.println("SMG1******" + text + "******");
 			if(text != null) {
-				String [] parts = text.split(","); //al massimo un elemento ha un valore diverso da -1
 				System.out.println("SMG2********" + text + "******");
-				for(String curPart : parts) {
-					Long id = new Long(curPart);
-					System.out.println("SMG3********" + id + "******");
-					if(id != -1) {
-						MGOGRelationship rel = new MGOGRelationship();
-						MGOGRelationshipPK pk = new MGOGRelationshipPK();
-						pk.setMg(goalManager.get(id));
-						rel.setPk(pk);
-						setValue(rel);	
-					}
+				Long id = new Long(text);
+				System.out.println("SMG3********" + id + "******");
+				if(id != -1) {
+					MGOGRelationship rel = new MGOGRelationship();
+					MGOGRelationshipPK pk = new MGOGRelationshipPK();
+					pk.setMg(goalManager.get(id));
+					rel.setPk(pk);
+					setValue(rel);	
 				}
 			}	
 		}

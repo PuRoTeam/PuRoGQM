@@ -59,7 +59,7 @@ public interface MGOGRelationshipManager extends GenericManager<MGOGRelationship
 	 * @param goal Il Goal di cui recuperare l'associato
 	 * @return Un oggetto MGOGRelationship corrispondente alla relazione, o null in caso non esistano relazioni
 	 */
-	//public MGOGRelationship getAssociatedRelation(Goal goal);
+	public MGOGRelationship getAssociatedRelation(Goal goal);
 	
 	/**
 	 * Recupera il goal associato a "goal"

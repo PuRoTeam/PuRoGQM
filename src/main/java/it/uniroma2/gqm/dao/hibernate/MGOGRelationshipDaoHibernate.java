@@ -19,14 +19,14 @@ public class MGOGRelationshipDaoHibernate extends GenericDaoHibernate<MGOGRelati
 	public MGOGRelationshipDaoHibernate() {
 		super(MGOGRelationship.class);
 	}
-	
+	/*
 	@Override
 	public MGOGRelationship get(Goal mg, Goal og) {
     	MGOGRelationshipPK id = new MGOGRelationshipPK();
     	id.setMg(mg);
     	id.setOg(og);
     	return get(id);
-	}
+	}*/
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -46,11 +46,11 @@ public class MGOGRelationshipDaoHibernate extends GenericDaoHibernate<MGOGRelati
     	return (relations != null && relations.size() > 0) ? relations.get(0) : null;
 	}
 	
-	@Override
+	/*@Override
 	public void remove(Goal mg, Goal og) {
     	MGOGRelationshipPK id = new MGOGRelationshipPK();
     	id.setMg(mg);
     	id.setOg(og);
     	remove(id);
-	}
+	}*/
 }

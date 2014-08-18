@@ -106,14 +106,24 @@
     </c:choose>
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_mg"/>
-					<div class="controls">
+					<div class="controls"> 
 						<form:select path="relationWithMG" onchange=""
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedMG">
-							<%-- Quando seleziono il goal dalla lista (e quindi ho selezionato un item con un id di un goal), viene automaticamente popolato l'id dell'associated goal con l'id del goal selezionato --%>
 							<form:option value="-1">None</form:option>
+							<%--
 			            	<form:options items="${mGoals}" itemValue="id" itemLabel="description"/>
-			            	<%-- Popola questa lista con i goal di mGoals. Il value di ogni item sarà l'id del goal, il testo html mostrato sarà la sua descrizione--%>
+			            	--%>
+							<c:forEach var="item" items="${mGoals}">
+								<c:choose>
+									<c:when test="${goal.relationWithMG.pk.mg.id eq item.id}">
+										<option value="${item.id}" selected="selected">${item.description}</option>
+									</c:when>
+									<c:otherwise>
+										<option value="${item.id}">${item.description}</option>
+									</c:otherwise>
+								</c:choose>			 
+							</c:forEach>
 						</form:select>
 						<form:errors path="relationWithMG" cssClass="help-inline"/>
 					</div>
@@ -206,9 +216,21 @@
 					<div class="controls">
 						<form:select path="relationWithOG" onchange="" 
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
-								cssStyle="width:400px" id="associatedOG">
+								cssStyle="width:400px" id="associatedOG">							
 							<form:option value="-1">None</form:option>
+							<%--
 			            	<form:options items="${oGoals}" itemValue="id" itemLabel="description"/>
+			            	--%>
+			            	<c:forEach var="item" items="${oGoals}">
+								<c:choose>
+									<c:when test="${goal.relationWithOG.pk.og.id eq item.id}">
+										<option value="${item.id}" selected="selected">${item.description}</option>
+									</c:when>
+									<c:otherwise>
+										<option value="${item.id}">${item.description}</option>
+									</c:otherwise>
+								</c:choose>			 
+							</c:forEach>
 						</form:select>
 						<form:errors path="relationWithOG" cssClass="help-inline"/>
 					</div>
