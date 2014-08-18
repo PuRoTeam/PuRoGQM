@@ -38,6 +38,11 @@ import org.appfuse.model.User;
             		" inner join q.metrics qm " +
             		" inner join qm.pk.metric m " +
             		" where g.project.id= :project_id "
+    ),
+    @NamedQuery(
+            name = "findOrganizationalGoal",
+            query = "select distinct g from Goal g" +
+            		" where g.type = 0 and g.project.id= :project_id "
     )
 })
 public class Goal extends BaseObject {

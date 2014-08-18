@@ -119,6 +119,8 @@ public class GoalFormController extends BaseFormController {
 		List<Goal> allGoals = goalManager.getAll();
 		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal mg non ancora associati ad alcun og
 		List<Goal> oGoals = new ArrayList<Goal>();
+		List<Goal> oGoalsAll = new ArrayList<Goal>();
+		
 				
 		for(Goal g: allGoals) {			
 			MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
@@ -130,6 +132,9 @@ public class GoalFormController extends BaseFormController {
 				else if(GoalType.isOG(g))
 					oGoals.add(g);
 			}
+
+			if(GoalType.isOG(g))
+				oGoalsAll.add(g);
 		}
 		
 		model.addAttribute("currentUser",currentUser);
@@ -139,6 +144,7 @@ public class GoalFormController extends BaseFormController {
         model.addAttribute("availableGoals",allGoals);
         model.addAttribute("mGoals", mGoals);
         model.addAttribute("oGoals", oGoals);
+        model.addAttribute("oGoalsAll", oGoalsAll);
         model.addAttribute("strategies",strategyManager.findByProject(ret.getProject()));        
         model.addAttribute("availableUsers",ret.getProject().getGQMTeam());
         return ret;
