@@ -93,6 +93,7 @@ public class GoalFormController extends BaseFormController {
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
         	MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(ret);
+
         	if(GoalType.isMG(ret))
         		ret.setRelationWithOG(rel);
         	else if(GoalType.isOG(ret))
@@ -118,16 +119,14 @@ public class GoalFormController extends BaseFormController {
 		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal mg non ancora associati ad alcun og
 		List<Goal> oGoals = new ArrayList<Goal>();
 				
-		for(Goal g: allGoals) {
-			
+		for(Goal g: allGoals) {			
 			MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
-						
-			if(GoalType.isMG(g) && rel == null) {
+            
+			//posso eseguire l'associazione solo con goal di tipo opposto non associati a nessuno
+			if(GoalType.isMG(g) && rel == null)
 				mGoals.add(g);
-			}				
-			else if(GoalType.isOG(g) && rel == null) {
+			else if(GoalType.isOG(g) && rel == null)
 				oGoals.add(g);
-			}			
 		}
 		
 		model.addAttribute("currentUser",currentUser);
@@ -192,8 +191,6 @@ public class GoalFormController extends BaseFormController {
             String key = (isNew) ? "goal.added" : "goal.updated";
             saveMessage(request, getText(key, locale));
             
-            System.out.println("Senza Pensieri");
-            
             MGOGRelationship newRelation = null;
             
         	//in initBinder3.setValue ho impostato solo un goal della relazione
@@ -218,8 +215,6 @@ public class GoalFormController extends BaseFormController {
         	else if(!isNew) {
         		mgogRelationshipManager.change(goal, newRelation);
         	}
-            
-        	System.out.println("C'arrivi");
         	
             if(goal.getId() == null){
 		        try {
@@ -296,16 +291,13 @@ public class GoalFormController extends BaseFormController {
     private class AssociatedOGEditorSupport extends PropertyEditorSupport {
 		public String getAsText() {
 			MGOGRelationship rel = (MGOGRelationship)getValue();
-			System.out.println("GOG*******" + rel + "****");
 			return rel != null ? Long.toString(rel.getPk().getOg().getId()) : null;
 		}
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {	
-			System.out.println("SOG1******" + text + "******");
-			if(text != null) {
-				System.out.println("SOG2********" + text + "******");				
+		public void setAsText(String text) throws IllegalArgumentException {
+			if(text != null) {			
 				Long id = new Long(text);
-				System.out.println("SOG3********" + id + "******");
+
 				if(id != -1) {
 					MGOGRelationship rel = new MGOGRelationship();
 					MGOGRelationshipPK pk = new MGOGRelationshipPK();
@@ -321,16 +313,13 @@ public class GoalFormController extends BaseFormController {
     private class AssociatedMGEditorSupport extends PropertyEditorSupport {
 		public String getAsText() {
 			MGOGRelationship rel = (MGOGRelationship)getValue();
-			System.out.println("GMG*******" + rel + "****");
 			return rel != null ? Long.toString(rel.getPk().getMg().getId()) : null;
 		}
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {	
-			System.out.println("SMG1******" + text + "******");
+		public void setAsText(String text) throws IllegalArgumentException {
 			if(text != null) {
-				System.out.println("SMG2********" + text + "******");
 				Long id = new Long(text);
-				System.out.println("SMG3********" + id + "******");
+
 				if(id != -1) {
 					MGOGRelationship rel = new MGOGRelationship();
 					MGOGRelationshipPK pk = new MGOGRelationshipPK();
