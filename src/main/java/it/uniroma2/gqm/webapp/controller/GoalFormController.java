@@ -93,12 +93,7 @@ public class GoalFormController extends BaseFormController {
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
-        	retRelation = mgogRelationshipManager.getAssociatedRelation(ret);
-
-        	if(GoalType.isMG(ret))
-        		ret.setRelationWithOG(retRelation);
-        	else if(GoalType.isOG(ret))
-        		ret.setRelationWithMG(retRelation);
+        	retRelation = ret.getMGOGRelation();
         }else {
         	ret = new Goal();
         	ret.setStatus(GoalStatus.DRAFT);
@@ -122,11 +117,13 @@ public class GoalFormController extends BaseFormController {
 		List<Goal> oGoalsAll = new ArrayList<Goal>();
 		
 				
-		for(Goal g: allGoals) {			
-			MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
-
+		for(Goal g: allGoals) {
+			/*MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
+			*/
+			MGOGRelationship rel = g.getMGOGRelation();				
+			
 			//mostro solo i goal non associati, più il goal già associato con quello correntemente visualizzato
-			if(rel == null || (retRelation != null && rel.equals(retRelation))) {
+			if(rel == null || rel.equals(retRelation)) {
 				if(GoalType.isMG(g))
 					mGoals.add(g);
 				else if(GoalType.isOG(g))
@@ -174,8 +171,11 @@ public class GoalFormController extends BaseFormController {
         boolean isNew = (goal.getId() == null);
          Locale locale = request.getLocale();
  
-        if (request.getParameter("delete") != null) {     	
+        if (request.getParameter("delete") != null) {
+        	System.out.println("AAAA");
         	mgogRelationshipManager.remove(goal);
+        	
+        	System.out.println("BBBB");
         	
             goalManager.remove(goal.getId());
             saveMessage(request, getText("goal.deleted", locale));
@@ -196,7 +196,7 @@ public class GoalFormController extends BaseFormController {
         	if("true".equalsIgnoreCase(request.getParameter("vote"))){
         		goal.getVotes().add(userManager.getUserByUsername(request.getRemoteUser()));
         	}
-            goalManager.save(goal);
+            goalManager.save(goal); //richiama in ogni caso la funziona save in GoalDaoHibernate (anche se sul manager non c'è la funzione save)
             String key = (isNew) ? "goal.added" : "goal.updated";
             saveMessage(request, getText(key, locale));
             
