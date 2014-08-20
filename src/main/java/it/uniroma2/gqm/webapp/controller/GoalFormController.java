@@ -173,9 +173,25 @@ public class GoalFormController extends BaseFormController {
  
         if (request.getParameter("delete") != null) {
         	System.out.println("AAAA");
-        	mgogRelationshipManager.remove(goal);
+        	//mgogRelationshipManager.remove(goal);
+        	
+        	//MGOGRelationship rel = goal.getMGOGRelation();
         	
         	System.out.println("BBBB");
+        	//goal.setRelationWithMG(null);
+        	//goal.setRelationWithOG(null);
+        	//mgogRelationshipManager.remove(rel);
+        	
+        	//goalManager.remove(goal);
+        	/*Goal gDB = goalManager.get(goal.getId());
+        	MGOGRelationship rel = gDB.getMGOGRelation();
+        	MGOGRelationshipPK pk = rel.getPk();
+        	pk.setMg(null);
+        	pk.setOg(null);
+        	mgogRelationshipManager.remove(rel);
+        	gDB.setRelationWithMG(null);
+        	gDB.setRelationWithOG(null);
+        	goalManager.remove(gDB);*/
         	
             goalManager.remove(goal.getId());
             saveMessage(request, getText("goal.deleted", locale));
@@ -196,32 +212,24 @@ public class GoalFormController extends BaseFormController {
         	if("true".equalsIgnoreCase(request.getParameter("vote"))){
         		goal.getVotes().add(userManager.getUserByUsername(request.getRemoteUser()));
         	}
+            
+            MGOGRelationship newRelation = goal.getMGOGRelation();
+            
+            //in initBinder3.setValue ho impostato solo un goal della relazione
+            if(newRelation != null) {
+            	if(GoalType.isMG(goal))
+            		newRelation.getPk().setMg(goal);
+            	else if(GoalType.isOG(goal))
+            		newRelation.getPk().setOg(goal);	
+            }
+      	
             goalManager.save(goal); //richiama in ogni caso la funziona save in GoalDaoHibernate (anche se sul manager non c'è la funzione save)
             String key = (isNew) ? "goal.added" : "goal.updated";
             saveMessage(request, getText(key, locale));
-            
-            MGOGRelationship newRelation = null;
-            
-        	//in initBinder3.setValue ho impostato solo un goal della relazione
-        	if(GoalType.isMG(goal)) {
-        		newRelation = goal.getRelationWithOG();
-        		if(newRelation != null) {
-            		MGOGRelationshipPK pk = newRelation.getPk();
-            		pk.setMg(goal);
-        		}
-        	}
-        	else if(GoalType.isOG(goal)) {
-        		newRelation = goal.getRelationWithOG();
-        		if(newRelation != null) {
-            		MGOGRelationshipPK pk = newRelation.getPk();
-            		pk.setOg(goal);	
-        		}
-        	}            
-      	
+        	
         	if(isNew && newRelation != null) {        		
         		mgogRelationshipManager.save(newRelation);
-        	}
-        	else if(!isNew) {
+        	} else if(!isNew) {
         		mgogRelationshipManager.change(goal, newRelation);
         	}
         	
