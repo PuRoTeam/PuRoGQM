@@ -2,26 +2,39 @@
 <head>
     <title><fmt:message key="binaryTable.title"/></title>
     <meta name="menu" content="DefinitionPhaseMenu"/>
+    <style type="text/css">
+	    #col1 {
+		    position: absolute;
+		    left: 5px;
+		    padding: 0px;  
+		}
+		
+		#col2 {
+		    position: absolute;
+		    margin-left: 100px;
+		    padding: 0px;
+		}
+		
+		#col3 {
+		    margin-left: 200px;
+		    padding: 0px;
+		}
+    </style>
+    
 </head>
 <div class="span10">
     <h2><fmt:message key='binaryTable.heading'/></h2>
     
-	<display:table name="goalList" class="table table-condensed table-striped table-hover" requestURI="" id="goalList" export="true" pagesize="25">
-	    <display:column property="id" sortable="true" href="/goalform" media="html" paramId="id" paramProperty="id" titleKey="goal.id"/>
-	    <display:column property="id" media="csv excel xml pdf" titleKey="goal.id" />
-	    <display:column property="parent.id" sortable="true" titleKey="goal.parent"/>
-	    <display:column property="description" sortable="true" titleKey="goal.description"/>
-	    <display:column property="scope" sortable="true" titleKey="goal.scope"/>        
-	    <display:column property="focus" sortable="true" titleKey="goal.focus"/>
-	    <display:column property="strategy.name" sortable="true" titleKey="goal.strategy"/>
-	    <display:column property="goalOwner.fullName" sortable="true" titleKey="goal.go"/>
-	    <display:column property="goalEnactor.fullName" sortable="true" titleKey="goal.ge"/>
-	    <display:column property="typeAsString" sortable="true" titleKey="goal.type"/>
-	    <display:column property="status" sortable="true" titleKey="goal.status"/>	    
-	    <display:setProperty name="paging.banner.item_name"><fmt:message key="goalList.goal"/></display:setProperty>
-	    <display:setProperty name="paging.banner.items_name"><fmt:message key="goalList.goals"/></display:setProperty>
-	    <display:setProperty name="export.excel.filename"><fmt:message key="goalList.title"/>.xls</display:setProperty>
-	    <display:setProperty name="export.csv.filename"><fmt:message key="goalList.title"/>.csv</display:setProperty>
-	    <display:setProperty name="export.pdf.filename"><fmt:message key="goalList.title"/>.pdf</display:setProperty>
-	</display:table>
+
+	<div id="col$1}">
+    		<a href="#">${mainGoal.goal.description}</a>
+    		<div>${mainGoal.value}</div>
+  	</div>
+	<c:forEach var="childGoal" varStatus="status" items="${userList}" step="1" begin="1" end="${childGoal.size()}">
+		<div id="col${status.index % 3 + 1}">
+    		<a href="#">${childGoal.goal.description}</a>
+    		<div>${childGoal.value}</div>
+  		</div>
+	</c:forEach>
+	
 </div>

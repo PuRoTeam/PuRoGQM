@@ -96,7 +96,7 @@ public class BinaryTableController {
         	mainGoal.setValue(1);
         
         //TODO recuperare la lista degli OG figli di questo OG
-        //List<Goal> ogs = goalManager.getOGChildren(ret);
+        List<Goal> ogs = goalManager.getOGChildren(ret);
 
         //Salvo un elto nell'array per ogni OG figlio
         for(Goal og: ogs){
