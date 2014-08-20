@@ -31,15 +31,12 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
     public List<Goal> findByDescription(String description) {
         return getSession().createCriteria(Goal.class).add(Restrictions.eq("description", description)).list();
     }
-
-    
-    
     
 	@Override
 	public void remove(Goal object) {
 		super.remove(object);
 	}
-
+	
 	@Override
 	public Goal save(Goal object)  {
 		if(object.getId() != null){	
@@ -65,7 +62,62 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 				List<Long> ids = new ArrayList<Long>();
 				for(User u:object.getVotes())
 					ids.add(u.getId());
-								
+				
+				
+				object.getVotes().clear();
+				getSession().saveOrUpdate(object);
+				getSession().flush();
+				for(Long uId:ids){
+					object.getVotes().add(userDao.get(uId));
+					getSession().saveOrUpdate(object);
+					getSession().flush();
+				}
+			}else {
+				System.out.println("A");
+				getSession().merge(object);
+		        //getSession().saveOrUpdate(object);
+		        System.out.println("B");
+		        getSession().flush();
+		        System.out.println("C");
+			}
+		} catch (Exception e){	
+			/*System.out.println("1");
+			getSession().saveOrUpdate(object);
+			System.out.println("2");
+			getSession().flush();
+			System.out.println("3");*/
+		}
+
+		return object;
+	}
+	
+	/*@Override
+	public Goal save(Goal object)  {
+		if(object.getId() != null){	
+			if(object.getStatus() == GoalStatus.PROPOSED){				
+				Session old= getSessionFactory().openSession();			
+				Goal gTemp = (Goal) old.get(Goal.class, object.getId());
+				System.out.println("*** OLD STATUS = " +  gTemp.getStatus());	
+				if(gTemp.getStatus() == GoalStatus.FOR_REVIEW){
+					System.out.println("*** clean old votes....");	
+					// clean previous vote....
+					object.getVotes().clear();
+				}
+				old.close();
+			}
+		}
+		// if the quorum was reached, change status to Accepted
+		if(object.getStatus() == GoalStatus.PROPOSED && object.getNumberOfVote() == object.getQuorum())
+			object.setStatus(GoalStatus.ACCEPTED);
+		
+		try{
+			System.out.println("numero di voti: " + object.getVotes().size());
+			if(object.getVotes() != null && object.getVotes().size() > 0){
+				List<Long> ids = new ArrayList<Long>();
+				for(User u:object.getVotes())
+					ids.add(u.getId());
+				
+				
 				object.getVotes().clear();
 				getSession().saveOrUpdate(object);
 				getSession().flush();
@@ -90,7 +142,7 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 		}
 
 		return object;
-	}
+	}*/
 
 	@Override
 	public List<Goal> findByProject(Long id) {

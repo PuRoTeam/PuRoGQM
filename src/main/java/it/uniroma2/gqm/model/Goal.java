@@ -405,7 +405,7 @@ public class Goal extends BaseObject {
 		this.constraints = constraints;
 	}
 	
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.mg")
+	@OneToOne(fetch = FetchType.LAZY, /*cascade = CascadeType.ALL, orphanRemoval=true,*/ mappedBy = "pk.og") //this ha ruolo OG nella relazione
 	public MGOGRelationship getRelationWithMG() {
 		return relationWithMG;
 	}
@@ -414,12 +414,26 @@ public class Goal extends BaseObject {
 		this.relationWithMG = relationWithMG;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.og")
+	@OneToOne(fetch = FetchType.LAZY, /*cascade = CascadeType.ALL, orphanRemoval=true,*/ mappedBy = "pk.mg") //this ha ruolo MG nella relazione
 	public MGOGRelationship getRelationWithOG() {
 		return relationWithOG;
 	}
 
 	public void setRelationWithOG(MGOGRelationship relationWithOG) {
 		this.relationWithOG = relationWithOG;
+	}
+	
+	/**
+	 * Se il goal è un MG, viene restituita la relazione con OG, se è un OG, la relazione con MG
+	 * @return Un oggetto MGOGRelationship rappresentante la relazione, o null in caso non esista
+	 */
+	@Transient
+	public MGOGRelationship getMGOGRelation() {
+		if(GoalType.isMG(this))
+			return getRelationWithOG();
+		else if(GoalType.isOG(this))
+			return getRelationWithMG();
+		
+		return null;
 	}
 }

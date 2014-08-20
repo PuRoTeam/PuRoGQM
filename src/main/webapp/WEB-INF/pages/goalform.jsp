@@ -278,7 +278,7 @@
 	        <div class="controls">      
 	            <form:select path="parent.id" onchange="" disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 	            				cssStyle="width:400px">
-	            	<%-- <form:option value="">None</form:option> --%>
+	            	<form:option value="">None</form:option>
 	            	<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"   />
 				</form:select>            	
 	            <form:errors path="parent" cssClass="help-inline"/>
