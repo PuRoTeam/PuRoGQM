@@ -31,6 +31,7 @@ public class Strategy extends BaseObject {
 	private Project project;
 	private String name;
 	private String assumption;
+	//TODO va aggiunto un campo -> private Goal parent
 	private List<Goal> goals;
 	private User strategyOwner;
 	

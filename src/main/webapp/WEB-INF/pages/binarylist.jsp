@@ -1,18 +1,13 @@
 <%@ include file="/common/taglibs.jsp"%>
 <head>
-    <title><fmt:message key="goalList.title"/></title>
+    <title><fmt:message key="binaryTable.title"/></title>
     <meta name="menu" content="DefinitionPhaseMenu"/>
 </head>
 <div class="span10">
-    <h2><fmt:message key='goalList.heading'/></h2>
-    <div id="actions" class="form-actions">
-        <a class="btn btn-primary" href="<c:url value='/goalform'/>">
-            <i class="icon-plus icon-white"></i> <fmt:message key="button.add"/></a>
-        <a class="btn" href="<c:url value='/mainMenu'/>">
-            <i class="icon-ok"></i> <fmt:message key="button.done"/></a>
-    </div>
+    <h2><fmt:message key='binaryTable.heading'/></h2>
+    
     <display:table name="goalList" class="table table-condensed table-striped table-hover" requestURI="" id="goalList" export="true" pagesize="25">
-        <display:column property="id" sortable="true" href="/goalform" media="html" paramId="id" paramProperty="id" titleKey="goal.id"/>
+        <display:column property="id" sortable="true" href="/binarytable" media="html" paramId="id" paramProperty="id" titleKey="goal.id"/>
         <display:column property="id" media="csv excel xml pdf" titleKey="goal.id" />
         <display:column property="parent.id" sortable="true" titleKey="goal.parent"/>
         <display:column property="description" sortable="true" titleKey="goal.description"/>

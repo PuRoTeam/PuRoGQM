@@ -116,4 +116,8 @@ public class MetricManagerImpl extends GenericManagerImpl<Metric, Long> implemen
 		ret.add("Collecting Type: " + (metric.getCollectingType()));
 		return ret;
 	}
+	
+	public boolean getSatisfaction(Metric m){
+		return m.isConditionReached();
+	}
 }

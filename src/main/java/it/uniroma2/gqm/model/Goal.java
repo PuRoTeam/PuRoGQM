@@ -77,7 +77,7 @@ public class Goal extends BaseObject {
 	private String magnitude;
 	private String timeframe;
 	private String constraints;
-	private Strategy strategy;
+	private Strategy strategy; //TODO deve essere una lista di Strategy
 	
 	//MG fields
 	private String subject;

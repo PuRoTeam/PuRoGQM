@@ -29,4 +29,5 @@ public interface MetricManager extends GenericManager<Metric, Long> {
 	public Metric findById(Long id);
 	public List<Double> getMeasuredMetricValues(Long metricId);
 	public List<String> getMetricInfo(Long metricId);
+	public boolean getSatisfaction(Metric m);
 }
