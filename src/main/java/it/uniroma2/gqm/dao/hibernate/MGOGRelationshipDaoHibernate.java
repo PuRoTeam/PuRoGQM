@@ -1,5 +1,6 @@
 package it.uniroma2.gqm.dao.hibernate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import it.uniroma2.gqm.dao.MGOGRelationshipDao;
@@ -22,7 +23,7 @@ public class MGOGRelationshipDaoHibernate extends GenericDaoHibernate<MGOGRelati
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public MGOGRelationship getAssociatedRelation(Goal goal) {
+	public List<MGOGRelationship> getAssociatedRelations(Goal goal) {
 		Query q = null;
 		if(GoalType.isMG(goal)) {
 			q = getSession().getNamedQuery("findAssociatedOG").setLong("mg_id", goal.getId());
@@ -34,7 +35,7 @@ public class MGOGRelationshipDaoHibernate extends GenericDaoHibernate<MGOGRelati
 		else
 			return null;
 		
-    	List<MGOGRelationship>relations = q.list();
-    	return (relations != null && relations.size() > 0) ? relations.get(0) : null;
+    	List<MGOGRelationship> relations = q.list();
+    	return (relations != null) ? relations : new ArrayList<MGOGRelationship>();
 	}
 }

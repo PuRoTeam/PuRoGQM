@@ -63,11 +63,11 @@
         	<form:select path="type"
         		onchange="if(this.form.type.value == 0) { //ho selezionato OG, mostro divOG, e annullo la selezione del goal associato nel divMG (setto a -1), così associatedGoal ha sempre una coppia di valori [x,-1]
         					document.getElementById('divOG').style.display='block';document.getElementById('divMG').style.display='none';
-        				  	document.getElementById('associatedOG').value = '-1';	
+        				  	document.getElementById('associatedOG').value = '-1';
         				  } 
         				  else { //ho selezionato MG, mostro divMG, e annullo la selezione del goal associato nel divOG (setto a -1), così associatedGoal ha sempre una coppia di valori [x,-1]
         				  	document.getElementById('divOG').style.display='none';document.getElementById('divMG').style.display='block';
-        				  	document.getElementById('associatedMG').value = '-1';	
+        				  	document.getElementById('associatedMG').value = '-1';
         				  }"
         		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}">
         		<form:option value="0"  label="Organizational Goal"/>
@@ -103,27 +103,34 @@
 		<c:otherwise>
 			<div id="divOG" hidden="true">
 		</c:otherwise>
-    	</c:choose>
-    	
+    	</c:choose>		
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_mg"/>
 					<div class="controls"> 
-						<form:select path="relationWithMG" onchange=""
-								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
-								cssStyle="width:400px" id="associatedMG">
-							<form:option value="-1">None</form:option>
-							<c:forEach var="item" items="${mGoals}">
-								<c:choose>
-									<c:when test="${goal.relationWithMG.pk.mg.id eq item.id}">
-										<option value="${item.id}" selected="selected">${item.description}</option>
+						<select id="relationsWithMG" name="relationsWithMG" 
+							<c:out value="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)? 'disabled' : ''}"></c:out>
+							multiple="multiple"  style="width:500px;" >
+							<option value="-1">None</option>
+							<c:forEach var="itemGoal" items="${mGoals}">	
+								<c:set var="itemSelected" value="false" />
+								<c:forEach var="itemRel" items="${goal.relationsWithMG}">
+									<c:choose>							
+										<c:when test="${itemRel.pk.mg.id eq itemGoal.id}">
+											<c:set var="itemSelected" value="true" /><%-- Il goal MG è in relazione con l'OG che stiamo modificando --%>
+										</c:when>
+									</c:choose>
+								</c:forEach>
+								<c:choose>							
+									<c:when test="${itemSelected eq true}">
+										<option value="${itemGoal.id}" selected="selected">${itemGoal.description}</option>
 									</c:when>
 									<c:otherwise>
-										<option value="${item.id}">${item.description}</option>
-									</c:otherwise>
-								</c:choose>			 
+										<option value="${itemGoal.id}">${itemGoal.description}</option>
+									</c:otherwise>	
+								</c:choose>
 							</c:forEach>
-						</form:select>
-						<form:errors path="relationWithMG" cssClass="help-inline"/>
+						</select>
+						<%--<form:errors path="relationsWithMG" cssClass="help-inline"/>--%>
 					</div>
 				</div>
 		        
@@ -206,9 +213,6 @@
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedOG">							
 							<form:option value="-1">None</form:option>
-							<%--
-			            	<form:options items="${oGoals}" itemValue="id" itemLabel="description"/>
-			            	--%>
 			            	<c:forEach var="item" items="${oGoals}">
 								<c:choose>
 									<c:when test="${goal.relationWithOG.pk.og.id eq item.id}">

@@ -74,7 +74,8 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 				}
 			}else {
 				System.out.println("A");
-				getSession().merge(object);
+				Goal mergedGoal = (Goal)getSession().merge(object);
+				object.setId(mergedGoal.getId());
 		        //getSession().saveOrUpdate(object);
 		        System.out.println("B");
 		        getSession().flush();

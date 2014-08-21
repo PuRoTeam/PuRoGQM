@@ -72,7 +72,7 @@ public class BinaryTableController {
         Project currentProject = (Project) session.getAttribute("currentProject");
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
 
-        if (!StringUtils.isBlank(id)) {
+        /*if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
         	retRelation = mgogRelationshipManager.getAssociatedRelation(ret);
         	ret.setRelationWithMG(retRelation);
@@ -117,7 +117,7 @@ public class BinaryTableController {
        
 		model.addAttribute("mainGoal", mainGoal);
 		model.addAttribute("childGoal", childGoal);
-		model.addAttribute("currentUser",currentUser);
+		model.addAttribute("currentUser",currentUser);*/
 
         return ret;
     }

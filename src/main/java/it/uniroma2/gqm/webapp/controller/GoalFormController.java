@@ -26,6 +26,7 @@ import javax.validation.Valid;
 
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -89,11 +90,11 @@ public class GoalFormController extends BaseFormController {
         Project currentProject = (Project) session.getAttribute("currentProject");
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
 
-        MGOGRelationship retRelation = null;        
+        List<MGOGRelationship> retRelations = new ArrayList<MGOGRelationship>();        
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
-        	retRelation = ret.getMGOGRelation();
+        	retRelations = ret.getMGOGRelations();
         }else {
         	ret = new Goal();
         	ret.setStatus(GoalStatus.DRAFT);
@@ -112,24 +113,34 @@ public class GoalFormController extends BaseFormController {
 					ret.getStatus() == GoalStatus.PROPOSED);
 		
 		List<Goal> allGoals = goalManager.getAll();
-		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal mg non ancora associati ad alcun og
-		List<Goal> oGoals = new ArrayList<Goal>();
+		List<Goal> associableMGoals = new ArrayList<Goal>(); //mg non associati a nessuno, o già associati a ret
+		List<Goal> associableOGoals = new ArrayList<Goal>();
 		List<Goal> oGoalsAll = new ArrayList<Goal>();
 		
 				
 		for(Goal g: allGoals) {
-			/*MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
-			*/
-			MGOGRelationship rel = g.getMGOGRelation();				
+			List<MGOGRelationship> gRelations = g.getMGOGRelations();				
 			
-			//mostro solo i goal non associati, più il goal già associato con quello correntemente visualizzato
-			if(rel == null || rel.equals(retRelation)) {
-				if(GoalType.isMG(g))
-					mGoals.add(g);
-				else if(GoalType.isOG(g))
-					oGoals.add(g);
+			if(!g.equals(ret)) {
+				//goal senza relazioni, lo aggiungo
+				if(gRelations.size() == 0) {			
+					if(GoalType.isMG(g))
+						associableMGoals.add(g);
+					else if(GoalType.isOG(g))
+						associableOGoals.add(g);
+				}
+				
+				//goal con relazioni, aggiungo solo i goal che sono in relazione con quello corrente
+				for(MGOGRelationship gRel : gRelations) {
+					if(retRelations.contains(gRel)) {
+						if(GoalType.isMG(g))
+							associableMGoals.add(g);
+						else if(GoalType.isOG(g))
+							associableOGoals.add(g);
+					}
+				}
 			}
-
+			
 			if(GoalType.isOG(g))
 				oGoalsAll.add(g);
 		}
@@ -139,8 +150,8 @@ public class GoalFormController extends BaseFormController {
 		model.addAttribute("modificableHeader",modificableHeader);
         model.addAttribute("availableStatus",availableStatus);
         model.addAttribute("availableGoals",allGoals);
-        model.addAttribute("mGoals", mGoals);
-        model.addAttribute("oGoals", oGoals);
+        model.addAttribute("mGoals", associableMGoals);
+        model.addAttribute("oGoals", associableOGoals);
         model.addAttribute("oGoalsAll", oGoalsAll);
         model.addAttribute("strategies",strategyManager.findByProject(ret.getProject()));        
         model.addAttribute("availableUsers",ret.getProject().getGQMTeam());
@@ -173,11 +184,13 @@ public class GoalFormController extends BaseFormController {
  
         if (request.getParameter("delete") != null) {        	
         	Goal gDB = goalManager.get(goal.getId());
-        	MGOGRelationship rel = gDB.getMGOGRelation();
-        	if(rel != null) {
-        		gDB.setRelationWithMG(null);
-            	gDB.setRelationWithOG(null);
-            	goalManager.save(gDB); //cancello relazione da goal
+        	List<MGOGRelationship> rels = gDB.getMGOGRelations();
+        	
+        	gDB.getRelationsWithMG().clear();
+        	gDB.setRelationWithOG(null);
+        	goalManager.save(gDB); //cancello relazioni da goal
+        	
+        	for(MGOGRelationship rel : rels) {
             	mgogRelationshipManager.remove(rel); //elimino relazione da tabella relazioni
         	}
         	
@@ -201,34 +214,39 @@ public class GoalFormController extends BaseFormController {
         		goal.getVotes().add(userManager.getUserByUsername(request.getRemoteUser()));
         	}
              
-        	MGOGRelationship oldRelation = !isNew ? mgogRelationshipManager.getAssociatedRelation(goal) : null; //vecchia relazione
-            MGOGRelationship newRelation = goal.getMGOGRelation(); //nuova relazione
+        	List<MGOGRelationship> oldRelations = !isNew ? mgogRelationshipManager.getAssociatedRelations(goal) : new ArrayList<MGOGRelationship>(); //vecchie relazioni
+            List<MGOGRelationship> newRelations = goal.getMGOGRelations(); //nuove relazioni
+            oldRelations.remove(null); //se l'utente ha selezionato "None" (da modificare nel javascript)
+            newRelations.remove(null); //se l'utente ha selezionato "None" (da modificare nel javascript)
             
-            //In initBinder3.setValue ho impostato solo un goal della relazione, devo impostare l'altro goal
-            if(newRelation != null) {
-            	if(GoalType.isMG(goal))
-            		newRelation.getPk().setMg(goal);
-            	else if(GoalType.isOG(goal))
-            		newRelation.getPk().setOg(goal);	
-            }
-            
-            boolean sameRelation = (!(oldRelation == null || !oldRelation.equals(newRelation)));
+            boolean sameRelation = oldRelations.equals(newRelations);
                         
-            if(!sameRelation) { //evito di modificare la relazione, se la nuova e la vecchia coincidono
-                goal.setRelationWithMG(null);
+            if(!sameRelation) { //evito di modificare le relazioni, se le nuove e la vecchie coincidono
+                goal.getRelationsWithMG().clear();
                 goal.setRelationWithOG(null);
                 goalManager.save(goal); //cancello vecchia relazione da goal
                 
-                if(oldRelation != null)
-                	mgogRelationshipManager.remove(oldRelation); //cancello vecchia relazione da tabella relazioni
+                for(MGOGRelationship oldRel : oldRelations)
+                	mgogRelationshipManager.remove(oldRel); //cancello vecchie relazioni da tabella relazioni
                 
-                if(newRelation != null) {
-                	mgogRelationshipManager.save(newRelation); //salvo nuova relazione in tabella relazioni
+                //In initBinder3.setValue ho impostato solo un goal della relazione, devo impostare l'altro goal.
+                if(GoalType.isMG(goal))
+                	for(MGOGRelationship newrel : newRelations)
+                		newrel.getPk().setMg(goal);
+                else if(GoalType.isOG(goal))
+                	for(MGOGRelationship newrel : newRelations)
+                		newrel.getPk().setOg(goal);
+                
+                for(MGOGRelationship newRel : newRelations) {
+                	mgogRelationshipManager.save(newRel); //salvo nuove relazioni in tabella relazioni
                 	
-                	if(GoalType.isMG(goal))
-                		goal.setRelationWithOG(newRelation);
-                	else if(GoalType.isOG(goal))
-                		goal.setRelationWithMG(newRelation);
+                	if(GoalType.isMG(goal)) {
+                		goal.setRelationWithOG(newRel);
+                	}                		
+                	else if(GoalType.isOG(goal)) {
+                		goal.getRelationsWithMG().add(newRel);
+                	}
+                		
                 }       
             }
                  	
@@ -297,17 +315,36 @@ public class GoalFormController extends BaseFormController {
         });
     }    
     
-    @InitBinder
-    protected void initBinder3(HttpServletRequest request, ServletRequestDataBinder binder) {
-    	binder.registerCustomEditor(MGOGRelationship.class, "relationWithMG", new AssociatedMGEditorSupport());
-    	binder.registerCustomEditor(MGOGRelationship.class, "relationWithOG", new AssociatedOGEditorSupport());
-    }
-    
     @InitBinder(value="goal")
     protected void initBinder(WebDataBinder binder) {
         binder.setValidator(new GoalValidator());
     }
     
+    @InitBinder
+    protected void initBinder3(HttpServletRequest request, ServletRequestDataBinder binder) {    	
+    	binder.registerCustomEditor(Set.class, "relationsWithMG", new AssociatedMGCollectionEditor(Set.class));
+    	binder.registerCustomEditor(MGOGRelationship.class, "relationWithOG", new AssociatedOGEditorSupport());
+    	    	
+    	/*binder.registerCustomEditor(Set.class, "relationsWithMG", new CustomCollectionEditor(Set.class){
+    		
+        	protected Object convertElement(Object element) {
+        		if (element != null && StringUtils.isNotBlank((String)element)) {
+    	    		Long id = new Long((String)element);
+    	    		Goal mg = goalManager.get(id);
+    	    		
+    	    		MGOGRelationship rel = new MGOGRelationship();
+    	    		MGOGRelationshipPK pk = new MGOGRelationshipPK();
+    	    		pk.setMg(mg);
+    	    		rel.setPk(pk);
+    	    		
+    	    		return rel;
+        		}
+        		return null;
+        	}
+    		
+    	});*/
+    }
+
     private class AssociatedOGEditorSupport extends PropertyEditorSupport {
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {
@@ -317,7 +354,7 @@ public class GoalFormController extends BaseFormController {
 				if(id != -1) {
 					MGOGRelationship rel = new MGOGRelationship();
 					MGOGRelationshipPK pk = new MGOGRelationshipPK();
-					pk.setOg(goalManager.get(id));
+					pk.setOg(goalManager.get(id)); //il goal mg lo setto in onSubmit
 					rel.setPk(pk);
 					setValue(rel);	
 				} else {
@@ -327,22 +364,27 @@ public class GoalFormController extends BaseFormController {
 		}
     }
     
-    private class AssociatedMGEditorSupport extends PropertyEditorSupport {
-		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
-			if(text != null) {
-				Long id = new Long(text);
-
-				if(id != -1) {
-					MGOGRelationship rel = new MGOGRelationship();
-					MGOGRelationshipPK pk = new MGOGRelationshipPK();
-					pk.setMg(goalManager.get(id));
-					rel.setPk(pk);
-					setValue(rel);	
-				} else {
-					setValue(null);
-				}
-			}	
-		}
+    private class AssociatedMGCollectionEditor extends CustomCollectionEditor {
+    	private AssociatedMGCollectionEditor(Class collectionType) {
+    		super(collectionType);
+    	}
+    	
+    	protected Object convertElement(Object element) {
+    		if (element != null && StringUtils.isNotBlank((String)element)) {
+	    		Long id = new Long((String)element);
+	    		
+	    		if(id != -1) {
+		    		Goal mg = goalManager.get(id);
+		    		
+		    		MGOGRelationship rel = new MGOGRelationship();
+		    		MGOGRelationshipPK pk = new MGOGRelationshipPK();
+		    		pk.setMg(mg);
+		    		rel.setPk(pk);
+		    		
+		    		return rel;	
+	    		}
+    		}
+    		return null;
+    	}
     }
 }
