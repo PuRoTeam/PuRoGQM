@@ -27,6 +27,7 @@ import javax.validation.Valid;
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -188,7 +189,7 @@ public class GoalFormController extends BaseFormController {
         	
         	gDB.getRelationsWithMG().clear();
         	gDB.setRelationWithOG(null);
-        	goalManager.save(gDB); //cancello relazioni da goal
+        	gDB = goalManager.save(gDB); //cancello relazioni da goal
         	
         	for(MGOGRelationship rel : rels) {
             	mgogRelationshipManager.remove(rel); //elimino relazione da tabella relazioni
@@ -213,7 +214,7 @@ public class GoalFormController extends BaseFormController {
         	if("true".equalsIgnoreCase(request.getParameter("vote"))){
         		goal.getVotes().add(userManager.getUserByUsername(request.getRemoteUser()));
         	}
-             
+                    	
         	List<MGOGRelationship> oldRelations = !isNew ? mgogRelationshipManager.getAssociatedRelations(goal) : new ArrayList<MGOGRelationship>(); //vecchie relazioni
             List<MGOGRelationship> newRelations = goal.getMGOGRelations(); //nuove relazioni
             oldRelations.remove(null); //se l'utente ha selezionato "None" (da modificare nel javascript)
@@ -222,9 +223,10 @@ public class GoalFormController extends BaseFormController {
             boolean sameRelation = oldRelations.equals(newRelations);
                         
             if(!sameRelation) { //evito di modificare le relazioni, se le nuove e la vecchie coincidono
-                goal.getRelationsWithMG().clear();
+                goal.setRelationsWithMG(new HashSet<MGOGRelationship>());
+            	//goal.getRelationsWithMG().clear();
                 goal.setRelationWithOG(null);
-                goalManager.save(goal); //cancello vecchia relazione da goal
+                goal = goalManager.save(goal); //cancello vecchia relazione da goal
                 
                 for(MGOGRelationship oldRel : oldRelations)
                 	mgogRelationshipManager.remove(oldRel); //cancello vecchie relazioni da tabella relazioni
@@ -250,7 +252,7 @@ public class GoalFormController extends BaseFormController {
                 }       
             }
                  	
-            goalManager.save(goal); //aggiungo nuova relazione
+            goal = goalManager.save(goal); //aggiungo nuova relazione
             String key = (isNew) ? "goal.added" : "goal.updated";
             saveMessage(request, getText(key, locale));
         	
@@ -324,25 +326,6 @@ public class GoalFormController extends BaseFormController {
     protected void initBinder3(HttpServletRequest request, ServletRequestDataBinder binder) {    	
     	binder.registerCustomEditor(Set.class, "relationsWithMG", new AssociatedMGCollectionEditor(Set.class));
     	binder.registerCustomEditor(MGOGRelationship.class, "relationWithOG", new AssociatedOGEditorSupport());
-    	    	
-    	/*binder.registerCustomEditor(Set.class, "relationsWithMG", new CustomCollectionEditor(Set.class){
-    		
-        	protected Object convertElement(Object element) {
-        		if (element != null && StringUtils.isNotBlank((String)element)) {
-    	    		Long id = new Long((String)element);
-    	    		Goal mg = goalManager.get(id);
-    	    		
-    	    		MGOGRelationship rel = new MGOGRelationship();
-    	    		MGOGRelationshipPK pk = new MGOGRelationshipPK();
-    	    		pk.setMg(mg);
-    	    		rel.setPk(pk);
-    	    		
-    	    		return rel;
-        		}
-        		return null;
-        	}
-    		
-    	});*/
     }
 
     private class AssociatedOGEditorSupport extends PropertyEditorSupport {
