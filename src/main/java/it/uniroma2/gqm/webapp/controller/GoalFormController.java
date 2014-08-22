@@ -175,7 +175,8 @@ public class GoalFormController extends BaseFormController {
         	Goal gDB = goalManager.get(goal.getId());
         	List<MGOGRelationship> rels = gDB.getMGOGRelations();
         	
-        	gDB.getRelationsWithMG().clear();
+        	//gDB.getRelationsWithMG().clear();
+        	gDB.setRelationsWithMG(new HashSet<MGOGRelationship>());
         	gDB.setRelationWithOG(null);
         	gDB = goalManager.save(gDB); //cancello relazioni da goal
         	
