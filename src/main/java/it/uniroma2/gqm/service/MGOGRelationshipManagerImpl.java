@@ -1,5 +1,6 @@
 package it.uniroma2.gqm.service;
 
+import java.util.HashSet;
 import java.util.List;
 
 import it.uniroma2.gqm.dao.MGOGRelationshipDao;
@@ -23,16 +24,19 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 	}
 
 	@Override
-	public void remove(Goal goal) { 
+	public void removeRelations(Goal goal) { 
 		if(goal == null)
 			return;
 		
-		if(GoalType.isMG(goal))
-			mgogRelationshipDao.remove(goal.getRelationWithOG());
-		else if(GoalType.isOG(goal)) {
-			for(MGOGRelationship rel : goal.getRelationsWithMG())
-				mgogRelationshipDao.remove(rel);
-		}			
+		List<MGOGRelationship> relations =  goal.getMGOGRelations();
+		
+		for(MGOGRelationship rel : relations)
+			mgogRelationshipDao.remove(rel); //elimino le relazioni da tabella MGOGRelationship
+		
+		//elimino le relazioni dall'oggetto goal
+		goal.setRelationWithOG(null);
+		goal.getRelationsWithMG().clear();
+		//goal.setRelationsWithMG(new HashSet<MGOGRelationship>());
 	}
 	
 	@Override

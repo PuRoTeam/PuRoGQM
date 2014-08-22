@@ -11,10 +11,11 @@ import org.appfuse.service.GenericManager;
 public interface MGOGRelationshipManager extends GenericManager<MGOGRelationship, MGOGRelationshipPK> {  
 	
 	/**
-	 * Elimina la (unica) relazione in cui compare il goal
-	 * @param goal Il Goal di cui eliminare la relazione
+	 * Elimina tutte le relazioni in cui compare il goal. Le relazioni vengono eliminate dalla tabella MGOGRelationship
+	 * e dall'oggetto goal. Dopo questa chiamata, per rendere definitive le eliminazioni è necessario salvare il goal
+	 * @param goal Il Goal da modificare
 	 */
-	public void remove(Goal goal);
+	public void removeRelations(Goal goal);
 	
 	/**
 	 * Recupera le relazioni in cui compare il goal, riconoscendone il tipo
