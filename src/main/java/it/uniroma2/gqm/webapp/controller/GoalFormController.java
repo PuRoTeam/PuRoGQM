@@ -174,12 +174,7 @@ public class GoalFormController extends BaseFormController {
         if (request.getParameter("delete") != null) {        	
         	Goal gDB = goalManager.get(goal.getId());
         	List<MGOGRelationship> rels = gDB.getMGOGRelations();
-        	
-        	//gDB.getRelationsWithMG().clear();
-        	gDB.setRelationsWithMG(new HashSet<MGOGRelationship>());
-        	gDB.setRelationWithOG(null);
-        	gDB = goalManager.save(gDB); //cancello relazioni da goal
-        	
+        	        	
         	for(MGOGRelationship rel : rels) {
             	mgogRelationshipManager.remove(rel); //elimino relazione da tabella relazioni
         	}
@@ -206,39 +201,30 @@ public class GoalFormController extends BaseFormController {
                     	
         	List<MGOGRelationship> oldRelations = !isNew ? mgogRelationshipManager.getAssociatedRelations(goal) : new ArrayList<MGOGRelationship>(); //vecchie relazioni
             List<MGOGRelationship> newRelations = goal.getMGOGRelations(); //nuove relazioni
-            oldRelations.remove(null); //se l'utente ha selezionato "None" (da modificare nel javascript)
             newRelations.remove(null); //se l'utente ha selezionato "None" (da modificare nel javascript)
             
             boolean sameRelation = oldRelations.equals(newRelations);
                         
             if(!sameRelation) { //evito di modificare le relazioni, se le nuove e la vecchie coincidono
                 goal.setRelationsWithMG(new HashSet<MGOGRelationship>());
-            	//goal.getRelationsWithMG().clear();
                 goal.setRelationWithOG(null);
                 goal = goalManager.save(goal); //cancello vecchia relazione da goal
                 
                 for(MGOGRelationship oldRel : oldRelations)
                 	mgogRelationshipManager.remove(oldRel); //cancello vecchie relazioni da tabella relazioni
-                
+
                 //In initBinder3.setValue ho impostato solo un goal della relazione, devo impostare l'altro goal.
-                if(GoalType.isMG(goal))
-                	for(MGOGRelationship newrel : newRelations)
-                		newrel.getPk().setMg(goal);
-                else if(GoalType.isOG(goal))
-                	for(MGOGRelationship newrel : newRelations)
-                		newrel.getPk().setOg(goal);
-                
+                //Riassocio le relazioni al goal
                 for(MGOGRelationship newRel : newRelations) {
-                	mgogRelationshipManager.save(newRel); //salvo nuove relazioni in tabella relazioni
-                	
-                	if(GoalType.isMG(goal)) {
-                		goal.setRelationWithOG(newRel);
-                	}                		
-                	else if(GoalType.isOG(goal)) {
+                	if(GoalType.isOG(goal)) {
+                		newRel.getPk().setOg(goal);
                 		goal.getRelationsWithMG().add(newRel);
+                	} else if(GoalType.isMG(goal)) {
+                		newRel.getPk().setMg(goal);
+                		goal.setRelationWithOG(newRel);
                 	}
-                		
-                }       
+                	mgogRelationshipManager.save(newRel); //salvo nuove relazioni in tabella relazioni
+                }     
             }
                  	
             goal = goalManager.save(goal); //aggiungo nuova relazione
