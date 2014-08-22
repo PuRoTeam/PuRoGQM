@@ -114,45 +114,33 @@ public class GoalFormController extends BaseFormController {
 					ret.getStatus() == GoalStatus.PROPOSED);
 		
 		List<Goal> allGoals = goalManager.getAll();
-		List<Goal> associableMGoals = new ArrayList<Goal>(); //mg non associati a nessuno, o già associati a ret
-		List<Goal> associableOGoals = new ArrayList<Goal>();
+		List<Goal> associableMGoals = new ArrayList<Goal>(); //mg associabili ad og
+		List<Goal> associableOGoals = new ArrayList<Goal>(); //og associabili ad mg
 		List<Goal> oGoalsAll = new ArrayList<Goal>();
+		List<Goal> mGoalsAll = new ArrayList<Goal>();
 		
-				
 		for(Goal g: allGoals) {
-			List<MGOGRelationship> gRelations = g.getMGOGRelations();				
-			
-			if(!g.equals(ret)) {
-				//goal senza relazioni, lo aggiungo
-				if(gRelations.size() == 0) {			
-					if(GoalType.isMG(g))
-						associableMGoals.add(g);
-					else if(GoalType.isOG(g))
-						associableOGoals.add(g);
-				}
-				
-				//goal con relazioni, aggiungo solo i goal che sono in relazione con quello corrente
-				for(MGOGRelationship gRel : gRelations) {
-					if(retRelations.contains(gRel)) {
-						if(GoalType.isMG(g))
-							associableMGoals.add(g);
-						else if(GoalType.isOG(g))
-							associableOGoals.add(g);
-					}
-				}
-			}
-			
-			if(GoalType.isOG(g))
+			if(GoalType.isMG(g))
+				mGoalsAll.add(g);
+			else if(GoalType.isOG(g))
 				oGoalsAll.add(g);
 		}
 		
+		associableOGoals.addAll(oGoalsAll); //popolo og associabili ad mg, ossia tutti
+			
+		for(Goal g: mGoalsAll) { //popolo mg associabili a og, ossia quelli senza relazione o in relazione con l'og corrente
+			List<MGOGRelationship> gRelations = g.getMGOGRelations(); 
+			if(gRelations.size() == 0 || retRelations.contains(gRelations.get(0))) //essendo un mg, ha al massimo una relazione
+				associableMGoals.add(g);
+		}
+				
 		model.addAttribute("currentUser",currentUser);
 		model.addAttribute("visibleGESection",visibleGESection);
 		model.addAttribute("modificableHeader",modificableHeader);
         model.addAttribute("availableStatus",availableStatus);
         model.addAttribute("availableGoals",allGoals);
-        model.addAttribute("mGoals", associableMGoals);
-        model.addAttribute("oGoals", associableOGoals);
+        model.addAttribute("associableMGoals", associableMGoals);
+        model.addAttribute("associableOGoals", associableOGoals);
         model.addAttribute("oGoalsAll", oGoalsAll);
         model.addAttribute("strategies",strategyManager.findByProject(ret.getProject()));        
         model.addAttribute("availableUsers",ret.getProject().getGQMTeam());

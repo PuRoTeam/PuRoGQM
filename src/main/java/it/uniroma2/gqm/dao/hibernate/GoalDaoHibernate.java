@@ -76,14 +76,14 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 					getSession().flush();
 				}
 			}else {
-				System.out.println("A");
+				//System.out.println("A");
 				//Goal mergedGoal = (Goal)getSession().merge(object);
 				//object.setId(mergedGoal.getId());
 				updatedGoal = (Goal)getSession().merge(object);
 				//(Goal)getSession().saveOrUpdate(object);
-		        System.out.println("B");
+		        //System.out.println("B");
 		        getSession().flush();
-		        System.out.println("C");
+		        //System.out.println("C");
 			}
 		} catch (Exception e){	
 			e.printStackTrace();

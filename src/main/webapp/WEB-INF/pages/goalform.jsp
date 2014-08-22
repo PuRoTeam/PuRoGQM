@@ -111,7 +111,7 @@
 							<c:out value="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)? 'disabled' : ''}"></c:out>
 							multiple="multiple"  style="width:500px;" >
 							<option value="-1">None</option>
-							<c:forEach var="itemGoal" items="${mGoals}">	
+							<c:forEach var="itemGoal" items="${associableMGoals}">	
 								<c:set var="itemSelected" value="false" />
 								<c:forEach var="itemRel" items="${goal.relationsWithMG}">
 									<c:choose>							
@@ -213,7 +213,7 @@
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedOG">							
 							<form:option value="-1">None</form:option>
-			            	<c:forEach var="item" items="${oGoals}">
+			            	<c:forEach var="item" items="${associableOGoals}">
 								<c:choose>
 									<c:when test="${goal.relationWithOG.pk.og.id eq item.id}">
 										<option value="${item.id}" selected="selected">${item.description}</option>
