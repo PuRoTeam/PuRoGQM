@@ -566,29 +566,48 @@
         </row>                                                                           
     </table>         
     <table name="goal">
-        <column>goal_id</column>
-        <column>project_id</column>
-        <column>description</column>
-        <column>type</column>
-        <column>subject</column>
-        <column>scope</column>
-		<column>focus</column>
-		<column>context</column>
-		<column>viewpoint</column>
-		<column>impact_of_variation</column>
-		<!--<column>interpretation_model</column>-->
-		<column>status</column>
+    	<column>description</column>
+    	<column>type</column>
+    	<column>scope</column>
+    	<column>focus</column>
+    	<column>parent_id</column>
 		<column>go_id</column>
 		<column>ge_id</column>
-		<column>refinement</column>
-		<column>strategy_id</column>
-		<column>activity</column>
+		<column>status</column>		    	
+        <column>goal_id</column>
+        <column>project_id</column>
+        <column>refinement</column>
+        
+        <column>activity</column>
 		<column>object</column>
 		<column>magnitude</column>
 		<column>timeframe</column>
 		<column>constraints</column>
-		<column>relations</column>
-		<column>parent_id</column>	
+		<column>strategy_id</column>
+		
+        <column>subject</column>		
+		<column>context</column>
+		<column>viewpoint</column>
+		<column>impact_of_variation</column>		
+
+        <!--<row>
+        	<value description="description"><![CDATA[A]]></value>
+        	<value description="type">1</value> 
+        	<value description="scope"><![CDATA[A]]></value>
+        	<value description="focus"><![CDATA[A]]></value>
+            <value description="go_id">5</value>
+            <value description="ge_id">6</value>
+            <value description="status">APPROVED</value>                    	
+            <value description="goal_id">1</value>
+            <value description="project_id">-1</value>
+            <value description="refinement"></value>        
+            <value description="subject"><![CDATA[A]]></value>
+            <value description="context"><![CDATA[A]]></value>
+            <value description="viewpoint"><![CDATA[A]]></value>
+            <value description="impact_of_variation"><![CDATA[A]]></value>
+        </row>
+		-->
+
         <!--<row>
             <value description="goal_id">-1</value>
             <value description="project_id">-1</value>
