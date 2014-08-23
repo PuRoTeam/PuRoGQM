@@ -47,6 +47,149 @@
             <form:errors path="assumption" cssClass="help-inline"/>
         </div>
     </div>            
+    
+    <%-- ################################################ --%>
+	
+	<spring:bind path="strategy.parentType">
+	<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+	<appfuse:label styleClass="control-label" key="stretegy.parentType"/>
+	</spring:bind>
+		<div class="controls"> 
+			<form:select path="parentType"
+					onchange="if(this.form.parentType.value == 0) {
+	        					document.getElementById('parentOrg').style.display='block';
+	        					document.getElementById('parentStra').style.display='none';
+	        					document.getElementById('parentStra').value = '-1';	
+	        				  } 
+	        				  else if(this.form.parentType.value == 1) {
+	        					document.getElementById('parentOrg').style.display='none';
+	        					document.getElementById('parentStra').style.display='block';
+	        					document.getElementById('parentOrg').value = '-1';
+	        				  }"
+					disabled=""
+					cssStyle="width:400px" >
+				<form:option value="0" selected="selected">Organizational Goal</form:option>
+				<form:option value="1">Strategy</form:option>
+			</form:select>
+			<form:errors path="parentType" cssClass="help-inline"/>
+		</div>
+	</div>
+	
+	<c:choose>
+	   	<c:when test="${strategy.parentType eq 0}">
+	    	<div id="parentOrg" >
+		</c:when>
+		<c:otherwise>
+			<div id="parentOrg" hidden="true">
+		</c:otherwise>
+    </c:choose>
+    			<spring:bind path="strategy.sorgParent">
+				<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+				<appfuse:label styleClass="control-label" key="strategy.org.parent"/>
+				</spring:bind>
+					<div class="controls"> 
+						<form:select  path="sorgParent" onchange="" disabled=""	cssStyle="width:400px" >
+									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
+						</form:select>
+						<form:errors path="sorgParent" cssClass="help-inline"/>
+					</div>
+				</div>
+			</div>
+			
+	<c:choose>
+	   	<c:when test="${strategy.parentType eq 1}">
+	    	<div id="parentStra" >
+		</c:when>
+		<c:otherwise>
+			<div id="parentStra" hidden="true">
+		</c:otherwise>
+    </c:choose>
+    			<spring:bind path="strategy.strategyParent">
+				<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+				<appfuse:label styleClass="control-label" key="strategy.strategies.parent"/>
+				</spring:bind>
+					<div class="controls"> 
+						<form:select path="strategyParent" onchange="" disabled="" cssStyle="width:400px" >
+									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
+						</form:select>
+						<form:errors path="strategyParent" cssClass="help-inline"/>
+					</div>
+				</div>
+			</div>
+	
+	<div class="control-group">
+	<appfuse:label styleClass="control-label" key="goal.childType"/>
+		<div class="controls"> 
+			<form:select path="childType" 
+					onchange="if(this.form.childType.value == 0) { 
+	        					document.getElementById('childOrg').style.display='block';
+	        					document.getElementById('childStra').style.display='none';
+	        					document.getElementById('childStra').value = '-1';	
+	        				  } 
+	        				  else if(this.form.childType.value == 1) { 
+	        					document.getElementById('childOrg').style.display='none';
+	        					document.getElementById('childStra').style.display='block';
+	        					document.getElementById('childOrg').value = '-1';
+	        				  }
+	        				  else if(this.form.childType.value == -1) { 
+	        					document.getElementById('childOrg').style.display='none';
+	        					document.getElementById('childStra').style.display='none';
+	        					document.getElementById('childOrg').value = '-1';
+	        					document.getElementById('childStra').value = '-1';
+	        				  }"
+					disabled=""
+					cssStyle="width:400px" >
+				<form:option value="-1" selected="selected">None</form:option>
+				<form:option value="0">Organizational Goal</form:option>
+				<form:option value="1">Strategy</form:option>
+			</form:select>
+			<form:errors path="childType" cssClass="help-inline"/>
+		</div>
+	</div>
+	
+	<c:choose>
+	   	<c:when test="${strategy.childType eq 0}">
+	    	<div id="childOrg" >
+		</c:when>
+		<c:otherwise>
+			<div id="childOrg" hidden="true">
+		</c:otherwise>
+    </c:choose>
+    			<spring:bind path="strategy.sorgChild">
+				<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+				<appfuse:label styleClass="control-label" key="goal.org.child"/>
+				</spring:bind>
+					<div class="controls"> 
+						<form:select path="sorgChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
+									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
+						</form:select>
+						<form:errors path="sorgChild" cssClass="help-inline"/>
+					</div>
+				</div>
+			</div>
+			
+	<c:choose>
+	   	<c:when test="${goal.childType eq 1}">
+	    	<div id="childStra" >
+		</c:when>
+		<c:otherwise>
+			<div id="childStra" hidden="true">
+		</c:otherwise>
+    </c:choose>
+    			<spring:bind path="strategy.strategyChild">
+				<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+				<appfuse:label styleClass="control-label" key="goal.strategies.child"/>
+				</spring:bind>
+					<div class="controls"> 
+						<form:select path="strategyChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
+									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
+						</form:select>
+						<form:errors path="strategyChild" cssClass="help-inline"/>
+					</div>
+				</div>
+			</div>
+			
+    <%--#################################################################### --%>
     <div class="form-actions">
         <button type="submit" class="btn btn-primary" name="save">
             <i class="icon-ok icon-white"></i> <fmt:message key="button.save"/>

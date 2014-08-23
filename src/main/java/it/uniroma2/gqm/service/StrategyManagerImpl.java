@@ -1,6 +1,7 @@
 package it.uniroma2.gqm.service;
 
 import it.uniroma2.gqm.dao.StrategyDao;
+import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.model.Strategy;
 
@@ -27,4 +28,21 @@ public class StrategyManagerImpl  extends GenericManagerImpl<Strategy, Long> imp
     	else
     		return null;
     }
+    
+    @Override
+	public boolean hasChildren(Strategy s){
+		if(s.getSorgChild().size() >0 || s.getStrategyChild().size() > 0)
+			return true;
+		else
+			return false;
+	}
+	
+	@Override
+	public boolean hasParent(Strategy s){
+		if (s.getSorgParent() != null || s.getStrategyParent() != null) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 }
