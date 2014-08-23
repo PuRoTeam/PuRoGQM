@@ -14,6 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import org.appfuse.model.BaseObject;
 import org.appfuse.model.User;
@@ -35,6 +36,7 @@ public class Strategy extends BaseObject {
 
 	//Strategy hierarchy fields
 	private int childType;
+	private int parentType;
 	
 	private Strategy strategyParent;
 	private Set<Strategy> strategyChild = new HashSet<Strategy>();
@@ -126,8 +128,25 @@ public class Strategy extends BaseObject {
 	public void setStrategyOwner(User strategyOwner) {
 		this.strategyOwner = strategyOwner;
 	}
+	@Transient
+	public int getParentType() {
+		
+		if(this.strategyParent != null){
+			return 1;
+		}else {
+			return 0;
+		}
+	}
+	public void setParentType(int parentType){
+		this.parentType = parentType;
+	}
+	@Transient
 	public int getChildType() {
-		return childType;
+		if(this.strategyChild.size() >= 0){
+			return 1;
+		}else {
+			return 0;
+		}
 	}
 	public void setChildType(int childType) {
 		this.childType = childType;
