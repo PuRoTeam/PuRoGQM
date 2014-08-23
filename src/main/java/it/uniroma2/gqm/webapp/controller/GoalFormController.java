@@ -112,10 +112,10 @@ public class GoalFormController extends BaseFormController {
 					ret.getStatus() == GoalStatus.PROPOSED);
 		
 		List<Goal> allGoals = goalManager.getAll();
-		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal mg non ancora associati ad alcun og
+		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal MG non ancora associati ad alcun og
 		List<Goal> oGoals = new ArrayList<Goal>();
 		List<Goal> oGoalsAll = new ArrayList<Goal>();
-		
+		List<Strategy> allStragies = strategyManager.getAll(); //TODO cambiare in Strategy 
 				
 		for(Goal g: allGoals) {
 			/*MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
@@ -144,6 +144,8 @@ public class GoalFormController extends BaseFormController {
         model.addAttribute("oGoalsAll", oGoalsAll);
         model.addAttribute("strategies",strategyManager.findByProject(ret.getProject()));        
         model.addAttribute("availableUsers",ret.getProject().getGQMTeam());
+        model.addAttribute("strategies", allStragies);
+        
         return ret;
     }
 
@@ -159,7 +161,7 @@ public class GoalFormController extends BaseFormController {
  
         if (validator != null) { // validator is null during testing
             validator.validate(goal, errors);
- 
+            
             if (errors.hasErrors() && request.getParameter("delete") == null) { // don't validate when deleting
             	System.out.println("errors: " + errors);
                 return "goalform";
@@ -169,11 +171,41 @@ public class GoalFormController extends BaseFormController {
         log.debug("entering 'onSubmit' method...");
  
         boolean isNew = (goal.getId() == null);
-         Locale locale = request.getLocale();
+        	Locale locale = request.getLocale();
  
         if (request.getParameter("delete") != null) {        	
         	Goal gDB = goalManager.get(goal.getId());
         	MGOGRelationship rel = gDB.getMGOGRelation();
+        	
+        	if(GoalType.isOG(gDB)){
+        		
+        		if(goalManager.hasChildren(gDB)) {
+        			//TODO Attenzione!!! potrebbe non funzionare
+            		errors.rejectValue("childType", "childType", "Can't delete OG with children"); 
+            		return "goalform";
+            	} else {
+            		
+            		//TODO si potrebbe mettere dentro una funzione
+            		//Prendo il padre, accedo al campo figli tipo goal, cerco il figlio e lo elimino
+    	        	if(gDB.getParentType() != -1) {
+    	        		if (gDB.getParentType() == 0) {
+    						
+    	        			Goal oParent = gDB.getOrgParent(); 	//recupero il padre
+    						oParent.getOrgChild().remove(gDB); 	//aggiorno il padre
+    						goalManager.save(oParent); 			//salvo il padre
+    						gDB.setOrgParent(null); 			//aggiorno il goal
+    					
+    	        		}else {
+    						Strategy sParent = gDB.getOstrategyParent();
+    						sParent.getSorgChild().remove(gDB);
+    						strategyManager.save(sParent);
+    						gDB.setOstrategyParent(null);
+    					}
+    	        		goalManager.save(gDB); 					//salvo il goal
+    	        	}
+            	}
+        	}
+        	
         	if(rel != null) {
         		gDB.setRelationWithMG(null);
             	gDB.setRelationWithOG(null);
@@ -183,26 +215,260 @@ public class GoalFormController extends BaseFormController {
         	
         	goalManager.remove(gDB); //elimino goal     	
             saveMessage(request, getText("goal.deleted", locale));
-        } else {
+            
+        } else { //Caso di aggiornamento o creazione di un Goal
+        	
+        	//###########################################################
+
+        	if(GoalType.isOG(goal)){
+        		
+        		if(isNew){ //creazione
+        			
+        			if (goalManager.hasParent(goal)) { //ha padre
+        				if (goal.getParentType() == 0) { //ha padre Goal
+							
+        					Goal oParent = goalManager.get(goal.getOrgParent().getId());
+        					oParent.getOrgChild().add(goal);
+        					goal.setOrgParent(oParent);
+        					goalManager.save(oParent);
+        					
+						} else { //ha padre Strategy
+							
+							Strategy sParent = strategyManager.get(goal.getOstrategyParent().getId());
+							sParent.getSorgChild().add(goal);
+							goal.setOstrategyParent(sParent);
+							strategyManager.save(sParent);
+						}
+						
+        				goalManager.save(goal);
+        				
+					} else {
+						
+						//TODO else controllare (mysql count) che sia il primo ROOT, altrimenti errore
+						if(goalManager.rootExist()){
+							errors.rejectValue("parentType", "parentType", "OG Root exists!!!"); 
+		            		return "goalform";
+						}
+					}
+        			
+        			if(goalManager.hasChildren(goal)) { //ha figli
+       	        		if (goal.getChildType() == 0) { //ha figli Goal
+        						
+       	        			for (Goal g : goal.getOrgChild()) {
+       	        				g.setOrgParent(goal);		//imposto il padre
+       	        				goal.getOrgChild().add(g);	//aggiungo il figlio a 'goal'
+       	        				goalManager.save(g);		//salvo il figlio
+    						}
+        					
+        	        	}else {	//ha figli Strategy
+      
+        	        		for (Strategy s : goal.getOstrategyChild()) {
+        	        			s.setSorgParent(goal);
+        	        			goal.getOstrategyChild().add(s);
+        	        			strategyManager.save(s);
+    						}
+        	        	}
+       	        		goalManager.save(goal); 			//salvo il goal
+            			
+                	}//else non devo fare niente
+        			
+            	} else { //aggiornamento
+            		
+            		
+            		Goal gDB = goalManager.get(goal.getId());
+            		
+            		boolean pSameType = (gDB.getParentType() == goal.getParentType()) ? true : false;
+            		int parentType = goal.getParentType();
+            		boolean pOSame = (gDB.getOrgParent().getId() == goal.getOrgParent().getId()) ? true : false;
+            		boolean pSSame = (gDB.getOstrategyParent().getId() == goal.getOstrategyParent().getId()) ? true : false;
+            		
+            		//stesso tipo padre
+            		if (pSameType) { 
+
+            			//stesso padre Goal
+            			if (parentType == 0) { 
+            			
+            				//è cambiato il padre Goal
+            				if(!pOSame){
+            					/**
+            					 * tolgo il figlio al vecchio padre
+            					 * ho cambiato il padre
+            					 * aggiungo il figlio al nuovo padre
+            					 */
+            					gDB.getOrgParent().getOrgChild().remove(goal);
+            					goalManager.save(gDB.getOrgParent());
+            					
+            					gDB.setOrgParent(null);
+            					goalManager.save(gDB);
+            					
+            					goal.getOrgParent().getOrgChild().add(goal);
+            				}
+            				
+            			//stesso padre Strategy
+						} else if(parentType == 1){
+							
+							//è cambiato il padre Strategy
+							if(!pSSame) {
+								gDB.getOstrategyParent().getSorgChild().remove(goal);
+								strategyManager.save(gDB.getOstrategyParent());
+								
+								gDB.setOstrategyParent(null);
+								goalManager.save(gDB);
+								
+								goal.getOstrategyParent().getSorgChild().add(goal);
+							}
+						
+						}// else non è cambiato niente, ma è rimasto null
+            			
+            			goalManager.save(goal);
+						
+					} else { //non stesso tipo padre, che tipo è?
+						
+						//se il nuovo padre è null, quindi non ho più il padre
+						if (parentType == -1) { //il nuovo parent è null
+							
+							//se il vecchio padre era un Goal
+							if (gDB.getParentType() == 0 ) { 
+								
+								/*
+								 * mi tolgo dalla lista dei figli del mio vecchio padre
+								 */
+								gDB.getOrgParent().getOrgChild().remove(goal);
+								goalManager.save(gDB.getOrgParent());
+								
+								gDB.setOrgParent(null);
+            					goalManager.save(gDB);
+					
+            				//Se il vecchio padre era una Strategy
+							} else if(gDB.getParentType() == 1){
+								
+								gDB.getOstrategyParent().getSorgChild().remove(goal);
+								strategyManager.save(gDB.getOstrategyParent());
+								
+								gDB.setOstrategyParent(null);
+								goalManager.save(gDB);
+							}
+
+						} else { //il nuovo parent è Goal/Strategy ed il vecchio è Strategy/Goal
+							
+							//se il nuovo padre è un Goal e il vecchio padre era una Strategy
+							if (goal.getParentType() == 0) {
+								
+								gDB.getOstrategyParent().getSorgChild().remove(goal);
+								strategyManager.save(gDB.getOstrategyParent());
+								
+								gDB.setOstrategyParent(null);
+								goalManager.save(gDB);
+								
+								goal.getOrgParent().getOrgChild().add(goal);
+								
+							//se il nuovo padre è una Strategy e il vecchio padre era un Goal
+							} else {
+								
+								gDB.getOrgParent().getOrgChild().remove(goal);
+								goalManager.save(gDB.getOrgParent());
+								
+								gDB.setOrgParent(null);
+								goalManager.save(gDB);
+								
+								goal.getOstrategyParent().getSorgChild().add(goal);
+								
+							}
+						}
+						
+						goalManager.save(goal);
+					}
+            		
+            		boolean cSameType = (gDB.getChildType() == goal.getChildType()) ? true : false;
+            		boolean cOSame = (gDB.getOrgChild() == goal.getOrgChild()) ? true : false;
+            		boolean cSSame = (gDB.getOstrategyChild() == goal.getOstrategyChild()) ? true : false;
+            		
+            		//se stesso tipo figlio
+            		if (cSameType) { 
+            			
+            			//se stesso tipo Goal
+            			if(goal.getChildType() == 0){
+	            			
+            				//se non stesso figlio Goal
+	            			if (!cOSame) {
+	            				if(!goal.getOrgChild().containsAll(gDB.getOrgChild())){
+	            					errors.rejectValue("childType", "childType", "Can't remove children from here!"); 
+	    		            		return "goalform";
+	            				}
+							} 
+	            			
+	            		//se stesso tipo Strategy
+            			} else if(goal.getChildType() == 1) {
+            				
+            				//se non stesso figlio Stretegy
+							if (!cSSame) {
+								if(!goal.getOstrategyChild().containsAll(gDB.getOstrategyChild())){
+	            					errors.rejectValue("childType", "childType", "Can't remove children from here!"); 
+	    		            		return "goalform";
+	            				}
+							} 
+							
+            			} //else non è cambiato niente, ma è rimasto null
+            			
+            			goalManager.save(goal);
+            			
+					} else { //non stesso tipo figlio, male male!!!
+						
+						errors.rejectValue("childType", "childType", "Can't change children type!"); 
+	            		return "goalform";
+						/*
+						//se il nuovo figlio è null, quindi non ho più figli
+						if (goal.getChildType() == -1) { //il nuovo figlio è null
+							
+							//se il vecchio figlio era un Goal
+							if (gDB.getChildType() == 0 ) { 
+								
+								//elimino tutti i figli Goal
+								gDB.getOrgChild().clear();
+								goalManager.save(gDB);
+								
+							//se il vecchio figlio era una Strategy
+							} else if(gDB.getChildType() == 1) { 
+								
+								//elimino tutti i figli Strategy
+								gDB.getOstrategyChild().clear();
+								goalManager.save(gDB);
+							}
+							
+						} else { //il nuovo figlio è Goal/Strategy ed il vecchio era Strategy/Goal
+							
+							//se il nuovo figlio è un Goal e il vecchio figlio era una Strategy
+							if (goal.getChildType() == 0) {
+								
+								gDB.getOrgChild().clear();
+								goalManager.save(gDB);
+							
+							//se il nuovo figlio è una Strategy e il vecchio figlio era un Goal
+							} else {
+							
+								gDB.getOstrategyChild().clear();
+								goalManager.save(gDB);
+							}
+						}
+						
+						goalManager.save(goal);
+						*/
+					} 
+            	}
+        		
+        	}
+        	
+        	//###########################################################
         	
         	goal.setGoalOwner(userManager.get(goal.getGoalOwner().getId()));
         	goal.setGoalEnactor(userManager.get(goal.getGoalEnactor().getId()));
-        	if(goal.getStrategy().getId() != null)
-        		goal.setStrategy(strategyManager.get(goal.getStrategy().getId()));
-        	else 
-        		goal.setStrategy(null);
-        	
-        	if(goal.getParent().getId() != null)
-        		goal.setParent(goalManager.get(goal.getParent().getId()));
-        	else 
-        		goal.setParent(null);
         	
         	if("true".equalsIgnoreCase(request.getParameter("vote"))){
         		goal.getVotes().add(userManager.getUserByUsername(request.getRemoteUser()));
         	}
-             
+            
         	MGOGRelationship oldRelation = !isNew ? mgogRelationshipManager.getAssociatedRelation(goal) : null; //vecchia relazione
-            MGOGRelationship newRelation = goal.getMGOGRelation(); //nuova relazione
+        	MGOGRelationship newRelation = goal.getMGOGRelation(); //nuova relazione
             
             //In initBinder3.setValue ho impostato solo un goal della relazione, devo impostare l'altro goal
             if(newRelation != null) {
@@ -270,6 +536,10 @@ public class GoalFormController extends BaseFormController {
         return getSuccessView();
     }
 
+    /*
+     * InitBinders
+     */
+    
     @InitBinder
     protected void initBinder1(HttpServletRequest request, ServletRequestDataBinder binder) {
         binder.registerCustomEditor(Set.class, "QSMembers", new CustomCollectionEditor(Set.class) {
@@ -283,6 +553,7 @@ public class GoalFormController extends BaseFormController {
             }
         });
     }
+    
     @InitBinder
     protected void initBinder2(HttpServletRequest request, ServletRequestDataBinder binder) {
         binder.registerCustomEditor(Set.class, "MMDMMembers", new CustomCollectionEditor(Set.class) {
@@ -303,11 +574,53 @@ public class GoalFormController extends BaseFormController {
     	binder.registerCustomEditor(MGOGRelationship.class, "relationWithOG", new AssociatedOGEditorSupport());
     }
     
+    @InitBinder
+    protected void initBinder4(HttpServletRequest request, ServletRequestDataBinder binder) {
+    	binder.registerCustomEditor(Set.class, "orgChild", new OrgChildEditorSupport());/*new CustomCollectionEditor(Set.class) {
+            protected Object convertElement(Object element) {
+                if (element != null) {
+                    Long id = new Long((String)element);
+                    if(id != -1){
+                    	Goal g = goalManager.get(id);
+                    	return g;
+                    }
+                }
+                return null;
+            }
+        });*/
+    }
+    
+    @InitBinder
+    protected void initBinder5(HttpServletRequest request, ServletRequestDataBinder binder) {
+    	binder.registerCustomEditor(Strategy.class, "ostrategyChild", new OstrategyChildEditorSupport() );/* new CustomCollectionEditor(Set.class) {
+            protected Object convertElement(Object element) {
+                if (element != null) {
+                    Long id = new Long((String)element);
+                    if(id != -1){
+                    	Strategy s = strategyManager.get(id);
+                    	return s;
+                    }
+                }
+                return null;
+            }
+        });*/
+    }
+    
+    @InitBinder
+    protected void initBinder6(HttpServletRequest request, ServletRequestDataBinder binder) {
+    	binder.registerCustomEditor(Goal.class, "orgParent", new OrgParentEditorSupport());
+    	binder.registerCustomEditor(Strategy.class, "ostrategyParent", new OstrategyParentEditorSupport());
+    }
+    
+    
     @InitBinder(value="goal")
     protected void initBinder(WebDataBinder binder) {
         binder.setValidator(new GoalValidator());
     }
     
+    /*
+     * Editor support classes
+     */
     private class AssociatedOGEditorSupport extends PropertyEditorSupport {
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {
@@ -339,6 +652,70 @@ public class GoalFormController extends BaseFormController {
 					pk.setMg(goalManager.get(id));
 					rel.setPk(pk);
 					setValue(rel);	
+				} else {
+					setValue(null);
+				}
+			}	
+		}
+    }
+    
+    private class OrgParentEditorSupport extends PropertyEditorSupport {
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {
+			if(text != null) {			
+				Long id = new Long(text);
+
+				if(id != -1) {
+					Goal g = goalManager.get(id);
+					setValue(g);	
+				} else {
+					setValue(null);
+				}
+			}	
+		}
+    }
+    
+    private class OstrategyParentEditorSupport extends PropertyEditorSupport {
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {
+			if(text != null) {			
+				Long id = new Long(text);
+
+				if(id != -1) {
+					Strategy s = strategyManager.get(id);
+					setValue(s);	
+				} else {
+					setValue(null);
+				}
+			}	
+		}
+    }
+    
+    private class OrgChildEditorSupport extends PropertyEditorSupport {
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {
+			if(text != null) {			
+				Long id = new Long(text);
+
+				if(id != -1) {
+					Goal g = goalManager.get(id);
+					setValue(g);	
+				} else {
+					setValue(null);
+				}
+			}	
+		}
+    }
+    
+    private class OstrategyChildEditorSupport extends PropertyEditorSupport {
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {
+			if(text != null) {			
+				Long id = new Long(text);
+
+				if(id != -1) {
+					Strategy s = strategyManager.get(id);
+					setValue(s);	
 				} else {
 					setValue(null);
 				}
