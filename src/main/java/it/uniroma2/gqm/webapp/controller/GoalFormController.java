@@ -194,21 +194,13 @@ public class GoalFormController extends BaseFormController {
         		goal.getVotes().add(userManager.getUserByUsername(request.getRemoteUser()));
         	}                 	
             
-        	//1
-        	//goal = changeMGOGRelationship(goal);
-            //goal = goalManager.save(goal); //aggiungo nuova relazione
-            
-        	//2
-        	//goal = S(goal);
-            
-        	//3
         	List<MGOGRelationship> oldMGOGRelations = new ArrayList<MGOGRelationship>();
         	List<MGOGRelationship> newMGOGRelations = new ArrayList<MGOGRelationship>();
         	
-        	boolean sameMGOGRelation = A(goal, oldMGOGRelations, newMGOGRelations);
+        	boolean sameMGOGRelation = getNewAndOldMGOGRelationship(goal, oldMGOGRelations, newMGOGRelations);
         	
         	if(!sameMGOGRelation)
-        		goal = B(goal, oldMGOGRelations, newMGOGRelations);
+        		goal = deleteOldAddNewRelationship(goal, oldMGOGRelations, newMGOGRelations);
         	
         	//altro codice legato di confronto relazioni
         	
@@ -217,7 +209,7 @@ public class GoalFormController extends BaseFormController {
         	//salva altre relazioni
         	
         	if(!sameMGOGRelation)
-        		C(newMGOGRelations);
+        		saveNewRelationship(newMGOGRelations);
         	
             
             String key = (isNew) ? "goal.added" : "goal.updated";
@@ -268,54 +260,13 @@ public class GoalFormController extends BaseFormController {
     }
     
     /**
-     * Modifica le relazioni di tipo MGOG. E' necessario salvare il goal dopo la chiamata a questa funzione
-     * @param g Il Goal da modificare
-     * @return Il Goal aggiornato
-     */
-    //FUNZIONA!
-    /*private Goal changeMGOGRelationship(Goal g) {
-    	boolean isNew = (g.getId() == null);
-    	
-    	List<MGOGRelationship> oldMGOGRelations = !isNew ? mgogRelationshipManager.getAssociatedRelations(g) : new ArrayList<MGOGRelationship>(); //vecchie relazioni
-        List<MGOGRelationship> newMGOGRelations = g.getMGOGRelations(); //nuove relazioni
-        newMGOGRelations.remove(null); //se l'utente ha selezionato "None" (da modificare nel javascript)
-        
-        boolean sameMGOGRelation = oldMGOGRelations.equals(newMGOGRelations);
-                    
-        if(!sameMGOGRelation) { //evito di modificare le relazioni, se le nuove e la vecchie coincidono
-            g.setRelationsWithMG(new HashSet<MGOGRelationship>());
-            //g.getRelationsWithMG().clear();
-            g.setRelationWithOG(null);
-            g = goalManager.save(g); //cancello vecchia relazione da goal
-            
-            for(MGOGRelationship oldRel : oldMGOGRelations)
-            	mgogRelationshipManager.remove(oldRel); //cancello vecchie relazioni da tabella relazioni
-
-            //In initBinder3.setValue ho impostato solo un goal della relazione, devo impostare l'altro goal
-            //Riassocio le relazioni al goal
-            for(MGOGRelationship newRel : newMGOGRelations) {
-            	if(GoalType.isOG(g)) {
-            		newRel.getPk().setOg(g);
-            		g.getRelationsWithMG().add(newRel);
-            	} else if(GoalType.isMG(g)) {
-            		newRel.getPk().setMg(g);
-            		g.setRelationWithOG(newRel);
-            	}
-            	mgogRelationshipManager.save(newRel); //salvo nuove relazioni in tabella relazioni
-            }     
-        }
-        
-        return g;
-    }*/
-    
-    /**
      * Restituisce le relazioni di tipo MGOG vecchie e nuove del goal passato come parametro
      * @param g Il Goal di cui recuperare le relazioni MGOG
      * @param oldMGOGRelations Una lista a cui aggiungere le vecchie relazioni MGOG
      * @param newMGOGRelations Una lista a cui aggiungere le nuove relazioni MGOG
      * @return true in caso le relazioni non siano state modificate, false altrimenti
      */
-    private boolean A(Goal g, List<MGOGRelationship> oldMGOGRelations, List<MGOGRelationship> newMGOGRelations) {
+    private boolean getNewAndOldMGOGRelationship(Goal g, List<MGOGRelationship> oldMGOGRelations, List<MGOGRelationship> newMGOGRelations) {
     	boolean isNew = (g.getId() == null);
     	
     	List<MGOGRelationship> oldRelations = !isNew ? mgogRelationshipManager.getAssociatedRelations(g) : new ArrayList<MGOGRelationship>(); //vecchie relazioni
@@ -336,7 +287,7 @@ public class GoalFormController extends BaseFormController {
      * @param newMGOGRelations La lista delle nuove relazioni MGOG
      * @return Il Goal modificato
      */
-    public Goal B(Goal g, List<MGOGRelationship> oldMGOGRelations, List<MGOGRelationship> newMGOGRelations) {
+    public Goal deleteOldAddNewRelationship(Goal g, List<MGOGRelationship> oldMGOGRelations, List<MGOGRelationship> newMGOGRelations) {
         g.setRelationsWithMG(new HashSet<MGOGRelationship>());
     	//g.getRelationsWithMG().clear();
         g.setRelationWithOG(null);
@@ -365,73 +316,10 @@ public class GoalFormController extends BaseFormController {
      * Salva le nuove relazioni MGOG nella tabella MGOGRelationship
      * @param newMGOGRelations La lista delle nuove relazioni MGOG
      */
-    public void C(List<MGOGRelationship> newMGOGRelations) {
+    public void saveNewRelationship(List<MGOGRelationship> newMGOGRelations) {
         for(MGOGRelationship newRel : newMGOGRelations)
         	mgogRelationshipManager.save(newRel); //salvo nuove relazioni in tabella relazioni	
     }
-    
-    //S è da prendere il codice e metterlo paro paro in onSubmit per salvare solo una volta il goal in tutta l'esecuzione
-    /*public Goal S(Goal g) {
-    	List<MGOGRelationship> oldMGOGRelations = new ArrayList<MGOGRelationship>();
-    	List<MGOGRelationship> newMGOGRelations = new ArrayList<MGOGRelationship>();
-    	
-    	boolean sameMGOGRelation = A(g, oldMGOGRelations, newMGOGRelations);
-    	
-    	if(!sameMGOGRelation)
-    		g = B(g, oldMGOGRelations, newMGOGRelations);
-    	
-    	//altro codice legato a goal
-    	
-    	g = goalManager.save(g);
-    	
-    	if(!sameMGOGRelation)
-    		C(newMGOGRelations);
-    	
-    	return g;
-    }*/
-    
-    //Stesso codice di S, tutto insieme
-    /*private Goal change(Goal g) { 
-    	boolean isNew = (g.getId() == null);
-    	
-    	List<MGOGRelationship> oldMGOGRelations = !isNew ? mgogRelationshipManager.getAssociatedRelations(g) : new ArrayList<MGOGRelationship>(); //vecchie relazioni
-        List<MGOGRelationship> newMGOGRelations = g.getMGOGRelations(); //nuove relazioni
-        newMGOGRelations.remove(null); //se l'utente ha selezionato anche "None" (da modificare nel javascript)
-        
-        //In initBinder3.setValue ho impostato solo un goal della relazione, devo impostare l'altro goal
-        for(MGOGRelationship newRel : newMGOGRelations) {
-        	if(GoalType.isOG(g))
-        		newRel.getPk().setOg(g);
-        	else if(GoalType.isMG(g))
-        		newRel.getPk().setMg(g);
-        }
-        
-        boolean sameMGOGRelation = oldMGOGRelations.equals(newMGOGRelations);
-        if(!sameMGOGRelation) {        
-	        g.setRelationsWithMG(new HashSet<MGOGRelationship>());
-	        //g.getRelationsWithMG().clear();
-	        g.setRelationWithOG(null);
-	        
-	        for(MGOGRelationship newRel : newMGOGRelations) {
-	        	if(GoalType.isOG(g)) {
-	        		g.getRelationsWithMG().add(newRel);
-	        	} else if(GoalType.isMG(g)) {
-	        		g.setRelationWithOG(newRel);
-	        	}
-	        }
-        }
-        //fai altre operazioni sul goal
-        
-        //il goal ora ha le nuove relazioni (se sono cambiate)
-        g = goalManager.save(g);
-        
-        if(!sameMGOGRelation) {
-            for(MGOGRelationship newRel : newMGOGRelations)
-            	mgogRelationshipManager.save(newRel); //salvo nuove relazioni in tabella relazioni	
-        }
-        
-        return g;
-    }*/
     
     @InitBinder
     protected void initBinder1(HttpServletRequest request, ServletRequestDataBinder binder) {
