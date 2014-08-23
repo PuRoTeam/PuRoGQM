@@ -24,4 +24,6 @@ public interface GoalManager extends GenericManager<Goal, Long> {
 	public List<Goal> getMeasuredGoal(Project currentProject);
 	public List<Metric> getMeasuredMetricByGoal(Goal goal);
 	public List<Goal> getOrganizationalGoal(Project currentProject);
+	public boolean hasChildren(Goal g);
+	public boolean hasParent(Goal g);
 }

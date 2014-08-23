@@ -128,4 +128,21 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
 		List<Goal> goals= goalDao.findByNamedQuery("findOrganizationalGoal", maps);
 		return goals;
 	}
+	
+	@Override
+	public boolean hasChildren(Goal g){
+		if(g.getOrgChild().size() >0 || g.getOstrategyChild().size() > 0)
+			return true;
+		else
+			return false;
+	}
+	
+	@Override
+	public boolean hasParent(Goal g){
+		if (g.getOrgParent() != null || g.getOstrategyParent() != null) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 }
