@@ -64,8 +64,10 @@ public class Goal extends BaseObject {
 	private Set<User> MMDMMembers = new HashSet<User>();
 	private Set<GoalQuestion> questions = new HashSet<GoalQuestion>();	
 	private Set<User> votes = new HashSet<User>();
-	private Set<Goal> children = new HashSet<Goal>();
+	//private Set<Goal> children = new HashSet<Goal>();
 	private String refinement;
+	
+	
 	
 	//private Goal associatedGoal; //necessario per visualizzare il goal associato nella lista di goal
 	private MGOGRelationship relationWithMG;
@@ -77,7 +79,17 @@ public class Goal extends BaseObject {
 	private String magnitude;
 	private String timeframe;
 	private String constraints;
-	private Strategy strategy; //TODO deve essere una lista di Strategy
+	//private Strategy strategy;
+	
+	//OG hierarchy fields
+	private int childType  = -1;
+	private int parentType = -1;
+	
+	private Goal orgParent;
+	private Strategy ostrategyParent;
+	
+	private Set<Goal> orgChild = new HashSet<Goal>();
+	private Set<Strategy> ostrategyChild = new HashSet<Strategy>();
 	
 	//MG fields
 	private String subject;
@@ -92,7 +104,6 @@ public class Goal extends BaseObject {
 	public Goal(Long id) {
 		this.id = id;
 	}
-
 	
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Id @Column(name = "goal_id",nullable=false,unique=true)
@@ -228,7 +239,6 @@ public class Goal extends BaseObject {
 		return "Goal [id=" + id + ", description=" + description + "]";
 	}
 
-
 	@Enumerated(EnumType.STRING)
 	@Column(name = "status", length = 50)
 	public GoalStatus getStatus() {
@@ -239,8 +249,9 @@ public class Goal extends BaseObject {
 		this.status = status;
 	}
 	
+	/*
 	@ManyToOne
-	@JoinColumn(name = "strategy_id", nullable = true)	
+	@JoinColumn(name = "strategy_id", nullable = true)
 	public Strategy getStrategy() {
 		return strategy;
 	}
@@ -248,25 +259,24 @@ public class Goal extends BaseObject {
 	public void setStrategy(Strategy strategy) {
 		this.strategy = strategy;
 	}
-
+	*/
+	
 	@ManyToOne
 	@JoinColumn(name = "go_id", nullable = false)	
 	public User getGoalOwner() {
 		return goalOwner;
 	}
+	
 	public void setGoalOwner(User goalOwner) {
 		this.goalOwner = goalOwner;
 	}
 
     @ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    @JoinTable(
-            name = "goal_qs", 
-            joinColumns = { @JoinColumn(name = "goal_id") },
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
+    @JoinTable(name = "goal_qs", joinColumns = { @JoinColumn(name = "goal_id") }, inverseJoinColumns = @JoinColumn(name = "user_id"))
 	public Set<User> getQSMembers() {
 		return QSMembers;
 	}
+    
 	public void setQSMembers(Set<User> qSMembers) {
 		QSMembers = qSMembers;
 	}
@@ -276,6 +286,7 @@ public class Goal extends BaseObject {
 	public User getGoalEnactor() {
 		return goalEnactor;
 	}
+	
 	public void setGoalEnactor(User goalEnactor) {
 		this.goalEnactor = goalEnactor;
 	}
@@ -290,16 +301,12 @@ public class Goal extends BaseObject {
 		this.project = project;
 	}
 	
-	
     @ManyToMany(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    @JoinTable(
-            name = "goal_mmdm",
-            joinColumns = { @JoinColumn(name = "goal_id") },
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )	
+    @JoinTable(name = "goal_mmdm",joinColumns = { @JoinColumn(name = "goal_id") },inverseJoinColumns = @JoinColumn(name = "user_id"))	
 	public Set<User> getMMDMMembers() {
 		return MMDMMembers;
 	}
+    
 	public void setMMDMMembers(Set<User> mMDMMembers) {
 		this.MMDMMembers = mMDMMembers;
 	}
@@ -314,11 +321,7 @@ public class Goal extends BaseObject {
 	}
 	
     @ManyToMany(fetch = FetchType.EAGER, cascade=CascadeType.ALL)
-    @JoinTable(
-            name = "goal_vote",
-            joinColumns = { @JoinColumn(name = "goal_id") },
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )	
+    @JoinTable(name = "goal_vote",joinColumns = { @JoinColumn(name = "goal_id") },inverseJoinColumns = @JoinColumn(name = "user_id"))	
 	public Set<User> getVotes() {
 		return votes;
 	}
@@ -336,8 +339,8 @@ public class Goal extends BaseObject {
 	public int getQuorum(){
 		return this.project.getProjectManagers().size();
 	}
-
-
+	
+	/*
 	@ManyToOne
 	@JoinColumn(name = "parent_id", nullable = true)	
 	public Goal getParent() {
@@ -347,8 +350,7 @@ public class Goal extends BaseObject {
 	public void setParent(Goal parent) {
 		this.parent = parent;
 	}
-	
-	
+	*/
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.goal")
 	public Set<GoalQuestion>  getQuestions() {
@@ -358,7 +360,6 @@ public class Goal extends BaseObject {
 	public void setQuestions(Set<GoalQuestion> questions) {
 		this.questions = questions;
 	}
-
 
 	@Column(name = "activity", length = 255)
 	public String getActivity() {
@@ -405,6 +406,76 @@ public class Goal extends BaseObject {
 		this.constraints = constraints;
 	}
 	
+	@Transient
+	public int getChildType() {
+		
+		if(this.orgChild.size() > 0){
+			return 0;
+		}else if (this.ostrategyChild.size() > 0) {
+			return 1;
+		}else {
+			return -1;
+		}
+	}
+
+	public void setChildType(int childType) {
+		this.childType = childType;
+	}
+	
+	@Transient
+	public int getParentType() {
+		
+		if(this.orgParent != null){
+			return 0;
+		}else if (this.ostrategyParent != null) {
+			return 1;
+		}else {
+			return -1;
+		}
+	}
+
+	public void setParentType(int parentType) {
+		this.parentType = parentType;
+	}
+
+	@ManyToOne
+	//@JoinColumn(name="oparent_id")
+	public Goal getOrgParent() {
+		return orgParent;
+	}
+
+	public void setOrgParent(Goal orgParent) {
+		this.orgParent = orgParent;
+	}
+	
+	@OneToMany(mappedBy="orgParent")
+	public Set<Goal> getOrgChild() {
+		return orgChild;
+	}
+	
+	public void setOrgChild(Set<Goal> orgChild) {
+		this.orgChild = orgChild;
+	}
+	
+	@ManyToOne
+	//@JoinColumn(name="sparent_id")
+	public Strategy getOstrategyParent() {
+		return ostrategyParent;
+	}
+
+	public void setOstrategyParent(Strategy strategyParent) {
+		this.ostrategyParent = strategyParent;
+	}
+	
+	@OneToMany(mappedBy="sorgParent")	
+	public Set<Strategy> getOstrategyChild() {
+		return ostrategyChild;
+	}
+
+	public void setOstrategyChild(Set<Strategy> strategyChild) {
+		this.ostrategyChild = strategyChild;
+	}
+
 	@OneToOne(fetch = FetchType.LAZY, /*cascade = CascadeType.ALL, orphanRemoval=true,*/ mappedBy = "pk.og") //this ha ruolo OG nella relazione
 	public MGOGRelationship getRelationWithMG() {
 		return relationWithMG;
@@ -436,4 +507,5 @@ public class Goal extends BaseObject {
 		
 		return null;
 	}
+	
 }

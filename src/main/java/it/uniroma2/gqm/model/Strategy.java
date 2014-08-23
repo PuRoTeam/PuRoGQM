@@ -1,8 +1,8 @@
 package it.uniroma2.gqm.model;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -31,10 +31,20 @@ public class Strategy extends BaseObject {
 	private Project project;
 	private String name;
 	private String assumption;
-	//TODO va aggiunto un campo -> private Goal parent
-	private List<Goal> goals;
 	private User strategyOwner;
+
+	//Strategy hierarchy fields
+	private int childType;
 	
+	private Strategy strategyParent;
+	private Set<Strategy> strategyChild = new HashSet<Strategy>();
+	
+	private Goal sorgParent;
+	private Set<Goal> sorgChild = new HashSet<Goal>();
+
+
+	//private List<Goal> goals; //only OG type
+
  	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Id @Column(name = "strategy_id",nullable=false,unique=true)
 	public Long getId() {
@@ -98,6 +108,7 @@ public class Strategy extends BaseObject {
 		this.project = project;
 	}
 	
+	/*
 	@OneToMany(mappedBy="strategy", cascade=CascadeType.ALL)
 	public List<Goal> getGoals() {
 		return goals;
@@ -105,6 +116,7 @@ public class Strategy extends BaseObject {
 	public void setGoals(List<Goal> goals) {
 		this.goals = goals;
 	}
+	*/
 	
 	@ManyToOne
 	@JoinColumn(name = "so_id", nullable = false)	
@@ -113,5 +125,49 @@ public class Strategy extends BaseObject {
 	}
 	public void setStrategyOwner(User strategyOwner) {
 		this.strategyOwner = strategyOwner;
+	}
+	public int getChildType() {
+		return childType;
+	}
+	public void setChildType(int childType) {
+		this.childType = childType;
+	}
+	
+	@ManyToOne
+	//@JoinColumn(name="sparent_id")
+	public Strategy getStrategyParent() {
+		return strategyParent;
+	}
+	
+	public void setStrategyParent(Strategy strategyParent) {
+		this.strategyParent = strategyParent;
+	}
+	
+	@OneToMany(mappedBy="strategyParent")
+	public Set<Strategy> getStrategyChild() {
+		return strategyChild;
+	}
+	
+	public void setStrategyChild(Set<Strategy> strategyChild) {
+		this.strategyChild = strategyChild;
+	}
+	
+	@ManyToOne
+	//@JoinColumn(name="oparent_id")
+	public Goal getSorgParent() {
+		return sorgParent;
+	}
+	
+	public void setSorgParent(Goal sorgParent) {
+		this.sorgParent = sorgParent;
+	}
+	
+	@OneToMany(mappedBy="ostrategyParent")
+	public Set<Goal> getSorgChild() {
+		return sorgChild;
+	}
+	
+	public void setSorgChild(Set<Goal> sorgChild) {
+		this.sorgChild = sorgChild;
 	}
 }
