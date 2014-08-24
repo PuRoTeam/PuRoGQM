@@ -76,7 +76,7 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
 		}
 		return ret;
 	}
-    /*
+    
     public Goal goalSplitting(Goal goal, int numberOfSplit){    	
     	// close the current goal
     	/*goal.setStatus(GoalStatus.CLOSED);
@@ -96,7 +96,7 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     	goalDao.save(goal);*/
     	return goal;
     }
-	*/
+    
 	@Override
 	public List<Goal> findByProject(Project project) {
     	if(project !=null)
