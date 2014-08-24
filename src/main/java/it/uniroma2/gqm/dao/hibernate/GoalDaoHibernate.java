@@ -65,20 +65,22 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 				
 				
 				object.getVotes().clear();
-				getSession().saveOrUpdate(object);
+				//getSession().saveOrUpdate(object);
+				getSession().merge(object);
 				getSession().flush();
 				for(Long uId:ids){
 					object.getVotes().add(userDao.get(uId));
-					getSession().saveOrUpdate(object);
+					//getSession().saveOrUpdate(object);
+					getSession().merge(object);
 					getSession().flush();
 				}
 			}else {
-				System.out.println("A");
+				//System.out.println("A");
 				getSession().merge(object);
 		        //getSession().saveOrUpdate(object);
-		        System.out.println("B");
+		        //System.out.println("B");
 		        getSession().flush();
-		        System.out.println("C");
+		        //System.out.println("C");
 			}
 		} catch (Exception e){	
 			/*System.out.println("1");

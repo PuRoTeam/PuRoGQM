@@ -122,10 +122,11 @@
 				<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
 				<appfuse:label styleClass="control-label" key="goal.org.parent"/>
 				</spring:bind>
-					<div class="controls"> 
+					<div class="controls" > 
 						<form:select  path="orgParent" onchange=""
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" >
+									<form:option value="-1" selected="selected">None</form:option>
 									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="orgParent" cssClass="help-inline"/>
@@ -149,6 +150,7 @@
 						<form:select path="ostrategyParent" onchange=""
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" >
+									<form:option value="-1" selected="selected">None</form:option>
 									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
 						</form:select>
 						<form:errors path="ostrategyParent" cssClass="help-inline"/>
@@ -202,6 +204,7 @@
 						<form:select path="orgChild" multiple="true" onchange=""
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" >
+									<form:option value="-1" selected="selected">None</form:option>
 									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="orgChild" cssClass="help-inline"/>
@@ -225,6 +228,7 @@
 						<form:select path="ostrategyChild" multiple="true" onchange=""
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" >
+									<form:option value="-1" selected="selected">None</form:option>
 									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
 						</form:select>
 						<form:errors path="ostrategyChild" cssClass="help-inline"/>
@@ -425,6 +429,7 @@
 			    </div>		     
 			</div>
 	
+	<%-- 
 	<c:choose>
 	<c:when test="${oGoalsAll.size() > 0}">
 		<div class="control-group">
@@ -443,7 +448,8 @@
 	            <form:errors path="parent" cssClass="help-inline"/>
 	        </div>
 	    </div>  
-	                         
+	 --%>    
+	                        
     <div class="control-group">
         <appfuse:label styleClass="control-label" key="goal.go"/>
         <div class="controls">      
