@@ -138,6 +138,9 @@ public class StrategyFromController  extends BaseFormController {
             
           //#####################INIZIO PARENT CHILDREN###########################
 
+        	strategy.getSorgChild().remove(null);
+        	strategy.getStrategyChild().remove(null);
+        	
     		if(isNew){ //creazione
     			
     			if (strategyManager.hasParent(strategy)) { //ha padre
@@ -156,7 +159,7 @@ public class StrategyFromController  extends BaseFormController {
 						strategyManager.save(sParent);
 					}
 					
-    				strategyManager.save(strategy);
+    				//strategyManager.save(strategy);
     				
 				} else {
 					
@@ -182,7 +185,7 @@ public class StrategyFromController  extends BaseFormController {
 						}
     	        	}
    	        		
-   	        		strategyManager.save(strategy); 			//salvo la strategy
+   	        		//strategyManager.save(strategy); 			//salvo la strategy
         			
             	}//else non devo fare niente
     			
@@ -193,12 +196,13 @@ public class StrategyFromController  extends BaseFormController {
         		
         		boolean pSameType = (sDB.getParentType() == strategy.getParentType()) ? true : false;
         		int parentType = strategy.getParentType();
-        		boolean pOSame = (sDB.getSorgParent().getId() == strategy.getSorgParent().getId()) ? true : false;
-        		boolean pSSame = (sDB.getStrategyParent().getId() == strategy.getStrategyParent().getId()) ? true : false;
         		
         		//stesso tipo padre
         		if (pSameType) { 
 
+            		boolean pOSame = (sDB.getSorgParent().getId() == strategy.getSorgParent().getId()) ? true : false;
+            		boolean pSSame = (sDB.getStrategyParent().getId() == strategy.getStrategyParent().getId()) ? true : false;
+        			
         			//stesso padre Goal
         			if (parentType == 0) { 
         			
@@ -234,7 +238,7 @@ public class StrategyFromController  extends BaseFormController {
 					
 					}// else non è cambiato niente, ma è rimasto null
         			
-        			strategyManager.save(strategy);
+        			//strategyManager.save(strategy);
 					
 				} else { //non stesso tipo padre, che tipo è?
 					
@@ -263,15 +267,16 @@ public class StrategyFromController  extends BaseFormController {
 						
 					}
 					
-					strategyManager.save(strategy);
+					//strategyManager.save(strategy);
 				}
         		
         		boolean cSameType = (sDB.getChildType() == strategy.getChildType()) ? true : false;
-        		boolean cOSame = (sDB.getSorgChild() == strategy.getSorgChild()) ? true : false;
-        		boolean cSSame = (sDB.getStrategyChild() == strategy.getStrategyChild()) ? true : false;
         		
         		//se stesso tipo figlio
         		if (cSameType) { 
+        			
+            		boolean cOSame = (sDB.getSorgChild() == strategy.getSorgChild()) ? true : false;
+            		boolean cSSame = (sDB.getStrategyChild() == strategy.getStrategyChild()) ? true : false;
         			
         			//se stesso tipo Goal
         			if(strategy.getChildType() == 0){
@@ -297,7 +302,7 @@ public class StrategyFromController  extends BaseFormController {
 						
         			} //else non è cambiato niente, ma è rimasto null
         			
-        			strategyManager.save(strategy);
+        			//strategyManager.save(strategy);
         			
 				} else { //non stesso tipo figlio, male male!!!
 					
@@ -308,7 +313,7 @@ public class StrategyFromController  extends BaseFormController {
         	
         	//#####################FINE PARENT CHILDREN#######################
             
-        	strategyManager.save(strategy);
+        	strategy = strategyManager.save(strategy);
             String key = (isNew) ? "strategy.added" : "strategy.updated";
             saveMessage(request, getText(key, locale));
     		

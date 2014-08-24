@@ -39,6 +39,68 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 	
 	@Override
 	public Goal save(Goal object)  {
+		Goal updatedGoal = object;
+		if(object.getId() != null){	
+			if(object.getStatus() == GoalStatus.PROPOSED){		 		
+				Session old= getSessionFactory().openSession();		//TODO Perchè prende un'altra sessione?	
+				Goal gTemp = (Goal) old.get(Goal.class, object.getId());
+				System.out.println("*** OLD STATUS = " +  gTemp.getStatus());	
+				if(gTemp.getStatus() == GoalStatus.FOR_REVIEW){
+					System.out.println("*** clean old votes....");	
+					// clean previous vote....
+					object.getVotes().clear();
+				}
+				old.close();
+			}
+		}
+		// if the quorum was reached, change status to Accepted
+		if(object.getStatus() == GoalStatus.PROPOSED && object.getNumberOfVote() == object.getQuorum())
+			object.setStatus(GoalStatus.ACCEPTED);
+		
+		try{
+			System.out.println("numero di voti: " + object.getVotes().size());
+			if(object.getVotes() != null && object.getVotes().size() > 0){
+				List<Long> ids = new ArrayList<Long>();
+				for(User u:object.getVotes())
+					ids.add(u.getId());
+				
+				
+				object.getVotes().clear();
+				updatedGoal = (Goal)getSession().merge(object);
+				//getSession().saveOrUpdate(object);
+				getSession().flush();
+				for(Long uId:ids){
+					object.getVotes().add(userDao.get(uId));
+					updatedGoal = (Goal)getSession().merge(updatedGoal);
+					//getSession().saveOrUpdate(object);
+					getSession().flush();
+				}
+			}else {
+				//System.out.println("A");
+				//Goal mergedGoal = (Goal)getSession().merge(object);
+				//object.setId(mergedGoal.getId());
+				updatedGoal = (Goal)getSession().merge(object);
+				//(Goal)getSession().saveOrUpdate(object);
+		        //System.out.println("B");
+		        getSession().flush();
+		        //System.out.println("C");
+			}
+		} catch (Exception e){	
+			e.printStackTrace();
+			/*System.out.println("1");
+			getSession().saveOrUpdate(object);
+			System.out.println("2");
+			getSession().flush();
+			System.out.println("3");*/
+		}
+
+		return updatedGoal;
+		//return object;
+	}
+	
+	/*
+	@Override
+	public Goal save(Goal object)  {
 		if(object.getId() != null){	
 			if(object.getStatus() == GoalStatus.PROPOSED){				
 				Session old= getSessionFactory().openSession();			
@@ -83,64 +145,11 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 		        //System.out.println("C");
 			}
 		} catch (Exception e){	
-			/*System.out.println("1");
-			getSession().saveOrUpdate(object);
-			System.out.println("2");
-			getSession().flush();
-			System.out.println("3");*/
-		}
-
-		return object;
-	}
-	
-	/*@Override
-	public Goal save(Goal object)  {
-		if(object.getId() != null){	
-			if(object.getStatus() == GoalStatus.PROPOSED){				
-				Session old= getSessionFactory().openSession();			
-				Goal gTemp = (Goal) old.get(Goal.class, object.getId());
-				System.out.println("*** OLD STATUS = " +  gTemp.getStatus());	
-				if(gTemp.getStatus() == GoalStatus.FOR_REVIEW){
-					System.out.println("*** clean old votes....");	
-					// clean previous vote....
-					object.getVotes().clear();
-				}
-				old.close();
-			}
-		}
-		// if the quorum was reached, change status to Accepted
-		if(object.getStatus() == GoalStatus.PROPOSED && object.getNumberOfVote() == object.getQuorum())
-			object.setStatus(GoalStatus.ACCEPTED);
-		
-		try{
-			System.out.println("numero di voti: " + object.getVotes().size());
-			if(object.getVotes() != null && object.getVotes().size() > 0){
-				List<Long> ids = new ArrayList<Long>();
-				for(User u:object.getVotes())
-					ids.add(u.getId());
-				
-				
-				object.getVotes().clear();
-				getSession().saveOrUpdate(object);
-				getSession().flush();
-				for(Long uId:ids){
-					object.getVotes().add(userDao.get(uId));
-					getSession().saveOrUpdate(object);
-					getSession().flush();
-				}
-			}else {
-				System.out.println("A");
-		        getSession().saveOrUpdate(object);
-		        System.out.println("B");
-		        getSession().flush();
-		        System.out.println("C");
-			}
-		} catch (Exception e){	
-			System.out.println("1");
-			getSession().saveOrUpdate(object);
-			System.out.println("2");
-			getSession().flush();
-			System.out.println("3");
+			//System.out.println("1");
+			//getSession().saveOrUpdate(object);
+			//System.out.println("2");
+			//getSession().flush();
+			//System.out.println("3");
 		}
 
 		return object;
