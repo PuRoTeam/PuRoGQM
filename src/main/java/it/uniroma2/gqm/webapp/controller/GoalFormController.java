@@ -272,7 +272,16 @@ public class GoalFormController extends BaseFormController {
     	List<MGOGRelationship> oldRelations = !isNew ? mgogRelationshipManager.getAssociatedRelations(g) : new ArrayList<MGOGRelationship>(); //vecchie relazioni
         List<MGOGRelationship> newRelations = g.getMGOGRelations(); //nuove relazioni
         newRelations.remove(null); //se l'utente ha selezionato "None" (da modificare nel javascript)
-                
+            
+        //In initBinder3.setValue ho impostato solo un goal della relazione, devo impostare l'altro goal (ossia g)
+        //Devo eseguire questa operazione prima di confrontare oldRelations e newRelations
+        for(MGOGRelationship newRel : newRelations) {
+        	if(GoalType.isOG(g))
+        		newRel.getPk().setOg(g);
+        	else if(GoalType.isMG(g))
+        		newRel.getPk().setMg(g);
+        }
+        
         oldMGOGRelations.addAll(oldRelations);
         newMGOGRelations.addAll(newRelations);
         
@@ -288,11 +297,11 @@ public class GoalFormController extends BaseFormController {
      * @return Il Goal modificato
      */
     public Goal deleteOldAddNewRelationship(Goal g, List<MGOGRelationship> oldMGOGRelations, List<MGOGRelationship> newMGOGRelations) {
-        g.setRelationsWithMG(new HashSet<MGOGRelationship>());
-    	//g.getRelationsWithMG().clear();
+        //g.setRelationsWithMG(new HashSet<MGOGRelationship>());
+    	g.getRelationsWithMG().clear();
         g.setRelationWithOG(null);
         
-        if(g.getId() == null)
+        if(g.getId() == null) //se il goal è nuovo, non ha un id, quindi quando salvo le nuove relazioni, lancia un'eccezione
         	g = goalManager.save(g);
         
         for(MGOGRelationship oldRel : oldMGOGRelations)
@@ -303,7 +312,8 @@ public class GoalFormController extends BaseFormController {
         	if(GoalType.isOG(g)) {
         		newRel.getPk().setOg(g);
         		g.getRelationsWithMG().add(newRel);
-        	} else if(GoalType.isMG(g)) {
+        	}
+        	else if(GoalType.isMG(g)) {
         		newRel.getPk().setMg(g);
         		g.setRelationWithOG(newRel);
         	}
