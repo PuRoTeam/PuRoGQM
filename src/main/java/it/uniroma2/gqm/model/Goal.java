@@ -478,7 +478,7 @@ public class Goal extends BaseObject {
 		this.ostrategyChild = strategyChild;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY, /*cascade = CascadeType.ALL, orphanRemoval=true,*/ mappedBy = "pk.og") //this ha ruolo OG nella relazione
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.og") //this ha ruolo OG nella relazione
 	public MGOGRelationship getRelationWithMG() {
 		return relationWithMG;
 	}
@@ -487,7 +487,7 @@ public class Goal extends BaseObject {
 		this.relationWithMG = relationWithMG;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY, /*cascade = CascadeType.ALL, orphanRemoval=true,*/ mappedBy = "pk.mg") //this ha ruolo MG nella relazione
+	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.mg") //this ha ruolo MG nella relazione
 	public MGOGRelationship getRelationWithOG() {
 		return relationWithOG;
 	}
