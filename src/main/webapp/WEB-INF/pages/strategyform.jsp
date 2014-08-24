@@ -52,7 +52,7 @@
 	
 	<spring:bind path="strategy.parentType">
 	<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-	<appfuse:label styleClass="control-label" key="stretegy.parentType"/>
+	<appfuse:label styleClass="control-label" key="strategy.parentType"/>
 	</spring:bind>
 		<div class="controls"> 
 			<form:select path="parentType"
@@ -65,10 +65,17 @@
 	        					document.getElementById('parentOrg').style.display='none';
 	        					document.getElementById('parentStra').style.display='block';
 	        					document.getElementById('parentOrg').value = '-1';
+	        				  }
+	        				  else {
+	        				  	document.getElementById('parentOrg').style.display='none';
+	        				  	document.getElementById('parentStra').style.display='none';
+	        				  	document.getElementById('parentOrg').value = '-1';
+	        				  	document.getElementById('parentStra').value = '-1';	        				  	
 	        				  }"
 					disabled=""
 					cssStyle="width:400px" >
-				<form:option value="0" selected="selected">Organizational Goal</form:option>
+				<form:option value="-1">None</form:option>
+				<form:option value="0">Organizational Goal</form:option>
 				<form:option value="1">Strategy</form:option>
 			</form:select>
 			<form:errors path="parentType" cssClass="help-inline"/>
@@ -89,6 +96,7 @@
 				</spring:bind>
 					<div class="controls"> 
 						<form:select  path="sorgParent" onchange="" disabled=""	cssStyle="width:400px" >
+									<form:option value="-1">None</form:option>
 									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="sorgParent" cssClass="help-inline"/>
@@ -110,6 +118,7 @@
 				</spring:bind>
 					<div class="controls"> 
 						<form:select path="strategyParent" onchange="" disabled="" cssStyle="width:400px" >
+									<form:option value="-1">None</form:option>
 									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
 						</form:select>
 						<form:errors path="strategyParent" cssClass="help-inline"/>
@@ -118,7 +127,7 @@
 			</div>
 	
 	<div class="control-group">
-	<appfuse:label styleClass="control-label" key="goal.childType"/>
+	<appfuse:label styleClass="control-label" key="strategy.childType"/>
 		<div class="controls"> 
 			<form:select path="childType" 
 					onchange="if(this.form.childType.value == 0) { 
@@ -139,7 +148,7 @@
 	        				  }"
 					disabled=""
 					cssStyle="width:400px" >
-				<form:option value="-1" selected="selected">None</form:option>
+				<form:option value="-1">None</form:option>
 				<form:option value="0">Organizational Goal</form:option>
 				<form:option value="1">Strategy</form:option>
 			</form:select>
@@ -157,10 +166,11 @@
     </c:choose>
     			<spring:bind path="strategy.sorgChild">
 				<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-				<appfuse:label styleClass="control-label" key="goal.org.child"/>
+				<appfuse:label styleClass="control-label" key="strategy.org.child"/>
 				</spring:bind>
 					<div class="controls"> 
 						<form:select path="sorgChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
+									<form:option value="-1">None</form:option>
 									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="sorgChild" cssClass="help-inline"/>
@@ -169,7 +179,7 @@
 			</div>
 			
 	<c:choose>
-	   	<c:when test="${goal.childType eq 1}">
+	   	<c:when test="${strategy.childType eq 1}">
 	    	<div id="childStra" >
 		</c:when>
 		<c:otherwise>
@@ -178,10 +188,11 @@
     </c:choose>
     			<spring:bind path="strategy.strategyChild">
 				<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-				<appfuse:label styleClass="control-label" key="goal.strategies.child"/>
+				<appfuse:label styleClass="control-label" key="strategy.strategies.child"/>
 				</spring:bind>
 					<div class="controls"> 
 						<form:select path="strategyChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
+									<form:option value="-1">None</form:option>
 									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
 						</form:select>
 						<form:errors path="strategyChild" cssClass="help-inline"/>

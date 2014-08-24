@@ -245,10 +245,10 @@ public class GoalFormController extends BaseFormController {
 					} else {
 						
 						//TODO else controllare (mysql count) che sia il primo ROOT, altrimenti errore
-						if(goalManager.rootExist()){
+						/*if(goalManager.rootExist()){
 							errors.rejectValue("parentType", "parentType", "OG Root exists!!!"); 
 		            		return "goalform";
-						}
+						}*/
 					}
         			
         			if(goalManager.hasChildren(goal)) { //ha figli

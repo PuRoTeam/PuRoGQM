@@ -6,9 +6,10 @@ import it.uniroma2.gqm.model.Strategy;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.StrategyManager;
 
-import java.util.ArrayList;
+import java.beans.PropertyEditorSupport;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,9 +21,12 @@ import org.appfuse.service.GenericManager;
 import org.appfuse.service.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.propertyeditors.CustomCollectionEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -70,7 +74,7 @@ public class StrategyFromController  extends BaseFormController {
         	ret.setProject(currentProject);
         }      
         
-        List<Goal> oGoalsAll = new ArrayList<Goal>();
+        List<Goal> oGoalsAll = goalManager.getOrganizationalGoal(currentProject);
 		List<Strategy> allStragies = strategyManager.getAll(); //TODO cambiare in Strategy 
 		
         model.addAttribute("currentUser",currentUser);
@@ -130,9 +134,7 @@ public class StrategyFromController  extends BaseFormController {
             saveMessage(request, getText("strategy.deleted", locale));
             
         } else {
-        	strategyManager.save(strategy);
-            String key = (isNew) ? "strategy.added" : "strategy.updated";
-            saveMessage(request, getText(key, locale));
+
             
           //#####################INIZIO PARENT CHILDREN###########################
 
@@ -306,6 +308,10 @@ public class StrategyFromController  extends BaseFormController {
         	
         	//#####################FINE PARENT CHILDREN#######################
             
+        	strategyManager.save(strategy);
+            String key = (isNew) ? "strategy.added" : "strategy.updated";
+            saveMessage(request, getText(key, locale));
+    		
             if (!isNew) {
             	success = "redirect:strategyform?id=" + strategy.getId();
         	}
@@ -313,5 +319,80 @@ public class StrategyFromController  extends BaseFormController {
         return getSuccessView();
     }
     
+    /*******************Binder*******************/
     
+    @InitBinder
+    protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) {
+    	binder.registerCustomEditor(Strategy.class, "strategyParent", new strategyParentEditorSupport());
+    	binder.registerCustomEditor(Goal.class, "sorgParent", new sorgParentEditorSupport());
+    	
+    	binder.registerCustomEditor(Set.class, "strategyChild", new strategyChildCollectionEditor(Set.class));
+    	binder.registerCustomEditor(Set.class, "sorgChild", new sorgChildCollectionEditor(Set.class));
+    }
+    
+    private class strategyParentEditorSupport extends PropertyEditorSupport {
+    	public void setAsText(String text) throws IllegalArgumentException {
+    		if(text != null && StringUtils.isNotBlank((String)text)) {
+    			Long id = new Long(text);
+    			
+    			if(id != -1) {
+    				Strategy strategy = strategyManager.get(id);
+    				setValue(strategy);
+    			} else {
+    				setValue(null);
+    			}
+    		}
+    	}
+    }
+    
+    private class sorgParentEditorSupport extends PropertyEditorSupport {
+    	public void setAsText(String text) throws IllegalArgumentException {
+    		if(text != null && StringUtils.isNotBlank((String)text)) {
+    			Long id = new Long(text);
+    			
+    			if(id != -1) {
+    				Goal goal = goalManager.get(id);
+    				setValue(goal);
+    			} else {
+    				setValue(null);
+    			}
+    		}
+    	}
+    }
+    
+    private class strategyChildCollectionEditor extends CustomCollectionEditor {
+    	private strategyChildCollectionEditor(Class collectionType) {
+    		super(collectionType);
+    	}
+    	
+    	protected Object convertElement(Object element) {
+    		if (element != null && StringUtils.isNotBlank((String)element)) {
+    			Long id = new Long((String)element);
+    			
+    			if(id != -1) {
+    				Strategy strategy = strategyManager.get(id);    				
+    				return strategy;
+    			}
+    		}
+    		return null;
+    	}
+    }
+    
+    private class sorgChildCollectionEditor extends CustomCollectionEditor {
+    	private sorgChildCollectionEditor(Class collectionType) {
+    		super(collectionType);
+    	}
+    	
+    	protected Object convertElement(Object element) {
+    		if (element != null && StringUtils.isNotBlank((String)element)) {
+    			Long id = new Long((String)element);
+    			
+    			if(id != -1) {
+    				Goal goal = goalManager.get(id);
+    				return goal;
+    			}
+    		}
+    		return null;
+    	}
+    }
 }

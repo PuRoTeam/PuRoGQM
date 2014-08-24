@@ -79,7 +79,7 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     
     public Goal goalSplitting(Goal goal, int numberOfSplit){    	
     	// close the current goal
-    	goal.setStatus(GoalStatus.CLOSED);
+    	/*goal.setStatus(GoalStatus.CLOSED);
     	for(int i=1;i<=numberOfSplit;i++){
     		Goal temp = new Goal();
     		temp.setGoalOwner(goal.getGoalEnactor());
@@ -93,7 +93,7 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     		
     		goalDao.save(temp);
     	}
-    	goalDao.save(goal);
+    	goalDao.save(goal);*/
     	return goal;
     }
 

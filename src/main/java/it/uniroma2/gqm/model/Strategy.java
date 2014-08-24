@@ -33,10 +33,6 @@ public class Strategy extends BaseObject {
 	private String name;
 	private String assumption;
 	private User strategyOwner;
-
-	//Strategy hierarchy fields
-	private int childType;
-	private int parentType;
 	
 	private Strategy strategyParent;
 	private Set<Strategy> strategyChild = new HashSet<Strategy>();
@@ -44,6 +40,8 @@ public class Strategy extends BaseObject {
 	private Goal sorgParent;
 	private Set<Goal> sorgChild = new HashSet<Goal>();
 
+	private int childType = -1;
+	private int parentType = -1;
 
 	//private List<Goal> goals; //only OG type
 
@@ -128,26 +126,35 @@ public class Strategy extends BaseObject {
 	public void setStrategyOwner(User strategyOwner) {
 		this.strategyOwner = strategyOwner;
 	}
+	
 	@Transient
 	public int getParentType() {
+		if(sorgParent != null)
+			parentType = 0;
+		else if(strategyParent != null)
+			parentType = 1;
+		else
+			parentType = -1;		
 		
-		if(this.strategyParent != null){
-			return 1;
-		}else {
-			return 0;
-		}
+		return parentType;
 	}
-	public void setParentType(int parentType){
+	
+	public void setParentType(int parentType) {
 		this.parentType = parentType;
 	}
+
 	@Transient
 	public int getChildType() {
-		if(this.strategyChild.size() >= 0){
-			return 1;
-		}else {
-			return 0;
-		}
+		if(sorgChild.size() > 0)
+			childType = 0;
+		else if(strategyChild.size() > 0)
+			childType = 1;
+		else
+			childType = -1;
+		
+		return childType;
 	}
+	
 	public void setChildType(int childType) {
 		this.childType = childType;
 	}
