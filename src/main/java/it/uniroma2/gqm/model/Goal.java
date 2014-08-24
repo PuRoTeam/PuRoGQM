@@ -54,7 +54,7 @@ public class Goal extends BaseObject {
 	private Integer type;
 	private String scope;
 	private String focus;
-	private Goal parent;
+	//private Goal parent;
 	private User goalOwner;
 	private User goalEnactor;
 	private GoalStatus status;
@@ -82,8 +82,8 @@ public class Goal extends BaseObject {
 	//private Strategy strategy;
 	
 	//OG hierarchy fields
-	private int childType  = -1;
-	private int parentType = -1;
+	//private int childType  = -1;
+	//private int parentType = -1;
 	
 	private Goal orgParent;
 	private Strategy ostrategyParent;
@@ -417,11 +417,12 @@ public class Goal extends BaseObject {
 			return -1;
 		}
 	}
-
+	
+	/*
 	public void setChildType(int childType) {
 		this.childType = childType;
 	}
-	
+	*/
 	@Transient
 	public int getParentType() {
 		
@@ -433,11 +434,12 @@ public class Goal extends BaseObject {
 			return -1;
 		}
 	}
-
+	/*
 	public void setParentType(int parentType) {
 		this.parentType = parentType;
 	}
-
+	 */
+	
 	@ManyToOne
 	//@JoinColumn(name="oparent_id")
 	public Goal getOrgParent() {
@@ -466,12 +468,12 @@ public class Goal extends BaseObject {
 	public void setOstrategyParent(Strategy strategyParent) {
 		this.ostrategyParent = strategyParent;
 	}
-	
-	@OneToMany(mappedBy="sorgParent")	
+
+	@OneToMany(mappedBy="sorgParent")
 	public Set<Strategy> getOstrategyChild() {
 		return ostrategyChild;
 	}
-
+	
 	public void setOstrategyChild(Set<Strategy> strategyChild) {
 		this.ostrategyChild = strategyChild;
 	}

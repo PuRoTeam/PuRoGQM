@@ -219,9 +219,15 @@ public class GoalFormController extends BaseFormController {
         } else { //Caso di aggiornamento o creazione di un Goal
         	
         	//###########################################################
-
+        	
+        	
         	if(GoalType.isOG(goal)){
         		
+        		goal.getOrgChild().remove(null);
+            	goal.getOstrategyChild().remove(null);
+            	//goal.setOrgParent(null);
+            	//goal.setOstrategyParent(null);
+            	
         		if(isNew){ //creazione
         			
         			if (goalManager.hasParent(goal)) { //ha padre
@@ -239,16 +245,14 @@ public class GoalFormController extends BaseFormController {
 							goal.setOstrategyParent(sParent);
 							strategyManager.save(sParent);
 						}
-						
-        				goalManager.save(goal);
         				
 					} else {
 						
-						//TODO else controllare (mysql count) che sia il primo ROOT, altrimenti errore
-						/*if(goalManager.rootExist()){
+						//else controllare che sia il primo ROOT, altrimenti errore
+						if(goalManager.rootExists(goal.getProject())){
 							errors.rejectValue("parentType", "parentType", "OG Root exists!!!"); 
 		            		return "goalform";
-						}*/
+						}
 					}
         			
         			if(goalManager.hasChildren(goal)) { //ha figli
@@ -268,9 +272,10 @@ public class GoalFormController extends BaseFormController {
         	        			strategyManager.save(s);
     						}
         	        	}
-       	        		goalManager.save(goal); 			//salvo il goal
             			
                 	}//else non devo fare niente
+        			
+        			//goal = goalManager.save(goal);
         			
             	} else { //aggiornamento
             		
@@ -279,16 +284,15 @@ public class GoalFormController extends BaseFormController {
             		
             		boolean pSameType = (gDB.getParentType() == goal.getParentType()) ? true : false;
             		int parentType = goal.getParentType();
-            		boolean pOSame = (gDB.getOrgParent().getId() == goal.getOrgParent().getId()) ? true : false;
-            		boolean pSSame = (gDB.getOstrategyParent().getId() == goal.getOstrategyParent().getId()) ? true : false;
             		
             		//stesso tipo padre
             		if (pSameType) { 
 
             			//stesso padre Goal
             			if (parentType == 0) { 
-            			
-            				//è cambiato il padre Goal
+            				
+            				boolean pOSame = (gDB.getOrgParent().getId() == goal.getOrgParent().getId()) ? true : false;
+                    		//è cambiato il padre Goal
             				if(!pOSame){
             					/**
             					 * tolgo il figlio al vecchio padre
@@ -307,6 +311,7 @@ public class GoalFormController extends BaseFormController {
             			//stesso padre Strategy
 						} else if(parentType == 1){
 							
+							boolean pSSame = (gDB.getOstrategyParent().getId() == goal.getOstrategyParent().getId()) ? true : false;
 							//è cambiato il padre Strategy
 							if(!pSSame) {
 								gDB.getOstrategyParent().getSorgChild().remove(goal);
@@ -320,7 +325,7 @@ public class GoalFormController extends BaseFormController {
 						
 						}// else non è cambiato niente, ma è rimasto null
             			
-            			goalManager.save(goal);
+            			goal = goalManager.save(goal);
 						
 					} else { //non stesso tipo padre, che tipo è?
 						
@@ -376,7 +381,7 @@ public class GoalFormController extends BaseFormController {
 							}
 						}
 						
-						goalManager.save(goal);
+						//goal = goalManager.save(goal);
 					}
             		
             		boolean cSameType = (gDB.getChildType() == goal.getChildType()) ? true : false;
@@ -410,7 +415,7 @@ public class GoalFormController extends BaseFormController {
 							
             			} //else non è cambiato niente, ma è rimasto null
             			
-            			goalManager.save(goal);
+            			goal = goalManager.save(goal);
             			
 					} else { //non stesso tipo figlio, male male!!!
 						
@@ -451,7 +456,7 @@ public class GoalFormController extends BaseFormController {
 							}
 						}
 						
-						goalManager.save(goal);
+						goal = goalManager.save(goal);
 						*/
 					} 
             	}
@@ -483,7 +488,7 @@ public class GoalFormController extends BaseFormController {
             if(!sameRelation) { //evito di modificare la relazione, se la nuova e la vecchia coincidono
                 goal.setRelationWithMG(null);
                 goal.setRelationWithOG(null);
-                goalManager.save(goal); //cancello vecchia relazione da goal
+                goal = goalManager.save(goal); //cancello vecchia relazione da goal
                 
                 if(oldRelation != null)
                 	mgogRelationshipManager.remove(oldRelation); //cancello vecchia relazione da tabella relazioni
@@ -498,7 +503,7 @@ public class GoalFormController extends BaseFormController {
                 }       
             }
                  	
-            goalManager.save(goal); //aggiungo nuova relazione
+            goal = goalManager.save(goal); //aggiungo nuova relazione
             String key = (isNew) ? "goal.added" : "goal.updated";
             saveMessage(request, getText(key, locale));
         	
@@ -576,7 +581,7 @@ public class GoalFormController extends BaseFormController {
     
     @InitBinder
     protected void initBinder4(HttpServletRequest request, ServletRequestDataBinder binder) {
-    	binder.registerCustomEditor(Set.class, "orgChild", new OrgChildEditorSupport());/*new CustomCollectionEditor(Set.class) {
+    	binder.registerCustomEditor(Set.class, "orgChild", new CustomCollectionEditor(Set.class) {
             protected Object convertElement(Object element) {
                 if (element != null) {
                     Long id = new Long((String)element);
@@ -587,14 +592,14 @@ public class GoalFormController extends BaseFormController {
                 }
                 return null;
             }
-        });*/
+        });
     }
     
     @InitBinder
     protected void initBinder5(HttpServletRequest request, ServletRequestDataBinder binder) {
-    	binder.registerCustomEditor(Strategy.class, "ostrategyChild", new OstrategyChildEditorSupport() );/* new CustomCollectionEditor(Set.class) {
+    	binder.registerCustomEditor(Set.class, "ostrategyChild", new CustomCollectionEditor(Set.class) {
             protected Object convertElement(Object element) {
-                if (element != null) {
+                if (element != null ) {
                     Long id = new Long((String)element);
                     if(id != -1){
                     	Strategy s = strategyManager.get(id);
@@ -603,7 +608,7 @@ public class GoalFormController extends BaseFormController {
                 }
                 return null;
             }
-        });*/
+        });
     }
     
     @InitBinder
@@ -691,6 +696,7 @@ public class GoalFormController extends BaseFormController {
 		}
     }
     
+    /*
     private class OrgChildEditorSupport extends PropertyEditorSupport {
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {
@@ -722,4 +728,5 @@ public class GoalFormController extends BaseFormController {
 			}	
 		}
     }
+    */
 }

@@ -14,7 +14,7 @@ public interface GoalManager extends GenericManager<Goal, Long> {
 	public List<Goal> findByProject(Project project);
 	
 	public List<String> getAvailableStatus(Goal goal, User user);
-	public Goal goalSplitting(Goal goal, int numberOfSplit);
+	//public Goal goalSplitting(Goal goal, int numberOfSplit);
 	
 	/**
 	 * This method return goals associated with one or more measured value
@@ -26,4 +26,5 @@ public interface GoalManager extends GenericManager<Goal, Long> {
 	public List<Goal> getOrganizationalGoal(Project currentProject);
 	public boolean hasChildren(Goal g);
 	public boolean hasParent(Goal g);
+	public boolean rootExists(Project currentProject);
 }
