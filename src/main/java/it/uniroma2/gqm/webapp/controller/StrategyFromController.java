@@ -78,16 +78,24 @@ public class StrategyFromController  extends BaseFormController {
         List<Goal> oGoalsAll = goalManager.getOrganizationalGoal(currentProject);
 		List<Strategy> allStragies = strategyManager.findByProject(currentProject); //TODO cambiare in Strategy 
 		
-		/*List<Goal> goalParent = new ArrayList<Goal>(); //tutti i padri Goal ammissibili
+		List<Goal> goalParent = new ArrayList<Goal>(); //tutti i padri Goal ammissibili
 		List<Strategy> strategyParent = new ArrayList<Strategy>();
 		List<Goal> goalChildren = new ArrayList<Goal>(); //tutti i figli Goal ammissibili
 		List<Strategy> strategyChildren = new ArrayList<Strategy>();
 
 		for(Goal g : oGoalsAll) {
-			if(!goalManager.hasChildren(g) || g.getChildType() == 0) //goal senza figli o con figli og
+			if(!goalManager.hasChildren(g) || g.getChildType() == 1) //goal g senza figli o con figli strategy
 				goalParent.add(g);
-			else if(g)
-		}*/
+			else if(ret.getChildType() == 0 && ret.getSorgChild().contains(g)) //il goal g è figlio della strategy ret
+				goalChildren.add(g);
+		}
+		
+		for(Strategy s: allStragies) {
+			if(!strategyManager.hasChildren(s) || s.getChildType() == 1) //strategy s senza figli o con figli strategy
+				strategyParent.add(s);
+			else if(ret.getChildType() == 1 && ret.getStrategyChild().contains(s)) //la strategy s è figlia della strategy ret
+				strategyChildren.add(s);
+		}
 		
         model.addAttribute("currentUser",currentUser);
         model.addAttribute("oGoalsAll", oGoalsAll);

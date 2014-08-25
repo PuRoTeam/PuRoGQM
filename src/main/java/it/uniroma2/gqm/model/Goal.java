@@ -88,8 +88,8 @@ public class Goal extends BaseObject {
 	private Goal orgParent;
 	private Strategy ostrategyParent;
 	
-	private int childType = -1;
-	private int parentType = -1;
+	private int childType = -1; //-1=no figli, 0=figli OG, 1=figli Strategy
+	private int parentType = -1; //-1=no padre, 0=padre OG, 1=padre Strategy
 	
 	private Set<Goal> orgChild = new HashSet<Goal>();
 	private Set<Strategy> ostrategyChild = new HashSet<Strategy>();
