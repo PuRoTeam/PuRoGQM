@@ -76,7 +76,7 @@ public class StrategyFromController  extends BaseFormController {
         }      
         
         List<Goal> oGoalsAll = goalManager.getOrganizationalGoal(currentProject);
-		List<Strategy> allStragies = strategyManager.findByProject(currentProject); //TODO cambiare in Strategy 
+		List<Strategy> allStragies = strategyManager.findByProject(currentProject); 
 		
 		List<Goal> goalParent = new ArrayList<Goal>(); //tutti i padri Goal ammissibili
 		List<Strategy> strategyParent = new ArrayList<Strategy>();
@@ -98,8 +98,12 @@ public class StrategyFromController  extends BaseFormController {
 		}
 		
         model.addAttribute("currentUser",currentUser);
-        model.addAttribute("oGoalsAll", oGoalsAll);
-        model.addAttribute("strategies", allStragies);
+        model.addAttribute("goalParent", goalParent);
+        model.addAttribute("strategyParent", strategyParent);
+        model.addAttribute("goalChildren", goalChildren);
+        model.addAttribute("strategyChildren", strategyChildren);
+        //model.addAttribute("oGoalsAll", oGoalsAll);
+        //model.addAttribute("strategies", allStragies);
         return ret;
     }    
     

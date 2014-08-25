@@ -97,7 +97,7 @@
 					<div class="controls"> 
 						<form:select  path="sorgParent" onchange="" disabled=""	cssStyle="width:400px" >
 									<form:option value="-1">None</form:option>
-									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
+									<form:options items="${goalParent}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="sorgParent" cssClass="help-inline"/>
 					</div>
@@ -119,7 +119,7 @@
 					<div class="controls"> 
 						<form:select path="strategyParent" onchange="" disabled="" cssStyle="width:400px" >
 									<form:option value="-1">None</form:option>
-									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
+									<form:options items="${strategyParent}" itemValue="id" itemLabel="id"/>
 						</form:select>
 						<form:errors path="strategyParent" cssClass="help-inline"/>
 					</div>
@@ -171,7 +171,7 @@
 					<div class="controls"> 
 						<form:select path="sorgChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
 									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
+									<form:options items="${goalChildren}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="sorgChild" cssClass="help-inline"/>
 					</div>
@@ -193,7 +193,7 @@
 					<div class="controls"> 
 						<form:select path="strategyChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
 									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
+									<form:options items="${strategyChildren}" itemValue="id" itemLabel="id"/>
 						</form:select>
 						<form:errors path="strategyChild" cssClass="help-inline"/>
 					</div>

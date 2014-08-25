@@ -91,9 +91,12 @@ public class GoalFormController extends BaseFormController {
 
         MGOGRelationship retRelation = null;        
         
+        //boolean isNew = true;
+        
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
         	retRelation = ret.getMGOGRelation();
+        	//isNew = false;
         }else {
         	ret = new Goal();
         	ret.setStatus(GoalStatus.DRAFT);
@@ -115,11 +118,42 @@ public class GoalFormController extends BaseFormController {
 		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal MG non ancora associati ad alcun og
 		List<Goal> oGoals = new ArrayList<Goal>();
 		List<Goal> oGoalsAll = new ArrayList<Goal>();
-		List<Strategy> allStragies = strategyManager.findByProject(currentProject); //TODO cambiare in Strategy 
+		List<Strategy> allStrategies = strategyManager.findByProject(currentProject);
 				
+		List<Goal> goalParent = new ArrayList<Goal>(); //tutti i padri Goal ammissibili
+		List<Strategy> strategyParent = new ArrayList<Strategy>();
+		List<Goal> goalChildren = new ArrayList<Goal>(); //tutti i figli Goal ammissibili
+		List<Strategy> strategyChildren = new ArrayList<Strategy>();
+		
+		getGoalParentAndChildren(oGoalsAll, ret, goalParent, goalChildren);
+		getStrategyParentAndChildren(allStrategies, ret, strategyParent, strategyChildren);
+		
+		/*if(isNew) { //se sono nuovo, non ho figli
+			for(Goal g : oGoalsAll) {
+				if(!goalManager.hasChildren(g) || g.getChildType() == 0) //goal g senza figli o con figli goal
+					goalParent.add(g);
+			}
+			
+			for(Strategy s: allStrategies) {
+				if(!strategyManager.hasChildren(s) || s.getChildType() == 0) //strategy s senza figli o con figli goal
+					strategyParent.add(s);
+			}
+		} else {
+			for(Goal g : oGoalsAll) {
+				if((!goalManager.hasChildren(g) || g.getChildType() == 0) && !grandChild(g, ret)) //goal g senza figli o con figli goal
+					goalParent.add(g);
+				else if(ret.getChildType() == 0 && ret.getOrgChild().contains(g)) //il goal g è figlio del goal ret
+					goalChildren.add(g);
+			}
+			for(Strategy s: allStrategies) {
+				if((!strategyManager.hasChildren(s) || s.getChildType() == 0) && !!grandChild(s, ret)) //strategy s senza figli o con figli goal
+					strategyParent.add(s);
+				else if(ret.getChildType() == 0 && ret.getOstrategyChild().contains(s)) //la strategy s è figlia del goal ret
+					strategyChildren.add(s);
+			}
+		}*/
+		
 		for(Goal g: allGoals) {
-			/*MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
-			*/
 			MGOGRelationship rel = g.getMGOGRelation();				
 			
 			//mostro solo i goal non associati, più il goal già associato con quello correntemente visualizzato
@@ -141,14 +175,56 @@ public class GoalFormController extends BaseFormController {
         model.addAttribute("availableGoals",allGoals);
         model.addAttribute("mGoals", mGoals);
         model.addAttribute("oGoals", oGoals);
-        model.addAttribute("oGoalsAll", oGoalsAll);
-        model.addAttribute("strategies",strategyManager.findByProject(ret.getProject()));        
         model.addAttribute("availableUsers",ret.getProject().getGQMTeam());
-        model.addAttribute("strategies", allStragies);
+        model.addAttribute("goalParent", goalParent);
+        model.addAttribute("strategyParent", strategyParent);
+        model.addAttribute("goalChildren", goalChildren);
+        model.addAttribute("strategyChildren", strategyChildren);
+        //model.addAttribute("oGoalsAll", oGoalsAll);
+        //model.addAttribute("strategies",strategyManager.findByProject(ret.getProject()));
+        //model.addAttribute("strategies", allStrategies);
         
         return ret;
     }
-
+    
+    
+    private void getGoalParentAndChildren(List<Goal> oGoalsAll, Goal current, List<Goal> goalParent, List<Goal> goalChildren) {
+    	boolean isNew = (current.getId() == null);
+    	
+    	if(isNew) { //se sono nuovo, non ho figli
+			for(Goal g : oGoalsAll) {
+				if(!goalManager.hasChildren(g) || g.getChildType() == 0) //goal g senza figli o con figli goal
+					goalParent.add(g);
+			}
+    	} else {
+			for(Goal g : oGoalsAll) {
+				if((!goalManager.hasChildren(g) || g.getChildType() == 0) && !grandChild(g, current)) //goal g senza figli o con figli goal
+					goalParent.add(g);
+				else if(current.getChildType() == 0 && current.getOrgChild().contains(g)) //il goal g è figlio del goal current
+					goalChildren.add(g);
+			}
+    	}
+    }
+    
+    private void getStrategyParentAndChildren(List<Strategy> allStrategies, Goal current, List<Strategy> strategyParent, List<Strategy> strategyChildren) {
+    	boolean isNew = (current.getId() == null);
+    	
+    	if(isNew) {
+			for(Strategy s: allStrategies) {
+				if(!strategyManager.hasChildren(s) || s.getChildType() == 0) //strategy s senza figli o con figli goal
+					strategyParent.add(s);
+			}
+    	} else {
+			for(Strategy s: allStrategies) {
+				if((!strategyManager.hasChildren(s) || s.getChildType() == 0) && !!grandChild(s, current)) //strategy s senza figli o con figli goal
+					strategyParent.add(s);
+				else if(current.getChildType() == 0 && current.getOstrategyChild().contains(s)) //la strategy s è figlia del goal current
+					strategyChildren.add(s);
+			}
+    	}
+    }
+    
+    
     
     @RequestMapping(method = RequestMethod.POST)
     public String onSubmit(@Valid Goal goal, BindingResult errors, HttpServletRequest request,
@@ -246,7 +322,7 @@ public class GoalFormController extends BaseFormController {
 						} else { //ha padre Strategy
 							
 							Strategy sParent = strategyManager.get(goal.getOstrategyParent().getId());
-							if(sParent.getChildType() == 1 || sParent.getChildType() == -1) {
+							if(sParent.getChildType() == 0 || sParent.getChildType() == -1) {
 								sParent.getSorgChild().add(goal);
 								goal.setOstrategyParent(sParent);
 								strategyManager.save(sParent);
