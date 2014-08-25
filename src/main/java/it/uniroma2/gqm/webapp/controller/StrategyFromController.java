@@ -167,16 +167,26 @@ public class StrategyFromController  extends BaseFormController {
     				if (strategy.getParentType() == 0) { //ha padre Goal
 						
     					Goal oParent = goalManager.get(strategy.getSorgParent().getId());
-    					oParent.getOstrategyChild().add(strategy);
-    					strategy.setSorgParent(oParent);
-    					goalManager.save(oParent);
+    					if(oParent.getParentType() == 1 || oParent.getParentType() == -1) {
+    						oParent.getOstrategyChild().add(strategy);
+        					strategy.setSorgParent(oParent);
+        					goalManager.save(oParent);
+    					} else {
+    						errors.rejectValue("parentType", "parentType", "Can't add Strategy child to parent already having Goal children");
+    						return "strategyform";
+    					}
     					
 					} else { //ha padre Strategy
 						
 						Strategy sParent = strategyManager.get(strategy.getStrategyParent().getId());
-						sParent.getStrategyChild().add(strategy);
-						strategy.setStrategyParent(sParent);
-						strategyManager.save(sParent);
+						if(sParent.getParentType() == 1 || sParent.getParentType() == -1) {
+    						sParent.getStrategyChild().add(strategy);
+        					strategy.setStrategyParent(sParent);
+        					strategyManager.save(sParent);
+    					} else {
+    						errors.rejectValue("parentType", "parentType", "Can't add Goal child to parent already having Strategy children");
+    						return "strategyform";
+    					}
 					}
 					
     				//strategyManager.save(strategy);
