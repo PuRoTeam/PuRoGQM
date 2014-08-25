@@ -119,7 +119,7 @@
 					<div class="controls"> 
 						<form:select path="strategyParent" onchange="" disabled="" cssStyle="width:400px" >
 									<form:option value="-1">None</form:option>
-									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
+									<form:options items="${strategies}" itemValue="id" itemLabel="name"/>
 						</form:select>
 						<form:errors path="strategyParent" cssClass="help-inline"/>
 					</div>
@@ -193,7 +193,7 @@
 					<div class="controls"> 
 						<form:select path="strategyChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
 									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
+									<form:options items="${strategies}" itemValue="id" itemLabel="name"/>
 						</form:select>
 						<form:errors path="strategyChild" cssClass="help-inline"/>
 					</div>

@@ -166,7 +166,7 @@
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" >
 									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
+									<form:options items="${strategies}" itemValue="id" itemLabel="name"/>
 						</form:select>
 						<form:errors path="ostrategyParent" cssClass="help-inline"/>
 					</div>
@@ -244,7 +244,7 @@
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" >
 									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
+									<form:options items="${strategies}" itemValue="id" itemLabel="name"/>
 						</form:select>
 						<form:errors path="ostrategyChild" cssClass="help-inline"/>
 					</div>

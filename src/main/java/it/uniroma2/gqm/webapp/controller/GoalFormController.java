@@ -246,7 +246,7 @@ public class GoalFormController extends BaseFormController {
 						} else { //ha padre Strategy
 							
 							Strategy sParent = strategyManager.get(goal.getOstrategyParent().getId());
-							if(sParent.getChildType() == 1 || sParent.getChildType() == -1) {
+							if(sParent.getChildType() == 0 || sParent.getChildType() == -1) {
 								sParent.getSorgChild().add(goal);
 								goal.setOstrategyParent(sParent);
 								strategyManager.save(sParent);
