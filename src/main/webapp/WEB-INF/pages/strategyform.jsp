@@ -170,7 +170,7 @@
 				</spring:bind>
 					<div class="controls"> 
 						<form:select path="sorgChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
-									<form:option value="-1">None</form:option>
+									<form:option value="-1" selected="selected">None</form:option>
 									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="sorgChild" cssClass="help-inline"/>
@@ -192,7 +192,7 @@
 				</spring:bind>
 					<div class="controls"> 
 						<form:select path="strategyChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
-									<form:option value="-1">None</form:option>
+									<form:option value="-1" selected="selected">None</form:option>
 									<form:options items="${strategies}" itemValue="id" itemLabel="id"/>
 						</form:select>
 						<form:errors path="strategyChild" cssClass="help-inline"/>
@@ -205,7 +205,8 @@
         <button type="submit" class="btn btn-primary" name="save">
             <i class="icon-ok icon-white"></i> <fmt:message key="button.save"/>
         </button>
-        <c:if test="${not empty strategy.id && strategy.goals.size() eq 0 && strategy.strategyOwner eq currentUser }">
+        <%--<c:if test="${not empty strategy.id  && strategy.goals.size() eq 0  && strategy.strategyOwner eq currentUser }">--%>
+        <c:if test="${not empty strategy.id && strategy.strategyOwner eq currentUser }">
           <button type="submit" class="btn" name="delete">
               <i class="icon-trash"></i> <fmt:message key="button.delete"/>
           </button>

@@ -18,6 +18,14 @@ public class StrategyDaoHibernate extends GenericDaoHibernate<Strategy, Long> im
         super(Strategy.class);
     }
  
+    @Override
+    /*public Strategy save(Strategy strategy) {
+    	Strategy updatedStrategy = strategy;
+    	
+    	updatedStrategy = (Strategy)getSession().merge(updatedStrategy);
+    	return updatedStrategy;
+    }*/
+    
 	public List<Strategy> findByProject(Long id) {
     	Query q =  getSession().getNamedQuery("findStrategyByProject").setLong("project_id", id);
     	return q.list();

@@ -40,6 +40,55 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 	@Override
 	public Goal save(Goal object)  {
 		Goal updatedGoal = object;
+		if(updatedGoal.getId() != null){	
+			if(updatedGoal.getStatus() == GoalStatus.PROPOSED){		 		
+				Session old= getSessionFactory().openSession();		//TODO Perchè prende un'altra sessione?	
+				Goal gTemp = (Goal) old.get(Goal.class, updatedGoal.getId());
+				System.out.println("*** OLD STATUS = " +  gTemp.getStatus());	
+				if(gTemp.getStatus() == GoalStatus.FOR_REVIEW){
+					System.out.println("*** clean old votes....");	
+					// clean previous vote....
+					updatedGoal.getVotes().clear();
+				}
+				old.close();
+			}
+		}
+		// if the quorum was reached, change status to Accepted
+		if(updatedGoal.getStatus() == GoalStatus.PROPOSED && updatedGoal.getNumberOfVote() == updatedGoal.getQuorum())
+			updatedGoal.setStatus(GoalStatus.ACCEPTED);
+		
+		try{
+			System.out.println("numero di voti: " + updatedGoal.getVotes().size());
+			if(updatedGoal.getVotes() != null && updatedGoal.getVotes().size() > 0){
+				List<Long> ids = new ArrayList<Long>();
+				for(User u:updatedGoal.getVotes())
+					ids.add(u.getId());
+				
+				
+				updatedGoal.getVotes().clear();
+				updatedGoal = (Goal)getSession().merge(updatedGoal);
+				getSession().flush();
+				for(Long uId:ids){
+					updatedGoal.getVotes().add(userDao.get(uId));
+					updatedGoal = (Goal)getSession().merge(updatedGoal);
+					getSession().flush();
+				}
+			}else {
+				updatedGoal = (Goal)getSession().merge(updatedGoal);
+		        getSession().flush();
+			}
+		} catch (Exception e){	
+			e.printStackTrace();
+		}
+
+		return updatedGoal;
+	}
+	
+	/*
+	//save nostra funzionante
+	@Override
+	public Goal save(Goal object)  {
+		Goal updatedGoal = object;
 		if(object.getId() != null){	
 			if(object.getStatus() == GoalStatus.PROPOSED){		 		
 				Session old= getSessionFactory().openSession();		//TODO Perchè prende un'altra sessione?	
@@ -87,18 +136,19 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 			}
 		} catch (Exception e){	
 			e.printStackTrace();
-			/*System.out.println("1");
-			getSession().saveOrUpdate(object);
-			System.out.println("2");
-			getSession().flush();
-			System.out.println("3");*/
+			//System.out.println("1");
+			//getSession().saveOrUpdate(object);
+			//System.out.println("2");
+			//getSession().flush();
+			//System.out.println("3");
 		}
 
 		return updatedGoal;
 		//return object;
-	}
+	}*/
 	
 	/*
+	//save loro
 	@Override
 	public Goal save(Goal object)  {
 		if(object.getId() != null){	

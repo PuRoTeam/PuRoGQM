@@ -62,11 +62,13 @@
         <div class="controls">
         	<form:select path="type"
         		onchange="if(this.form.type.value == 0) { //ho selezionato OG, mostro divOG, e annullo la selezione del goal associato nel divMG (setto a -1), così associatedGoal ha sempre una coppia di valori [x,-1]
-        					document.getElementById('divOG').style.display='block';document.getElementById('divMG').style.display='none';
+        					document.getElementById('divOG').style.display='block';
+        					document.getElementById('divMG').style.display='none';
         				  	document.getElementById('associatedOG').value = '-1';	
         				  } 
         				  else { //ho selezionato MG, mostro divMG, e annullo la selezione del goal associato nel divOG (setto a -1), così associatedGoal ha sempre una coppia di valori [x,-1]
-        				  	document.getElementById('divOG').style.display='none';document.getElementById('divMG').style.display='block';
+        				  	document.getElementById('divOG').style.display='none';
+        				  	document.getElementById('divMG').style.display='block';
         				  	document.getElementById('associatedMG').value = '-1';	
         				  }"
         		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}">
