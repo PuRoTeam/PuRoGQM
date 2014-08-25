@@ -88,6 +88,9 @@ public class Goal extends BaseObject {
 	private Goal orgParent;
 	private Strategy ostrategyParent;
 	
+	private int childType = -1;
+	private int parentType = -1;
+	
 	private Set<Goal> orgChild = new HashSet<Goal>();
 	private Set<Strategy> ostrategyChild = new HashSet<Strategy>();
 	
@@ -409,13 +412,15 @@ public class Goal extends BaseObject {
 	@Transient
 	public int getChildType() {
 		
-		if(this.orgChild.size() > 0){
-			return 0;
-		}else if (this.ostrategyChild.size() > 0) {
-			return 1;
+		if(orgChild.size() > 0){
+			childType = 0;
+		}else if (ostrategyChild.size() > 0) {
+			childType = 1;
 		}else {
-			return -1;
+			childType = -1;
 		}
+		
+		return childType;
 	}
 	
 	/*
@@ -426,13 +431,14 @@ public class Goal extends BaseObject {
 	@Transient
 	public int getParentType() {
 		
-		if(this.orgParent != null){
-			return 0;
-		}else if (this.ostrategyParent != null) {
-			return 1;
-		}else {
-			return -1;
-		}
+		if(orgParent != null)
+			parentType = 0;
+		else if(ostrategyParent != null)
+			parentType = 1;
+		else
+			parentType = -1;		
+		
+		return parentType;
 	}
 	/*
 	public void setParentType(int parentType) {

@@ -325,7 +325,7 @@ public class GoalFormController extends BaseFormController {
 						
 						}// else non è cambiato niente, ma è rimasto null
             			
-            			goal = goalManager.save(goal);
+            			//goal = goalManager.save(goal);
 						
 					} else { //non stesso tipo padre, che tipo è?
 						
@@ -385,8 +385,6 @@ public class GoalFormController extends BaseFormController {
 					}
             		
             		boolean cSameType = (gDB.getChildType() == goal.getChildType()) ? true : false;
-            		boolean cOSame = (gDB.getOrgChild() == goal.getOrgChild()) ? true : false;
-            		boolean cSSame = (gDB.getOstrategyChild() == goal.getOstrategyChild()) ? true : false;
             		
             		//se stesso tipo figlio
             		if (cSameType) { 
@@ -394,6 +392,7 @@ public class GoalFormController extends BaseFormController {
             			//se stesso tipo Goal
             			if(goal.getChildType() == 0){
 	            			
+            				boolean cOSame = (gDB.getOrgChild() == goal.getOrgChild()) ? true : false;
             				//se non stesso figlio Goal
 	            			if (!cOSame) {
 	            				if(!goal.getOrgChild().containsAll(gDB.getOrgChild())){
@@ -405,6 +404,7 @@ public class GoalFormController extends BaseFormController {
 	            		//se stesso tipo Strategy
             			} else if(goal.getChildType() == 1) {
             				
+            				boolean cSSame = (gDB.getOstrategyChild() == goal.getOstrategyChild()) ? true : false;
             				//se non stesso figlio Stretegy
 							if (!cSSame) {
 								if(!goal.getOstrategyChild().containsAll(gDB.getOstrategyChild())){
@@ -415,7 +415,7 @@ public class GoalFormController extends BaseFormController {
 							
             			} //else non è cambiato niente, ma è rimasto null
             			
-            			goal = goalManager.save(goal);
+            			//goal = goalManager.save(goal);
             			
 					} else { //non stesso tipo figlio, male male!!!
 						
