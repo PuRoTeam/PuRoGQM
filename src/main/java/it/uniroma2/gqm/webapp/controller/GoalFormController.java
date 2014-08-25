@@ -111,7 +111,7 @@ public class GoalFormController extends BaseFormController {
 		boolean visibleGESection = !(ret.getStatus() == GoalStatus.DRAFT || 
 					ret.getStatus() == GoalStatus.PROPOSED);
 		
-		List<Goal> allGoals = goalManager.getAll();
+		List<Goal> allGoals = goalManager.findByProject(currentProject); //goalManager.getAll();
 		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal MG non ancora associati ad alcun og
 		List<Goal> oGoals = new ArrayList<Goal>();
 		List<Goal> oGoalsAll = new ArrayList<Goal>();

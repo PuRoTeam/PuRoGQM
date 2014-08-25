@@ -75,7 +75,7 @@ public class StrategyFromController  extends BaseFormController {
         }      
         
         List<Goal> oGoalsAll = goalManager.getOrganizationalGoal(currentProject);
-		List<Strategy> allStragies = strategyManager.getAll(); //TODO cambiare in Strategy 
+		List<Strategy> allStragies = strategyManager.findByProject(currentProject); //TODO cambiare in Strategy 
 		
         model.addAttribute("currentUser",currentUser);
         model.addAttribute("oGoalsAll", oGoalsAll);

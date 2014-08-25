@@ -43,8 +43,6 @@ public class Strategy extends BaseObject {
 	private int childType = -1;
 	private int parentType = -1;
 
-	//private List<Goal> goals; //only OG type
-
  	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Id @Column(name = "strategy_id",nullable=false,unique=true)
 	public Long getId() {
@@ -107,16 +105,6 @@ public class Strategy extends BaseObject {
 	public void setProject(Project project) {
 		this.project = project;
 	}
-	
-	/*
-	@OneToMany(mappedBy="strategy", cascade=CascadeType.ALL)
-	public List<Goal> getGoals() {
-		return goals;
-	}
-	public void setGoals(List<Goal> goals) {
-		this.goals = goals;
-	}
-	*/
 	
 	@ManyToOne
 	@JoinColumn(name = "so_id", nullable = false)	
