@@ -115,7 +115,7 @@ public class GoalFormController extends BaseFormController {
 		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal MG non ancora associati ad alcun og
 		List<Goal> oGoals = new ArrayList<Goal>();
 		List<Goal> oGoalsAll = new ArrayList<Goal>();
-		List<Strategy> allStragies = strategyManager.getAll(); //TODO cambiare in Strategy 
+		List<Strategy> allStragies = strategyManager.findByProject(currentProject); //TODO cambiare in Strategy 
 				
 		for(Goal g: allGoals) {
 			/*MGOGRelationship rel = mgogRelationshipManager.getAssociatedRelation(g);
