@@ -45,17 +45,6 @@
             <form:errors path="description" cssClass="help-inline"/>
         </div>
     </div>
-
-	<%--
-	<c:choose>
-    	<c:when test="${goal.type eq 0}">>
-    		<c:set var="goalType" value="0" scope="page" />    		
-		</c:when>
-		<c:when test="${goal.type eq 1}">
-			<c:set var="goalType" value="1" scope="page" />
-		</c:when>
-    </c:choose>	
-     --%>
 	
     <spring:bind path="goal.type">
     <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
@@ -73,7 +62,7 @@
         				  	document.getElementById('divMG').style.display='block';
         				  	document.getElementById('associatedMG').value = '-1';	
         				  }"
-        		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}">
+        		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser && empty goal.type)}">
         		
         		<c:choose>
 		    		<c:when test="${goal.type eq 0}">
@@ -117,7 +106,7 @@
 	        				  }"
 					disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 					cssStyle="width:400px" >
-				<form:option value="-1" selected="selected">None</form:option>
+				<form:option value="-1" selected="${empty goal.parentType ? 'selected' : ''}">None</form:option>
 				<form:option value="0">Organizational Goal</form:option>
 				<form:option value="1">Strategy</form:option>
 			</form:select>
@@ -141,8 +130,8 @@
 						<form:select  path="orgParent" onchange=""
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" >
-									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
+									<form:option value="-1" selected="${empty goalParent ? 'selected' : ''}">None</form:option>
+									<form:options items="${goalParent}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="orgParent" cssClass="help-inline"/>
 					</div>
@@ -165,8 +154,8 @@
 						<form:select path="ostrategyParent" onchange=""
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" >
-									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${strategies}" itemValue="id" itemLabel="name"/>
+									<form:option value="-1" selected="${empty strategyParent ? 'selected' : ''}">None</form:option>
+									<form:options items="${strategyParent}" itemValue="id" itemLabel="name"/>
 						</form:select>
 						<form:errors path="ostrategyParent" cssClass="help-inline"/>
 					</div>
@@ -193,9 +182,9 @@
 	        					document.getElementById('childOrg').value = '-1';
 	        					document.getElementById('childStra').value = '-1';
 	        				  }"
-					disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
+					disabled="true"
 					cssStyle="width:400px" >
-				<form:option value="-1" selected="selected">None</form:option>
+				<form:option value="-1" selected="${empty goal.childType ? 'selected' : ''}">None</form:option>
 				<form:option value="0">Organizational Goal</form:option>
 				<form:option value="1">Strategy</form:option>
 			</form:select>
@@ -217,10 +206,10 @@
 				</spring:bind>
 					<div class="controls"> 
 						<form:select path="orgChild" multiple="true" onchange=""
-								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
+								disabled="true"
 								cssStyle="width:400px" >
-									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${oGoalsAll}" itemValue="id" itemLabel="description"/>
+									<form:option value="-1" selected="${empty goalChildren ? 'selected' : ''}">None</form:option>
+									<form:options items="${goalChildren}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="orgChild" cssClass="help-inline"/>
 					</div>
@@ -241,10 +230,10 @@
 				</spring:bind>
 					<div class="controls"> 
 						<form:select path="ostrategyChild" multiple="true" onchange=""
-								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
+								disabled="true"
 								cssStyle="width:400px" >
-									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${strategies}" itemValue="id" itemLabel="name"/>
+									<form:option value="-1" selected="${empty strategyChildren ? 'selected' : ''}">None</form:option>
+									<form:options items="${strategyChildren}" itemValue="id" itemLabel="name"/>
 						</form:select>
 						<form:errors path="ostrategyChild" cssClass="help-inline"/>
 					</div>
@@ -351,22 +340,7 @@
 			            <form:input path="constraints" id="constraints" maxlength="255" readonly="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"/>
 			            <form:errors path="constraints" cssClass="help-inline"/>
 			        </div>
-			    </div> 	
-				
-				<%--     		            
-				<div class="control-group" id="divStrategy" >
-			       <appfuse:label styleClass="control-label" key="goal.strategy"/>
-			       <div class="controls">      
-			           <form:select id="strategy"  path="strategy.id" onchange="" disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
-			           				cssStyle="width:400px" >
-			           	<form:option value="">None</form:option>
-			           	<form:options items="${strategies}" itemValue="id" itemLabel="name"   />
-					</form:select>            	
-			           <form:errors path="strategy" cssClass="help-inline"/>
-			       </div>
-			   	</div>
-			   	--%>
-			   	
+			    </div>	   	
 			</div>
     		
 	<c:choose>

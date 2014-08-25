@@ -119,7 +119,7 @@
 					<div class="controls"> 
 						<form:select path="strategyParent" onchange="" disabled="" cssStyle="width:400px" >
 									<form:option value="-1">None</form:option>
-									<form:options items="${strategyParent}" itemValue="id" itemLabel="id"/>
+									<form:options items="${strategyParent}" itemValue="id" itemLabel="name"/>
 						</form:select>
 						<form:errors path="strategyParent" cssClass="help-inline"/>
 					</div>
@@ -145,9 +145,8 @@
 	        					document.getElementById('childStra').style.display='none';
 	        					document.getElementById('childOrg').value = '-1';
 	        					document.getElementById('childStra').value = '-1';
-	        				  }"
-					disabled=""
-					cssStyle="width:400px" >
+	        				  }"					
+					cssStyle="width:400px" disabled="true">
 				<form:option value="-1">None</form:option>
 				<form:option value="0">Organizational Goal</form:option>
 				<form:option value="1">Strategy</form:option>
@@ -169,8 +168,8 @@
 				<appfuse:label styleClass="control-label" key="strategy.org.child"/>
 				</spring:bind>
 					<div class="controls"> 
-						<form:select path="sorgChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
-									<form:option value="-1" selected="selected">None</form:option>
+						<form:select path="sorgChild" multiple="true" onchange="" disabled="true" cssStyle="width:400px" >
+									<form:option value="-1" selected="${empty goalChildren ? 'selected' : ''}">None</form:option>
 									<form:options items="${goalChildren}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="sorgChild" cssClass="help-inline"/>
@@ -191,9 +190,9 @@
 				<appfuse:label styleClass="control-label" key="strategy.strategies.child"/>
 				</spring:bind>
 					<div class="controls"> 
-						<form:select path="strategyChild" multiple="true" onchange="" disabled="" cssStyle="width:400px" >
-									<form:option value="-1" selected="selected">None</form:option>
-									<form:options items="${strategyChildren}" itemValue="id" itemLabel="id"/>
+						<form:select path="strategyChild" multiple="true" onchange="" disabled="true" cssStyle="width:400px" >
+									<form:option value="-1" selected="${empty strategyChildren ? 'selected' : ''}">None</form:option>
+									<form:options items="${strategyChildren}" itemValue="id" itemLabel="name"/>
 						</form:select>
 						<form:errors path="strategyChild" cssClass="help-inline"/>
 					</div>

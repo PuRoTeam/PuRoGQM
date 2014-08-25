@@ -121,18 +121,19 @@ public class GoalFormController extends BaseFormController {
 					ret.getStatus() == GoalStatus.PROPOSED);
 		
 		List<Goal> allGoals = goalManager.findByProject(currentProject); //goalManager.getAll();
-		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal MG non ancora associati ad alcun og
-		List<Goal> oGoals = new ArrayList<Goal>();
-		List<Goal> oGoalsAll = new ArrayList<Goal>();
 		List<Strategy> allStrategies = strategyManager.findByProject(currentProject);
-				
+
 		List<Goal> goalParent = new ArrayList<Goal>(); //tutti i padri Goal ammissibili
 		List<Strategy> strategyParent = new ArrayList<Strategy>();
 		List<Goal> goalChildren = new ArrayList<Goal>(); //tutti i figli Goal ammissibili
 		List<Strategy> strategyChildren = new ArrayList<Strategy>();
 		
-		getGoalParentAndChildren(oGoalsAll, ret, goalParent, goalChildren);
+		getGoalParentAndChildren(allGoals, ret, goalParent, goalChildren);
 		getStrategyParentAndChildren(allStrategies, ret, strategyParent, strategyChildren);
+		
+		List<Goal> mGoals = new ArrayList<Goal>(); //elenco goal MG non ancora associati ad alcun og
+		List<Goal> oGoals = new ArrayList<Goal>();
+		List<Goal> oGoalsAll = new ArrayList<Goal>();
 		
 		for(Goal g: allGoals) {
 			MGOGRelationship rel = g.getMGOGRelation();				
