@@ -167,7 +167,7 @@ public class StrategyFromController  extends BaseFormController {
     				if (strategy.getParentType() == 0) { //ha padre Goal
 						
     					Goal oParent = goalManager.get(strategy.getSorgParent().getId());
-    					if(oParent.getParentType() == 1 || oParent.getParentType() == -1) {
+    					if(oParent.getChildType() == 1 || oParent.getChildType() == -1) {
     						oParent.getOstrategyChild().add(strategy);
         					strategy.setSorgParent(oParent);
         					goalManager.save(oParent);
@@ -179,7 +179,7 @@ public class StrategyFromController  extends BaseFormController {
 					} else { //ha padre Strategy
 						
 						Strategy sParent = strategyManager.get(strategy.getStrategyParent().getId());
-						if(sParent.getParentType() == 1 || sParent.getParentType() == -1) {
+						if(sParent.getChildType() == 1 || sParent.getChildType() == -1) {
     						sParent.getStrategyChild().add(strategy);
         					strategy.setStrategyParent(sParent);
         					strategyManager.save(sParent);
