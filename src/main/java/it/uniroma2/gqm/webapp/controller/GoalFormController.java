@@ -234,16 +234,26 @@ public class GoalFormController extends BaseFormController {
         				if (goal.getParentType() == 0) { //ha padre Goal
 							
         					Goal oParent = goalManager.get(goal.getOrgParent().getId());
-        					oParent.getOrgChild().add(goal);
-        					goal.setOrgParent(oParent);
-        					goalManager.save(oParent);
+        					if(oParent.getChildType() == 0 || oParent.getChildType() == -1) {
+        						oParent.getOrgChild().add(goal);
+            					goal.setOrgParent(oParent);
+            					goalManager.save(oParent);
+        					} else {
+        						errors.rejectValue("parentType", "parentType", "Can't add Goal child to parent already having Strategy children");
+        						return "goalform";
+        					}
         					
 						} else { //ha padre Strategy
 							
 							Strategy sParent = strategyManager.get(goal.getOstrategyParent().getId());
-							sParent.getSorgChild().add(goal);
-							goal.setOstrategyParent(sParent);
-							strategyManager.save(sParent);
+							if(sParent.getChildType() == 1 || sParent.getChildType() == -1) {
+								sParent.getSorgChild().add(goal);
+								goal.setOstrategyParent(sParent);
+								strategyManager.save(sParent);
+	    					} else {
+	    						errors.rejectValue("parentType", "parentType", "Can't add Strategy child to parent already having Goal children");
+	    						return "goalform";
+	    					}
 						}
         				
 					} else {
