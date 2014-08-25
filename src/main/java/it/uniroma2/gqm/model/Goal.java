@@ -1,6 +1,8 @@
 package it.uniroma2.gqm.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -70,7 +72,7 @@ public class Goal extends BaseObject {
 	
 	
 	//private Goal associatedGoal; //necessario per visualizzare il goal associato nella lista di goal
-	private MGOGRelationship relationWithMG;
+	private Set<MGOGRelationship> relationsWithMG = new HashSet<MGOGRelationship>();
 	private MGOGRelationship relationWithOG;
 	
 	//OG fields
@@ -408,7 +410,7 @@ public class Goal extends BaseObject {
 	public void setConstraints(String constraints) {
 		this.constraints = constraints;
 	}
-	
+
 	@Transient
 	public int getChildType() {
 		
@@ -484,13 +486,13 @@ public class Goal extends BaseObject {
 		this.ostrategyChild = strategyChild;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.og") //this ha ruolo OG nella relazione
-	public MGOGRelationship getRelationWithMG() {
-		return relationWithMG;
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.og") //this ha ruolo OG nella relazione
+	public Set<MGOGRelationship> getRelationsWithMG() {
+		return relationsWithMG;
 	}
 
-	public void setRelationWithMG(MGOGRelationship relationWithMG) {
-		this.relationWithMG = relationWithMG;
+	public void setRelationsWithMG(Set<MGOGRelationship> relationsWithMG) {
+		this.relationsWithMG = relationsWithMG;
 	}
 
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.mg") //this ha ruolo MG nella relazione
@@ -501,17 +503,29 @@ public class Goal extends BaseObject {
 	public void setRelationWithOG(MGOGRelationship relationWithOG) {
 		this.relationWithOG = relationWithOG;
 	}
-	
 	/**
-	 * Se il goal è un MG, viene restituita la relazione con OG, se è un OG, la relazione con MG
-	 * @return Un oggetto MGOGRelationship rappresentante la relazione, o null in caso non esista
+	 * Restituisce un insieme di oggetti MGOGRelationship. Se il goal è un MG, l'insieme ha al massimo un elemento.
+	 * @return Un insieme di oggetti MGOGRelationship, eventualmente nullo
 	 */
 	@Transient
-	public MGOGRelationship getMGOGRelation() {
-		if(GoalType.isMG(this))
-			return getRelationWithOG();
-		else if(GoalType.isOG(this))
-			return getRelationWithMG();
+	public List<MGOGRelationship> getMGOGRelations() {
+		if(GoalType.isMG(this)) {
+			List<MGOGRelationship> ogSet = new ArrayList<MGOGRelationship>();
+			
+			MGOGRelationship relOG = getRelationWithOG();
+			if(relOG != null) {
+				ogSet.add(relOG);
+			}
+			
+			return ogSet;
+		} else if(GoalType.isOG(this)) {
+			List<MGOGRelationship> mgSet = new ArrayList<MGOGRelationship>();
+			
+			for(MGOGRelationship rel : getRelationsWithMG())
+				mgSet.add(rel);
+			
+			return mgSet;
+		}
 		
 		return null;
 	}

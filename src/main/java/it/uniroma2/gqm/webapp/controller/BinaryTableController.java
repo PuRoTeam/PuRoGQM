@@ -72,7 +72,7 @@ public class BinaryTableController {
         Project currentProject = (Project) session.getAttribute("currentProject");
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
 
-        if (!StringUtils.isBlank(id)) {
+        /*if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
         	retRelation = mgogRelationshipManager.getAssociatedRelation(ret);
         	ret.setRelationWithMG(retRelation);

@@ -30,7 +30,7 @@ import org.appfuse.model.BaseObject;
             query = "select gq from GoalQuestion gq  where gq.pk.goal.id= :goal_id and  gq.pk.question.id = :question_id"
     )
 })
-public class GoalQuestion extends BaseObject {
+public class GoalQuestion extends BaseObject { 
 	
 	private GoalQuestionPK pk;
 	private GoalQuestionStatus status;

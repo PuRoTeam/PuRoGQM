@@ -1,12 +1,12 @@
 package it.uniroma2.gqm.model;
 
 public enum GoalType {
-	OG(0),
+	OG(0), 
 	MG(1);
 	
 	private final int id;
 	
-	private GoalType(int id) {
+	private GoalType(int id) { 
 		 this.id = id;
 	}
 	

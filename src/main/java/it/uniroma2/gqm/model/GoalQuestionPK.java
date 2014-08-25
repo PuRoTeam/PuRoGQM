@@ -9,12 +9,12 @@ import javax.persistence.ManyToOne;
 
 
 @Embeddable
-public class GoalQuestionPK implements Serializable {
+public class GoalQuestionPK implements Serializable { 
 	private static final long serialVersionUID = 6222968472061692626L;	
 	private Goal goal;
 	private Question question;
 	
-	public GoalQuestionPK(){
+	public GoalQuestionPK(){ 
 		;
 	}
 	public GoalQuestionPK(Goal goal, Question question){

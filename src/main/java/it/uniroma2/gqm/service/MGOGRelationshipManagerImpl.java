@@ -1,5 +1,8 @@
 package it.uniroma2.gqm.service;
 
+import java.util.HashSet;
+import java.util.List;
+
 import it.uniroma2.gqm.dao.MGOGRelationshipDao;
 import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.GoalType;
@@ -21,59 +24,24 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 	}
 
 	@Override
-	public void remove(Goal goal) {
+	public void removeRelations(Goal goal) { 
 		if(goal == null)
 			return;
 		
-		if(GoalType.isMG(goal))
-			mgogRelationshipDao.remove(goal.getRelationWithOG());
-		else if(GoalType.isOG(goal))
-			mgogRelationshipDao.remove(goal.getRelationWithMG());
+		List<MGOGRelationship> relations =  goal.getMGOGRelations();
+		
+		for(MGOGRelationship rel : relations)
+			mgogRelationshipDao.remove(rel); //elimino le relazioni da tabella MGOGRelationship
+		
+		//elimino le relazioni dall'oggetto goal
+		goal.setRelationWithOG(null);
+		goal.getRelationsWithMG().clear();
+		//goal.setRelationsWithMG(new HashSet<MGOGRelationship>());
 	}
 	
 	@Override
-	public MGOGRelationship getAssociatedRelation(Goal goal) {
-		return mgogRelationshipDao.getAssociatedRelation(goal);
-	}
-
-	@Override
-	public MGOGRelationship change(Goal goal, MGOGRelationship newRelation) {
-		if(goal == null)
-			return null;
-		
-		try {
-			if(newRelation != null) {
-				Goal mg = newRelation.getPk().getMg();
-				Goal og = newRelation.getPk().getOg();				
-				isMGOG(mg, og);				
-			}
-		}
-		catch(Exception e) {
-			return null;
-		}
-		
-		MGOGRelationship oldRelation = mgogRelationshipDao.getAssociatedRelation(goal);
-		
-		if(oldRelation == null && newRelation == null) { //nulla da fare
-			return null;	
-		}	
-		else if(oldRelation == null && newRelation != null) { //nessuna relazione esistente, creane una nuova
-			try {
-				return save(newRelation);
-			}
-			catch(Exception e) {
-				return null;
-			}
-		}	
-		else if(oldRelation != null && newRelation == null) { //elimina la vecchia relazione
-			remove(oldRelation);
-		}
-		else if(oldRelation != null && newRelation != null) { //elimina la vecchia relazione e creane una nuova
-			remove(oldRelation);
-			return save(newRelation);
-		}
-		
-		return null;
+	public List<MGOGRelationship> getAssociatedRelations(Goal goal) {
+		return mgogRelationshipDao.getAssociatedRelations(goal);
 	}
 
 	/**

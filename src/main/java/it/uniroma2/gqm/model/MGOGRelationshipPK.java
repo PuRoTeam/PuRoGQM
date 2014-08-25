@@ -2,10 +2,9 @@ package it.uniroma2.gqm.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
+import javax.persistence.ManyToOne;
 
 @Embeddable
 public class MGOGRelationshipPK implements Serializable {
@@ -16,8 +15,8 @@ public class MGOGRelationshipPK implements Serializable {
 	private Goal og;
 	
 	//associazione unidirezionale (in Goal non sono presenti riferimenti a questa entità)	
-	@OneToOne
-	@JoinColumn(name="mg_id", unique= true)
+	@ManyToOne
+	@JoinColumn(name="mg_id", unique= true) //un mg può essere associato ad un solo og (unique)
 	public Goal getMg() {
 		return mg;
 	}
@@ -26,9 +25,8 @@ public class MGOGRelationshipPK implements Serializable {
 		this.mg = mg;
 	}
 
-	//associazione unidirezionale (in Goal non sono presenti riferimenti a questa entità)	
-	@OneToOne
-	@JoinColumn(name="og_id", unique= true)
+	@ManyToOne
+	@JoinColumn(name="og_id") //un og può essere associato a più mg (no unique)
 	public Goal getOg() {
 		return og;
 	}
