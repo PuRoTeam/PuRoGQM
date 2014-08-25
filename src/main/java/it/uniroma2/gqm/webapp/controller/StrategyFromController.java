@@ -7,6 +7,7 @@ import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.StrategyManager;
 
 import java.beans.PropertyEditorSupport;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -76,6 +77,17 @@ public class StrategyFromController  extends BaseFormController {
         
         List<Goal> oGoalsAll = goalManager.getOrganizationalGoal(currentProject);
 		List<Strategy> allStragies = strategyManager.findByProject(currentProject); //TODO cambiare in Strategy 
+		
+		/*List<Goal> goalParent = new ArrayList<Goal>(); //tutti i padri Goal ammissibili
+		List<Strategy> strategyParent = new ArrayList<Strategy>();
+		List<Goal> goalChildren = new ArrayList<Goal>(); //tutti i figli Goal ammissibili
+		List<Strategy> strategyChildren = new ArrayList<Strategy>();
+
+		for(Goal g : oGoalsAll) {
+			if(!goalManager.hasChildren(g) || g.getChildType() == 0) //goal senza figli o con figli og
+				goalParent.add(g);
+			else if(g)
+		}*/
 		
         model.addAttribute("currentUser",currentUser);
         model.addAttribute("oGoalsAll", oGoalsAll);
@@ -199,13 +211,12 @@ public class StrategyFromController  extends BaseFormController {
         		
         		//stesso tipo padre
         		if (pSameType) { 
-
-            		boolean pOSame = (sDB.getSorgParent().getId() == strategy.getSorgParent().getId()) ? true : false;
-            		boolean pSSame = (sDB.getStrategyParent().getId() == strategy.getStrategyParent().getId()) ? true : false;
         			
         			//stesso padre Goal
         			if (parentType == 0) { 
         			
+        				boolean pOSame = (sDB.getSorgParent().getId() == strategy.getSorgParent().getId()) ? true : false;
+        				
         				//è cambiato il padre Goal
         				if(!pOSame){
         					/**
@@ -224,6 +235,8 @@ public class StrategyFromController  extends BaseFormController {
         				
         			//stesso padre Strategy
 					} else {
+						
+						boolean pSSame = (sDB.getStrategyParent().getId() == strategy.getStrategyParent().getId()) ? true : false;
 						
 						//è cambiato il padre Strategy
 						if(!pSSame) {
@@ -273,14 +286,13 @@ public class StrategyFromController  extends BaseFormController {
         		boolean cSameType = (sDB.getChildType() == strategy.getChildType()) ? true : false;
         		
         		//se stesso tipo figlio
-        		if (cSameType) { 
-        			
-            		boolean cOSame = (sDB.getSorgChild() == strategy.getSorgChild()) ? true : false;
-            		boolean cSSame = (sDB.getStrategyChild() == strategy.getStrategyChild()) ? true : false;
+        		if (cSameType) {    
         			
         			//se stesso tipo Goal
         			if(strategy.getChildType() == 0){
             			
+        				boolean cOSame = (sDB.getSorgChild() == strategy.getSorgChild()) ? true : false;
+        				
         				//se non stesso figlio Goal
             			if (!cOSame) {
             				if(!strategy.getSorgChild().containsAll(sDB.getSorgChild())){
@@ -291,6 +303,8 @@ public class StrategyFromController  extends BaseFormController {
             			
             		//se stesso tipo Strategy
         			} else if(strategy.getChildType() == 1) {
+        				
+        				boolean cSSame = (sDB.getStrategyChild() == strategy.getStrategyChild()) ? true : false;
         				
         				//se non stesso figlio Stretegy
 						if (!cSSame) {

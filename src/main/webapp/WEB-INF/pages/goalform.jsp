@@ -46,14 +46,16 @@
         </div>
     </div>
 
+	<%--
 	<c:choose>
-		<c:when test="${goal.type eq 1}"> <%-- Goal esistente e di tipo MG --%>
-			<c:set var="goalType" value="1" scope="page" />
-		</c:when>
-    	<c:when test="${goal.type eq 0}"> <%-- Goal esistente e di tipo OG --%>
+    	<c:when test="${goal.type eq 0}">>
     		<c:set var="goalType" value="0" scope="page" />    		
 		</c:when>
+		<c:when test="${goal.type eq 1}">
+			<c:set var="goalType" value="1" scope="page" />
+		</c:when>
     </c:choose>	
+     --%>
 	
     <spring:bind path="goal.type">
     <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
@@ -72,8 +74,19 @@
         				  	document.getElementById('associatedMG').value = '-1';	
         				  }"
         		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}">
-        		<form:option value="0"  label="Organizational Goal"/>
-				<form:option value="1"  label="Measurement Goal"/>
+        		
+        		<c:choose>
+		    		<c:when test="${goal.type eq 0}">
+		    			<form:option value="0"  label="Organizational Goal"/>  		
+					</c:when>
+					<c:when test="${goal.type eq 1}">
+						<form:option value="1"  label="Measurement Goal"/>
+					</c:when>
+					<c:otherwise>
+					    <form:option value="0"  label="Organizational Goal"/>
+						<form:option value="1"  label="Measurement Goal"/>
+					</c:otherwise>
+		    	</c:choose>
         	</form:select>
         </div>
     </div>
