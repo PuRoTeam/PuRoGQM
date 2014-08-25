@@ -532,10 +532,12 @@ public class Goal extends BaseObject {
 		return getChildType() == 1;
 	}
 	
+	@Transient
 	public boolean isParentGoal() {
 		return getParentType() == 0;
 	}
 	
+	@Transient
 	public boolean isParentStrategy() {
 		return getParentType() == 1;
 	}
