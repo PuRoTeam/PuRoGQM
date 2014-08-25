@@ -33,6 +33,7 @@ import java.util.Set;
 
 import it.uniroma2.gqm.model.*;
 import it.uniroma2.gqm.service.GoalManager;
+import it.uniroma2.gqm.service.GridManager;
 import it.uniroma2.gqm.service.MGOGRelationshipManager;
 import it.uniroma2.gqm.service.StrategyManager;
 import it.uniroma2.gqm.webapp.util.RequestUtil;
@@ -54,8 +55,15 @@ public class GoalFormController extends BaseFormController {
 
     private MGOGRelationshipManager mgogRelationshipManager;
     
+    private GridManager gridManager;
+    
     @Autowired
-	public void setMgogRelationshipManager(@Qualifier("mgogRelationshipManager") MGOGRelationshipManager  mgogRelationshipManager) {
+    public void setGridManager(@Qualifier("gridManager") GridManager gridManager) {
+    	this.gridManager = gridManager;
+    }
+    
+    @Autowired
+	public void setMgogRelationshipManager(@Qualifier("mgogRelationshipManager") MGOGRelationshipManager mgogRelationshipManager) {
 		this.mgogRelationshipManager = mgogRelationshipManager;
 	}
 
@@ -158,70 +166,6 @@ public class GoalFormController extends BaseFormController {
     }
     
     /**
-     * Verificare che grandChild sia nipote (o figlio) di grandParent 
-     * @param grandChild Il possibile nipote
-     * @param grandParent Il possibile nonno
-     * @return true nel caso in cui grandChild sia nipote di grandParent
-     */
-    //TODO spostare in GridManagerImpl
-    public boolean isGrandChild(Object grandChild, Object grandParent) {
-    	if(grandParent instanceof Goal) {
-    		Goal goalGrandParent = (Goal)grandParent;
-    		
-    		if(goalGrandParent.hasChildren()) { //ha figli
-    			if(goalGrandParent.areChildrenGoal()) { //i figli sono goal
-    				Set<Goal> children = goalGrandParent.getOrgChild();
-    				
-    				for(Goal child : children) {
-    					boolean found = isGrandChild(grandChild, child);
-    					if(found)
-    						return true;
-    				}
-    				
-    			} else { //i figli sono strategy
-    				Set<Strategy> children = goalGrandParent.getOstrategyChild();
-    				
-    				for(Strategy child : children) {
-    					boolean found = isGrandChild(grandChild, child);
-    					if(found)
-    						return true;
-    				}
-    			}
-    		} else { //non ha figli
-    			return grandParent == grandChild; //oppure devo controllare gli id? In caso positivo, devo controllare solo se sono dello stesso tipo
-    		}
-    		
-    	} else if(grandParent instanceof Strategy) {
-    		Strategy strategyGrandParent = (Strategy)grandParent;
-    		
-    		if(strategyGrandParent.hasChildren()) { //ha figli
-    			if(strategyGrandParent.areChildrenGoal()) { //i figli sono goal
-    				Set<Goal> children = strategyGrandParent.getSorgChild();
-    				
-    				for(Goal child : children) {
-    					boolean found = isGrandChild(grandChild, child);
-    					if(found)
-    						return true;
-    				}
-    				
-    			} else { //i figli sono strategy
-    				Set<Strategy> children = strategyGrandParent.getStrategyChild();
-    				
-    				for(Strategy child : children) {
-    					boolean found = isGrandChild(grandChild, child);
-    					if(found)
-    						return true;
-    				}
-    			}
-    		} else { //non ha figli
-    			return grandParent == grandChild; //oppure devo controllare gli id? In caso positivo, devo controllare solo se sono dello stesso tipo
-    		}    		
-    	}
-
-    	return false;
-    }
-    
-    /**
      * Recupera le liste di Goal ammissibili come parenti o figli
      * @param oGoalsAll La lista di Goal in cui cercare
      * @param current Il Goal di cui recuperare possibili parenti e figli
@@ -238,7 +182,7 @@ public class GoalFormController extends BaseFormController {
 			}
     	} else {
 			for(Goal g : oGoalsAll) {
-				if((!g.hasChildren() || g.areChildrenGoal()) && !isGrandChild(g, current)) //goal g senza figli o con figli goal, e g non è nipote di current
+				if((!g.hasChildren() || g.areChildrenGoal()) && !gridManager.isGrandChild(g, current)) //goal g senza figli o con figli goal, e g non è nipote di current
 					goalParent.add(g);
 				else if(current.areChildrenGoal() && current.getOrgChild().contains(g)) //il goal g è figlio del goal current
 					goalChildren.add(g);
@@ -263,7 +207,7 @@ public class GoalFormController extends BaseFormController {
 			}
     	} else {
 			for(Strategy s: allStrategies) {
-				if((!s.hasChildren() || s.areChildrenGoal()) && !isGrandChild(s, current)) //strategy s senza figli o con figli goal, e s non è nipote di current
+				if((!s.hasChildren() || s.areChildrenGoal()) && !gridManager.isGrandChild(s, current)) //strategy s senza figli o con figli goal, e s non è nipote di current
 					strategyParent.add(s);
 				else if(current.areChildrenStrategy() && current.getOstrategyChild().contains(s)) //la strategy s è figlia del goal current
 					strategyChildren.add(s);
