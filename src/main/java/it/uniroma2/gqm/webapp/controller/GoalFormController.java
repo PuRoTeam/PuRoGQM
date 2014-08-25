@@ -26,6 +26,7 @@ import javax.validation.Valid;
 
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -89,14 +90,11 @@ public class GoalFormController extends BaseFormController {
         Project currentProject = (Project) session.getAttribute("currentProject");
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
 
-        MGOGRelationship retRelation = null;        
-        
-        //boolean isNew = true;
+        MGOGRelationship retRelation = null;
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
         	retRelation = ret.getMGOGRelation();
-        	//isNew = false;
         }else {
         	ret = new Goal();
         	ret.setStatus(GoalStatus.DRAFT);
@@ -128,31 +126,6 @@ public class GoalFormController extends BaseFormController {
 		getGoalParentAndChildren(oGoalsAll, ret, goalParent, goalChildren);
 		getStrategyParentAndChildren(allStrategies, ret, strategyParent, strategyChildren);
 		
-		/*if(isNew) { //se sono nuovo, non ho figli
-			for(Goal g : oGoalsAll) {
-				if(!goalManager.hasChildren(g) || g.getChildType() == 0) //goal g senza figli o con figli goal
-					goalParent.add(g);
-			}
-			
-			for(Strategy s: allStrategies) {
-				if(!strategyManager.hasChildren(s) || s.getChildType() == 0) //strategy s senza figli o con figli goal
-					strategyParent.add(s);
-			}
-		} else {
-			for(Goal g : oGoalsAll) {
-				if((!goalManager.hasChildren(g) || g.getChildType() == 0) && !grandChild(g, ret)) //goal g senza figli o con figli goal
-					goalParent.add(g);
-				else if(ret.getChildType() == 0 && ret.getOrgChild().contains(g)) //il goal g è figlio del goal ret
-					goalChildren.add(g);
-			}
-			for(Strategy s: allStrategies) {
-				if((!strategyManager.hasChildren(s) || s.getChildType() == 0) && !!grandChild(s, ret)) //strategy s senza figli o con figli goal
-					strategyParent.add(s);
-				else if(ret.getChildType() == 0 && ret.getOstrategyChild().contains(s)) //la strategy s è figlia del goal ret
-					strategyChildren.add(s);
-			}
-		}*/
-		
 		for(Goal g: allGoals) {
 			MGOGRelationship rel = g.getMGOGRelation();				
 			
@@ -180,52 +153,124 @@ public class GoalFormController extends BaseFormController {
         model.addAttribute("strategyParent", strategyParent);
         model.addAttribute("goalChildren", goalChildren);
         model.addAttribute("strategyChildren", strategyChildren);
-        //model.addAttribute("oGoalsAll", oGoalsAll);
-        //model.addAttribute("strategies",strategyManager.findByProject(ret.getProject()));
-        //model.addAttribute("strategies", allStrategies);
         
         return ret;
     }
     
+    /**
+     * Verificare che grandChild sia nipote (o figlio) di grandParent 
+     * @param grandChild Il possibile nipote
+     * @param grandParent Il possibile nonno
+     * @return true nel caso in cui grandChild sia nipote di grandParent
+     */
+    //TODO spostare in GridManagerImpl
+    public boolean isGrandChild(Object grandChild, Object grandParent) {
+    	if(grandParent instanceof Goal) {
+    		Goal goalGrandParent = (Goal)grandParent;
+    		
+    		if(goalGrandParent.hasChildren()) { //ha figli
+    			if(goalGrandParent.areChildrenGoal()) { //i figli sono goal
+    				Set<Goal> children = goalGrandParent.getOrgChild();
+    				
+    				for(Goal child : children) {
+    					boolean found = isGrandChild(grandChild, child);
+    					if(found)
+    						return true;
+    				}
+    				
+    			} else { //i figli sono strategy
+    				Set<Strategy> children = goalGrandParent.getOstrategyChild();
+    				
+    				for(Strategy child : children) {
+    					boolean found = isGrandChild(grandChild, child);
+    					if(found)
+    						return true;
+    				}
+    			}
+    		} else { //non ha figli
+    			return grandParent == grandChild; //oppure devo controllare gli id? In caso positivo, devo controllare solo se sono dello stesso tipo
+    		}
+    		
+    	} else if(grandParent instanceof Strategy) {
+    		Strategy strategyGrandParent = (Strategy)grandParent;
+    		
+    		if(strategyGrandParent.hasChildren()) { //ha figli
+    			if(strategyGrandParent.areChildrenGoal()) { //i figli sono goal
+    				Set<Goal> children = strategyGrandParent.getSorgChild();
+    				
+    				for(Goal child : children) {
+    					boolean found = isGrandChild(grandChild, child);
+    					if(found)
+    						return true;
+    				}
+    				
+    			} else { //i figli sono strategy
+    				Set<Strategy> children = strategyGrandParent.getStrategyChild();
+    				
+    				for(Strategy child : children) {
+    					boolean found = isGrandChild(grandChild, child);
+    					if(found)
+    						return true;
+    				}
+    			}
+    		} else { //non ha figli
+    			return grandParent == grandChild; //oppure devo controllare gli id? In caso positivo, devo controllare solo se sono dello stesso tipo
+    		}    		
+    	}
+
+    	return false;
+    }
     
+    /**
+     * Recupera le liste di Goal ammissibili come parenti o figli
+     * @param oGoalsAll La lista di Goal in cui cercare
+     * @param current Il Goal di cui recuperare possibili parenti e figli
+     * @param goalParent La lista da popolare con i parenti Goal ammissibili
+     * @param goalChildren La lista da popolare con i figli Goal ammissibili
+     */
     private void getGoalParentAndChildren(List<Goal> oGoalsAll, Goal current, List<Goal> goalParent, List<Goal> goalChildren) {
     	boolean isNew = (current.getId() == null);
     	
-    	if(isNew) { //se sono nuovo, non ho figli
+    	if(isNew) { //se nuovo, current non ha figli
 			for(Goal g : oGoalsAll) {
-				if(!goalManager.hasChildren(g) || g.getChildType() == 0) //goal g senza figli o con figli goal
+				if(!g.hasChildren() || g.areChildrenGoal()) //goal g senza figli o con figli goal
 					goalParent.add(g);
 			}
     	} else {
 			for(Goal g : oGoalsAll) {
-				if((!goalManager.hasChildren(g) || g.getChildType() == 0) && !grandChild(g, current)) //goal g senza figli o con figli goal
+				if((!g.hasChildren() || g.areChildrenGoal()) && !isGrandChild(g, current)) //goal g senza figli o con figli goal, e g non è nipote di current
 					goalParent.add(g);
-				else if(current.getChildType() == 0 && current.getOrgChild().contains(g)) //il goal g è figlio del goal current
+				else if(current.areChildrenGoal() && current.getOrgChild().contains(g)) //il goal g è figlio del goal current
 					goalChildren.add(g);
 			}
     	}
     }
     
+    /**
+     * Recupera le liste di Strategy ammissibili come parenti o figli
+     * @param allStrategies La lista di Strategy in cui cercare
+     * @param current Il Goal di cui recuperare possibili parenti e figli
+     * @param strategyParent La lista da popolare con i parenti Strategy ammissibili
+     * @param strategyChildren La lista da popolare con i figli Strategy ammissibili
+     */
     private void getStrategyParentAndChildren(List<Strategy> allStrategies, Goal current, List<Strategy> strategyParent, List<Strategy> strategyChildren) {
     	boolean isNew = (current.getId() == null);
     	
-    	if(isNew) {
+    	if(isNew) { //se nuovo, current non ha figli
 			for(Strategy s: allStrategies) {
-				if(!strategyManager.hasChildren(s) || s.getChildType() == 0) //strategy s senza figli o con figli goal
+				if(!s.hasChildren() || s.areChildrenGoal()) //strategy s senza figli o con figli goal
 					strategyParent.add(s);
 			}
     	} else {
 			for(Strategy s: allStrategies) {
-				if((!strategyManager.hasChildren(s) || s.getChildType() == 0) && !!grandChild(s, current)) //strategy s senza figli o con figli goal
+				if((!s.hasChildren() || s.areChildrenGoal()) && !isGrandChild(s, current)) //strategy s senza figli o con figli goal, e s non è nipote di current
 					strategyParent.add(s);
-				else if(current.getChildType() == 0 && current.getOstrategyChild().contains(s)) //la strategy s è figlia del goal current
+				else if(current.areChildrenStrategy() && current.getOstrategyChild().contains(s)) //la strategy s è figlia del goal current
 					strategyChildren.add(s);
 			}
     	}
     }
-    
-    
-    
+
     @RequestMapping(method = RequestMethod.POST)
     public String onSubmit(@Valid Goal goal, BindingResult errors, HttpServletRequest request,
                            HttpServletResponse response)
@@ -255,7 +300,7 @@ public class GoalFormController extends BaseFormController {
         	
         	if(GoalType.isOG(gDB)){
         		
-        		if(goalManager.hasChildren(gDB)) {
+        		if(gDB.hasChildren()) {
         			//TODO Attenzione!!! potrebbe non funzionare
             		errors.rejectValue("childType", "childType", "Can't delete OG with children"); 
             		return "goalform";
@@ -306,7 +351,7 @@ public class GoalFormController extends BaseFormController {
             	
         		if(isNew){ //creazione
         			
-        			if (goalManager.hasParent(goal)) { //ha padre
+        			if (goal.hasParent()) { //ha padre
         				if (goal.getParentType() == 0) { //ha padre Goal
 							
         					Goal oParent = goalManager.get(goal.getOrgParent().getId());
@@ -341,7 +386,7 @@ public class GoalFormController extends BaseFormController {
 						}
 					}
         			
-        			if(goalManager.hasChildren(goal)) { //ha figli
+        			if(goal.hasChildren()) { //ha figli
        	        		if (goal.getChildType() == 0) { //ha figli Goal
         						
        	        			for (Goal g : goal.getOrgChild()) {

@@ -10,6 +10,6 @@ import org.appfuse.service.GenericManager;
 
 public interface StrategyManager  extends GenericManager<Strategy, Long> {
 	public List<Strategy> findByProject(Project project);
-	public boolean hasChildren(Strategy s);
-	public boolean hasParent(Strategy s);
+	//public boolean hasChildren(Strategy s);
+	//public boolean hasParent(Strategy s);
 }

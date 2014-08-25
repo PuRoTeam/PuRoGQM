@@ -29,7 +29,7 @@ public class StrategyManagerImpl  extends GenericManagerImpl<Strategy, Long> imp
     		return null;
     }
     
-    @Override
+    /*@Override
 	public boolean hasChildren(Strategy s){
 		if(s.getSorgChild().size() >0 || s.getStrategyChild().size() > 0)
 			return true;
@@ -44,5 +44,5 @@ public class StrategyManagerImpl  extends GenericManagerImpl<Strategy, Long> imp
 		}else {
 			return false;
 		}
-	}
+	}*/
 }

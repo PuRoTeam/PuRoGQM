@@ -40,8 +40,8 @@ public class Strategy extends BaseObject {
 	private Goal sorgParent;
 	private Set<Goal> sorgChild = new HashSet<Goal>();
 
-	private int childType = -1;
-	private int parentType = -1;
+	private int childType = -1; //-1=no figli, 0=figli OG, 1=figli Strategy
+	private int parentType = -1; //-1=no padre, 0=padre OG, 1=padre Strategy
 
  	@GeneratedValue(strategy=GenerationType.AUTO)
 	@Id @Column(name = "strategy_id",nullable=false,unique=true)
@@ -183,5 +183,29 @@ public class Strategy extends BaseObject {
 	
 	public void setSorgChild(Set<Goal> sorgChild) {
 		this.sorgChild = sorgChild;
+	}
+	
+	public boolean hasChildren(){
+		return getChildType() != -1;
+	}
+	
+	public boolean hasParent(){
+		return getParentType() != -1;
+	}
+	
+	public boolean areChildrenGoal() {
+		return getChildType() == 0;
+	}
+	
+	public boolean areChildrenStrategy() {
+		return getChildType() == 1;
+	}
+	
+	public boolean isParentGoal() {
+		return getParentType() == 0;
+	}
+	
+	public boolean isParentStrategy() {
+		return getParentType() == 1;
 	}
 }

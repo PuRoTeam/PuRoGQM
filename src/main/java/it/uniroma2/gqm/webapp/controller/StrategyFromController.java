@@ -76,36 +76,138 @@ public class StrategyFromController  extends BaseFormController {
         }      
         
         List<Goal> oGoalsAll = goalManager.getOrganizationalGoal(currentProject);
-		List<Strategy> allStragies = strategyManager.findByProject(currentProject); 
+		List<Strategy> allStrategies = strategyManager.findByProject(currentProject); 
 		
 		List<Goal> goalParent = new ArrayList<Goal>(); //tutti i padri Goal ammissibili
 		List<Strategy> strategyParent = new ArrayList<Strategy>();
 		List<Goal> goalChildren = new ArrayList<Goal>(); //tutti i figli Goal ammissibili
 		List<Strategy> strategyChildren = new ArrayList<Strategy>();
 
-		for(Goal g : oGoalsAll) {
-			if(!goalManager.hasChildren(g) || g.getChildType() == 1) //goal g senza figli o con figli strategy
-				goalParent.add(g);
-			else if(ret.getChildType() == 0 && ret.getSorgChild().contains(g)) //il goal g è figlio della strategy ret
-				goalChildren.add(g);
-		}
-		
-		for(Strategy s: allStragies) {
-			if(!strategyManager.hasChildren(s) || s.getChildType() == 1) //strategy s senza figli o con figli strategy
-				strategyParent.add(s);
-			else if(ret.getChildType() == 1 && ret.getStrategyChild().contains(s)) //la strategy s è figlia della strategy ret
-				strategyChildren.add(s);
-		}
+		getGoalParentAndChildren(oGoalsAll, ret, goalParent, goalChildren);
+		getStrategyParentAndChildren(allStrategies, ret, strategyParent, strategyChildren);
 		
         model.addAttribute("currentUser",currentUser);
         model.addAttribute("goalParent", goalParent);
         model.addAttribute("strategyParent", strategyParent);
         model.addAttribute("goalChildren", goalChildren);
         model.addAttribute("strategyChildren", strategyChildren);
-        //model.addAttribute("oGoalsAll", oGoalsAll);
-        //model.addAttribute("strategies", allStragies);
         return ret;
-    }    
+    }
+    
+    /**
+     * Verificare che grandChild sia nipote (o figlio) di grandParent 
+     * @param grandChild Il possibile nipote
+     * @param grandParent Il possibile nonno
+     * @return true nel caso in cui grandChild sia nipote di grandParent
+     */
+    /*
+    //TODO spostare in GridManagerImpl
+    public boolean isGrandChild(Object grandChild, Object grandParent) {
+    	if(grandParent instanceof Goal) {
+    		Goal goalGrandParent = (Goal)grandParent;
+    		
+    		if(goalGrandParent.hasChildren()) { //ha figli
+    			if(goalGrandParent.areChildrenGoal()) { //i figli sono goal
+    				Set<Goal> children = goalGrandParent.getOrgChild();
+    				
+    				for(Goal child : children) {
+    					boolean found = isGrandChild(grandChild, child);
+    					if(found)
+    						return true;
+    				}
+    				
+    			} else { //i figli sono strategy
+    				Set<Strategy> children = goalGrandParent.getOstrategyChild();
+    				
+    				for(Strategy child : children) {
+    					boolean found = isGrandChild(grandChild, child);
+    					if(found)
+    						return true;
+    				}
+    			}
+    		} else { //non ha figli
+    			return grandParent == grandChild; //oppure devo controllare gli id? In caso positivo, devo controllare solo se sono dello stesso tipo
+    		}
+    		
+    	} else if(grandParent instanceof Strategy) {
+    		Strategy strategyGrandParent = (Strategy)grandParent;
+    		
+    		if(strategyGrandParent.hasChildren()) { //ha figli
+    			if(strategyGrandParent.areChildrenGoal()) { //i figli sono goal
+    				Set<Goal> children = strategyGrandParent.getSorgChild();
+    				
+    				for(Goal child : children) {
+    					boolean found = isGrandChild(grandChild, child);
+    					if(found)
+    						return true;
+    				}
+    				
+    			} else { //i figli sono strategy
+    				Set<Strategy> children = strategyGrandParent.getStrategyChild();
+    				
+    				for(Strategy child : children) {
+    					boolean found = isGrandChild(grandChild, child);
+    					if(found)
+    						return true;
+    				}
+    			}
+    		} else { //non ha figli
+    			return grandParent == grandChild; //oppure devo controllare gli id? In caso positivo, devo controllare solo se sono dello stesso tipo
+    		}    		
+    	}
+
+    	return false;
+    }*/
+    
+    /**
+     * Recupera le liste di Goal ammissibili come parenti o figli
+     * @param oGoalsAll La lista di Goal in cui cercare
+     * @param current La Strategy di cui recuperare possibili parenti e figli
+     * @param goalParent La lista da popolare con i parenti Goal ammissibili
+     * @param goalChildren La lista da popolare con i figli Goal ammissibili
+     */
+    private void getGoalParentAndChildren(List<Goal> oGoalsAll, Strategy current, List<Goal> goalParent, List<Goal> goalChildren) {
+    	boolean isNew = (current.getId() == null);
+    	
+    	if(isNew) { //se nuovo, current non ha figli
+    		for(Goal g : oGoalsAll) {
+    			if(!g.hasChildren() || g.areChildrenStrategy()) //goal g senza figli o con figli strategy
+    				goalParent.add(g);
+    		}
+    	} else {
+    		for(Goal g : oGoalsAll) {
+    			if((!g.hasChildren() || g.areChildrenStrategy()) && !isGrandChild(g, current)) //goal g senza figli o con figli strategy, e g non è nipote di current
+    				goalParent.add(g);
+    			else if(current.areChildrenGoal() && current.getSorgChild().contains(g)) //il goal g è figlio della strategy current
+    				goalChildren.add(g);
+    		}
+    	}
+    }
+    
+    /**
+     * Recupera le liste di Strategy ammissibili come parenti o figli
+     * @param allStrategies La lista di Strategy in cui cercare
+     * @param current La Strategy di cui recuperare possibili parenti e figli
+     * @param strategyParent La lista da popolare con i parenti Strategy ammissibili
+     * @param strategyChildren La lista da popolare con i figli Strategy ammissibili
+     */
+    private void getStrategyParentAndChildren(List<Strategy> allStrategies, Strategy current, List<Strategy> strategyParent, List<Strategy> strategyChildren) {
+    	boolean isNew = (current.getId() == null);
+    	
+    	if(isNew) {
+    		for(Strategy s: allStrategies) {
+    			if(!s.hasChildren() || s.areChildrenStrategy()) //strategy s senza figli o con figli strategy
+    				strategyParent.add(s);
+    		}
+    	} else {
+    		for(Strategy s: allStrategies) {
+    			if((!s.hasChildren() || s.areChildrenStrategy()) && !isGrandChild(s, current)) //strategy s senza figli o con figli strategy, e s non è nipote di current
+    				strategyParent.add(s);
+    			else if(current.areChildrenStrategy() && current.getStrategyChild().contains(s)) //la strategy s è figlia della strategy current
+    				strategyChildren.add(s);
+    		}
+    	}
+    }
     
     @RequestMapping(method = RequestMethod.POST)
     public String onSubmit(Strategy strategy, BindingResult errors, HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -131,7 +233,7 @@ public class StrategyFromController  extends BaseFormController {
         	
         	Strategy sDB = strategyManager.get(strategy.getId());
         	
-        	if(strategyManager.hasChildren(sDB)) {
+        	if(sDB.hasChildren()) {
     			//TODO Attenzione!!! potrebbe non funzionare
         		errors.rejectValue("childType", "childType", "Can't delete Strategy with children"); 
         		return "strategyform";
@@ -167,7 +269,7 @@ public class StrategyFromController  extends BaseFormController {
         	
     		if(isNew){ //creazione
     			
-    			if (strategyManager.hasParent(strategy)) { //ha padre
+    			if (strategy.hasParent()) { //ha padre
     				if (strategy.getParentType() == 0) { //ha padre Goal
 						
     					Goal oParent = goalManager.get(strategy.getSorgParent().getId());
@@ -201,7 +303,7 @@ public class StrategyFromController  extends BaseFormController {
             		return "strategyform";
 				}
     			
-    			if(strategyManager.hasChildren(strategy)) { //ha figli
+    			if(strategy.hasChildren()) { //ha figli
    	        		if (strategy.getChildType() == 0) { //ha figli Goal
     						
    	        			for (Goal g : strategy.getSorgChild()) {

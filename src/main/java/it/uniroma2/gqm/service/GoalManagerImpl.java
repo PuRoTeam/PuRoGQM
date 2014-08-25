@@ -129,7 +129,7 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
 		return goals;
 	}
 	
-	@Override
+	/*@Override
 	public boolean hasChildren(Goal g){
 		if(g.getOrgChild().size() >0 || g.getOstrategyChild().size() > 0)
 			return true;
@@ -144,7 +144,7 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
 		}else {
 			return false;
 		}
-	}
+	}*/
 	
 	@Override
 	public boolean rootExists(Project currentProject){

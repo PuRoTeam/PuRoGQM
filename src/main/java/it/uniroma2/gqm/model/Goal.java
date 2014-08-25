@@ -516,4 +516,27 @@ public class Goal extends BaseObject {
 		return null;
 	}
 	
+	public boolean hasChildren() {
+		return getChildType() != -1;
+	}
+	
+	public boolean hasParent() {
+		return getParentType() != -1;
+	}
+	
+	public boolean areChildrenGoal() {
+		return getChildType() == 0;
+	}
+	
+	public boolean areChildrenStrategy() {
+		return getChildType() == 1;
+	}
+	
+	public boolean isParentGoal() {
+		return getParentType() == 0;
+	}
+	
+	public boolean isParentStrategy() {
+		return getParentType() == 1;
+	}
 }
