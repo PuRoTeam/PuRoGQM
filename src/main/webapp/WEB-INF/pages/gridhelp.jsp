@@ -11,7 +11,7 @@
 <div id="json_tree">
 	<% 
 	JSONObject jsonT = (JSONObject) pageContext.getAttribute("tree");
-	System.out.println(jsonT.toString());
+	//System.out.println(jsonT.toString());
 	out.println(jsonT.toString());
 	%>
 </div>
