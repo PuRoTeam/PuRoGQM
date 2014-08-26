@@ -77,10 +77,9 @@ public class GridController {
 	
         Goal ret = goalManager.get(Long.parseLong("1"));
         String tree = gridManager.explorer(ret, "null");
-		System.out.println(tree);
-		JSONObject tstring = new JSONObject(tree);
+		//System.out.println(tree);
 		
-		return new ModelAndView().addObject("tree", tstring);
+		return new ModelAndView().addObject("tree", (String)tree);
 	}
 	/*
 	@ModelAttribute
