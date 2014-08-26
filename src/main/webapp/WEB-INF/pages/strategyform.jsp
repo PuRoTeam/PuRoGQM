@@ -74,7 +74,7 @@
 	        				  }"
 					disabled=""
 					cssStyle="width:400px" >
-				<form:option value="-1">None</form:option>
+				<form:option value="-1" selected="${empty strategy.parentType ? 'selected' : ''}">None</form:option>
 				<form:option value="0">Organizational Goal</form:option>
 				<form:option value="1">Strategy</form:option>
 			</form:select>
@@ -90,6 +90,19 @@
 			<div id="parentOrg" hidden="true">
 		</c:otherwise>
     </c:choose>
+    			<%--
+    			<c:set var="contains" value="false"></c:set>
+    			<c:forEach var="item1" items="${goalParent}">
+    				<c:forEach var="item2" items="${item1.orgChild}">    				
+	    				<c:choose>
+	    					<c:when test="${item2 eq goal}">
+	    						<c:set var="contains" value="true"></c:set>
+	    					</c:when>
+	    				</c:choose>
+    				</c:forEach>
+    			</c:forEach>
+    			--%>
+    
     			<spring:bind path="strategy.sorgParent">
 				<div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
 				<appfuse:label styleClass="control-label" key="strategy.org.parent"/>
@@ -169,7 +182,7 @@
 				</spring:bind>
 					<div class="controls"> 
 						<form:select path="sorgChild" multiple="true" onchange="" disabled="true" cssStyle="width:400px" >
-									<form:option value="-1" selected="${empty goalChildren ? 'selected' : ''}">None</form:option>
+									<form:option value="-1">None</form:option>
 									<form:options items="${goalChildren}" itemValue="id" itemLabel="description"/>
 						</form:select>
 						<form:errors path="sorgChild" cssClass="help-inline"/>
@@ -191,7 +204,7 @@
 				</spring:bind>
 					<div class="controls"> 
 						<form:select path="strategyChild" multiple="true" onchange="" disabled="true" cssStyle="width:400px" >
-									<form:option value="-1" selected="${empty strategyChildren ? 'selected' : ''}">None</form:option>
+									<form:option value="-1">None</form:option>
 									<form:options items="${strategyChildren}" itemValue="id" itemLabel="name"/>
 						</form:select>
 						<form:errors path="strategyChild" cssClass="help-inline"/>
@@ -217,6 +230,14 @@
     </form:form>
 </div>
 <script type="text/javascript">
+
+	/*Prima di sottomettere il form, riabilito i select disabilitati, per poter passare i relativi valori al controller*/
+	$('#strategyForm').submit(function() {
+		$('#childType').removeAttr('disabled');
+	    $('#sorgChild').removeAttr('disabled');
+	    $('#strategyChild').removeAttr('disabled');	    
+	});
+
     $(document).ready(function() {
         $("input[type='text']:visible:enabled:first", document.forms['strategyForm']).focus();
     });

@@ -122,18 +122,7 @@ public class GoalFormController extends BaseFormController {
 					ret.getStatus() == GoalStatus.PROPOSED);
 		
 		List<Goal> allGoals = goalManager.findByProject(currentProject); //tutti i goal nel progetto
-		List<Strategy> allStrategies = strategyManager.findByProject(currentProject);
-
-		List<Goal> goalParent = new ArrayList<Goal>(); //tutti i padri Goal ammissibili
-		List<Strategy> strategyParent = new ArrayList<Strategy>();
-		List<Goal> goalChildren = new ArrayList<Goal>(); //tutti i figli Goal ammissibili
-		List<Strategy> strategyChildren = new ArrayList<Strategy>();
-		
-		getGoalParentAndChildren(allGoals, ret, goalParent, goalChildren);
-		getStrategyParentAndChildren(allStrategies, ret, strategyParent, strategyChildren);
-
-		List<Goal> associableMGoals = new ArrayList<Goal>(); //mg associabili ad og
-		List<Goal> associableOGoals = new ArrayList<Goal>(); //og associabili ad mg
+		List<Strategy> allStrategies = strategyManager.findByProject(currentProject); //tutte le strategie nel progetto
 
 		List<Goal> oGoalsAll = new ArrayList<Goal>(); //tutti gli og nel progetto
 		List<Goal> mGoalsAll = new ArrayList<Goal>(); //tutti gli mg nel progetto
@@ -145,6 +134,17 @@ public class GoalFormController extends BaseFormController {
 				oGoalsAll.add(g);
 		}
 		
+		List<Goal> goalParent = new ArrayList<Goal>(); //tutti i padri Goal ammissibili (ossia che sono già padri del Goal, o che possono essere selezionati come tali)
+		List<Strategy> strategyParent = new ArrayList<Strategy>();
+		List<Goal> goalChildren = new ArrayList<Goal>(); //tutti i figli Goal ammissibili
+		List<Strategy> strategyChildren = new ArrayList<Strategy>();
+		
+		getGoalParentAndChildren(oGoalsAll, ret, goalParent, goalChildren);
+		getStrategyParentAndChildren(allStrategies, ret, strategyParent, strategyChildren);
+
+		List<Goal> associableMGoals = new ArrayList<Goal>(); //tutti gli mg associabili ad og (ossia senza relazione o già in relazione con l'og) 
+		List<Goal> associableOGoals = new ArrayList<Goal>(); //tutti gli og associabili ad mg
+		
 		associableOGoals.addAll(oGoalsAll); //popolo og associabili ad mg, ossia tutti
 			
 		for(Goal g: mGoalsAll) { //popolo mg associabili a og, ossia quelli senza relazione o in relazione con l'og corrente
@@ -153,14 +153,13 @@ public class GoalFormController extends BaseFormController {
 				associableMGoals.add(g);
 		}
 				
-		model.addAttribute("currentUser",currentUser);
-		model.addAttribute("visibleGESection",visibleGESection);
-		model.addAttribute("modificableHeader",modificableHeader);
-        model.addAttribute("availableStatus",availableStatus);
-        model.addAttribute("availableGoals",allGoals);
+		model.addAttribute("currentUser", currentUser);
+		model.addAttribute("visibleGESection", visibleGESection);
+		model.addAttribute("modificableHeader", modificableHeader);
+        model.addAttribute("availableStatus", availableStatus);
         model.addAttribute("associableMGoals", associableMGoals);
         model.addAttribute("associableOGoals", associableOGoals);
-        model.addAttribute("availableUsers",ret.getProject().getGQMTeam());
+        model.addAttribute("availableUsers", ret.getProject().getGQMTeam());
         model.addAttribute("goalParent", goalParent);
         model.addAttribute("strategyParent", strategyParent);
         model.addAttribute("goalChildren", goalChildren);
@@ -692,6 +691,14 @@ public class GoalFormController extends BaseFormController {
     @InitBinder
     protected void initBinder1(HttpServletRequest request, ServletRequestDataBinder binder) {
         binder.registerCustomEditor(Set.class, "QSMembers", new CustomCollectionEditor(Set.class) {
+        	
+        	public void setValue(Object value) { //se la collection è nulla (perchè non ci sono elementi selezionati), la reimposto al valore di default
+        		if(value == null)
+        			super.setValue(new HashSet<User>());
+        		else
+        			super.setValue(value);    		
+        	}
+        	
             protected Object convertElement(Object element) {
                 if (element != null) {
                     Long id = new Long((String)element);
@@ -706,6 +713,14 @@ public class GoalFormController extends BaseFormController {
     @InitBinder
     protected void initBinder2(HttpServletRequest request, ServletRequestDataBinder binder) {
         binder.registerCustomEditor(Set.class, "MMDMMembers", new CustomCollectionEditor(Set.class) {
+        	
+        	public void setValue(Object value) { //se la collection è nulla (perchè non ci sono elementi selezionati), la reimposto al valore di default
+        		if(value == null)
+        			super.setValue(new HashSet<User>());
+        		else
+        			super.setValue(value);    		
+        	}
+        	
             protected Object convertElement(Object element) {
                 if (element != null) {
                     Long id = new Long((String)element);
@@ -720,6 +735,14 @@ public class GoalFormController extends BaseFormController {
     @InitBinder
     protected void initBinder3(HttpServletRequest request, ServletRequestDataBinder binder) {
     	binder.registerCustomEditor(Set.class, "orgChild", new CustomCollectionEditor(Set.class) {
+    		
+        	public void setValue(Object value) { //se la collection è nulla (perchè non ci sono elementi selezionati), la reimposto al valore di default
+        		if(value == null)
+        			super.setValue(new HashSet<Goal>());
+        		else
+        			super.setValue(value);    		
+        	}
+    		
             protected Object convertElement(Object element) {
                 if (element != null) {
                     Long id = new Long((String)element);
@@ -736,6 +759,14 @@ public class GoalFormController extends BaseFormController {
     @InitBinder
     protected void initBinder4(HttpServletRequest request, ServletRequestDataBinder binder) {
     	binder.registerCustomEditor(Set.class, "ostrategyChild", new CustomCollectionEditor(Set.class) {
+    		
+        	public void setValue(Object value) { //se la collection è nulla (perchè non ci sono elementi selezionati), la reimposto al valore di default
+        		if(value == null)
+        			super.setValue(new HashSet<Strategy>());
+        		else
+        			super.setValue(value);    		
+        	}
+    		
             protected Object convertElement(Object element) {
                 if (element != null ) {
                     Long id = new Long((String)element);
@@ -815,6 +846,13 @@ public class GoalFormController extends BaseFormController {
     private class AssociatedMGCollectionEditor extends CustomCollectionEditor {
     	private AssociatedMGCollectionEditor(Class collectionType) {
     		super(collectionType);
+    	}
+    	
+    	public void setValue(Object value) { //se la collection è nulla (perchè non ci sono elementi selezionati), la reimposto al valore di default
+    		if(value == null)
+    			super.setValue(new HashSet<MGOGRelationshipPK>());
+    		else
+    			super.setValue(value);    		
     	}
     	
     	protected Object convertElement(Object element) {
