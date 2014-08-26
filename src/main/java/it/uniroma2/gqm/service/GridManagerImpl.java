@@ -14,6 +14,9 @@ public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements G
 
 	@Override
     public boolean isGrandChild(Object grandChild, Object grandParent) {
+		if(grandParent == grandChild) //prima di controllare eventuali figli, verifico di non aver già trovato il nipote
+			return true;		
+		
     	if(grandParent instanceof Goal) {
     		Goal goalGrandParent = (Goal)grandParent;
     		
@@ -36,8 +39,6 @@ public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     						return true;
     				}
     			}
-    		} else { //non ha figli
-    			return grandParent == grandChild; //oppure devo controllare gli id? In caso positivo, devo controllare solo se sono dello stesso tipo
     		}
     		
     	} else if(grandParent instanceof Strategy) {
@@ -62,12 +63,10 @@ public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     						return true;
     				}
     			}
-    		} else { //non ha figli
-    			return grandParent == grandChild; //oppure devo controllare gli id? In caso positivo, devo controllare solo se sono dello stesso tipo
-    		}    		
+    		}
     	}
 
-    	return false;
+    	return false; //se ho controllato me stesso e tutti i figli, allora non c'è più niente da fare
     }
 	
 	public String explorer(Object obj, String s){

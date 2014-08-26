@@ -9,6 +9,7 @@ import it.uniroma2.gqm.service.StrategyManager;
 
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -451,6 +452,13 @@ public class StrategyFromController  extends BaseFormController {
     		super(collectionType);
     	}
     	
+    	public void setValue(Object value) { //se la collection è nulla (perchè non ci sono elementi selezionati), la reimposto al valore di default
+    		if(value == null)
+    			super.setValue(new HashSet<Strategy>());
+    		else
+    			super.setValue(value);    		
+    	}
+    	
     	protected Object convertElement(Object element) {
     		if (element != null && StringUtils.isNotBlank((String)element)) {
     			Long id = new Long((String)element);
@@ -467,6 +475,13 @@ public class StrategyFromController  extends BaseFormController {
     private class sorgChildCollectionEditor extends CustomCollectionEditor {
     	private sorgChildCollectionEditor(Class collectionType) {
     		super(collectionType);
+    	}
+    	
+    	public void setValue(Object value) { //se la collection è nulla (perchè non ci sono elementi selezionati), la reimposto al valore di default
+    		if(value == null)
+    			super.setValue(new HashSet<Goal>());
+    		else
+    			super.setValue(value);    		
     	}
     	
     	protected Object convertElement(Object element) {
