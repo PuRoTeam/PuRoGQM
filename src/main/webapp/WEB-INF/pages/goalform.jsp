@@ -513,22 +513,25 @@
 	    </div>
     </c:if>
     
+    <div id="dialog-confirm" title="Proceed?" hidden="true">
+  		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>You are creating/modifying a Measurement Goal without associated Organizational Goal. Are you sure?</p>
+	</div>
+    
     <div class="form-actions">
-        <button type="submit" class="btn btn-primary" name="save">
+        <button type="submit" onclick="setClickedButton('save')" class="btn btn-primary" name="save">
             <i class="icon-ok icon-white"></i> <fmt:message key="button.save"/>
         </button>
         <c:if test="${not empty goal.id && goal.status eq 'DRAFT' && goal.goalOwner eq currentUser}">
-          <button type="submit" class="btn" name="delete">
+          <button type="submit" onclick="setClickedButton('delete')" class="btn" name="delete">
               <i class="icon-trash"></i> <fmt:message key="button.delete"/>
           </button>
         </c:if>
-        <button type="submit" class="btn" name="cancel">
+        <button type="submit" onclick="setClickedButton('cancel')" class="btn" name="cancel">
             <i class="icon-remove"></i> <fmt:message key="button.cancel"/>
         </button>
     </div>
     </form:form>
 </div>
-
 
 <c:if test="${(goal.type eq 0) && (goal.status eq 'ACCEPTED') && (goal.goalEnactor eq currentUser)}">
 	<div class="span2">
@@ -564,13 +567,69 @@
 
 <script type="text/javascript">
 
-	/*Prima di sottomettere il form, riabilito i select disabilitati, per poter passare i relativi valori al controller*/
-	$('#goalForm').submit(function() {
+	/*$('#goalForm').submit(function() {		
 	    $('#childType').removeAttr('disabled');
 	    $('#orgChild').removeAttr('disabled');
 	    $('#ostrategyChild').removeAttr('disabled');
-	});
+	});*/
 
+	//Prima di sottomettere il form, riabilito i select disabilitati, per poter passare i relativi valori al controller
+	function enableSelect() {
+	    $('#childType').removeAttr('disabled');
+	    $('#orgChild').removeAttr('disabled');
+	    $('#ostrategyChild').removeAttr('disabled');
+	}
+	
+	var map = new Object();
+	map["save"] = false;
+	map["delete"] = false;
+	map["cancel"] = false;
+	
+	function setClickedButton(buttonClicked) {
+		map[buttonClicked] = true;
+	}
+	
+	function resetClickedButton() {
+		map["save"] = false;
+		map["delete"] = false;
+		map["cancel"] = false;
+	}
+	
+	$('#goalForm').submit(function(event) {	
+		event.preventDefault();
+		
+		var goalForm = $(this); //$('#goalForm')		
+		var mg_without_og = ($("#type").val() == 1 && $('#associatedOG').val() == -1);
+		
+		if(mg_without_og) { //goal mg senza og associato
+			if(map["save"]) { //stò salvando
+				$("#dialog-confirm").dialog( {
+				      resizable: false,
+				      height:200,
+				      modal: true,
+				      buttons: {
+				        "Confirm": function() {
+				         	$(this).dialog("close");				         	
+				         	enableSelect();		
+				         	goalForm.unbind('submit').submit();	          
+				        },
+				        Cancel: function() {
+				        	$(this).dialog("close");
+				        }
+				      }
+				    });				
+			}
+		}
+	
+		//posso continuare se ho cliccato su delete, su cancel, oppure se stò salvando un goal diverso da un mg senza og
+		var go_submit = (map["delete"] || map["cancel"] || (map["save"] && !mg_without_og)); 
+		
+		if(go_submit)
+			goalForm.unbind('submit').submit();
+		
+		resetClickedButton(); //restto lo stato dei pulsanti
+	});
+	
     $(document).ready(function() {
         $("input[type='text']:visible:enabled:first", document.forms['goalForm']).focus();
     });
