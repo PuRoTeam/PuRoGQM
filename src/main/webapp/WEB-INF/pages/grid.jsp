@@ -20,66 +20,23 @@
 		}
 	</style>
 </head>
- <!-- 
-<div class="span2">
-    <h2><fmt:message key='goal.heading'/></h2>
-</div>
--->
+
 <body>
 
+<div id="json_tree"></div>
 
 <script>
-
- /*
-d3.json("tree.json", function(json) {
-	  var nodes = tree.nodes(json);
-} 
-*/
-/*
-var treeData = 	[
-					{
-					"name": "Top Level",
-					"parent": "null",
-					"children": [
-									{
-									"name": "Level 2: A",
-									"parent": "Top Level",
-									"children": [
-									{
-									"name": "Son of A",
-									"parent": "Level 2: A"
-									},
-									{
-									"name": "Daughter of A",
-									"parent": "Level 2: A"
-									}
-								]
-					},
-					{
-					"name": "Level 2: B",
-					"parent": "Top Level"
-					},
-					{
-					"name": "Level 2: B",
-					"parent": "Top Level"
-					}
-				]
-	}
-];
-var treeData = [{"name":"G1","parent":"null", "children":[{"name":"S3","parent":"G1", "children":[{"name":"G14","parent":"S3", "children":[{"name":"S7","parent":"G14", "children":[{"name":"G18","parent":"S7"}]}]}]},{"name":"S4","parent":"G1", "children":[{"name":"S5","parent":"S4", "children":[{"name":"G15","parent":"S5", "children":[{"name":"G19","parent":"G15"},{"name":"G20","parent":"G15"}]}]},{"name":"S6","parent":"S4", "children":[{"name":"G17","parent":"S6"},{"name":"G16","parent":"S6", "children":[{"name":"S8","parent":"G16", "children":[{"name":"G21","parent":"S8"}]}]}]}]}]}];
-*/
 
 var url = "gridhelp";
 $.post(url, 
 		function(responseText) {
-			var treeData = [""];
+			var treeData = [];
 			var html = "";
 			var json_tree = "";
 			
 			html = $.parseHTML(responseText);
-			json_tree = $(html).find("#json_tree").text();
-			treeData[0] = json_tree;
-			console.log(treeData[0]);
+			json_tree = $(html).find("#json_tree").text().trim();
+			treeData.push(JSON.parse(json_tree));
 			
 			// ************** Generate the tree diagram *****************
 			var margin = {top: 40, right: 120, bottom: 20, left: 120},
@@ -93,7 +50,7 @@ $.post(url,
 			var diagonal = d3.svg.diagonal()
 			.projection(function(d) { return [d.x, d.y]; });
 			 
-			var svg = d3.select("body").append("svg")
+			var svg = d3.select("#json_tree").append("svg")
 			.attr("width", width + margin.right + margin.left)
 			.attr("height", height + margin.top + margin.bottom)
 			.append("g")
