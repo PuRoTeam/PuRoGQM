@@ -1,4 +1,5 @@
 <%@ include file="/common/taglibs.jsp"%>
+<%@ page import="org.json.JSONObject"%>
 
 <head>
     <title><fmt:message key="goalDetail.title"/></title>
@@ -7,10 +8,12 @@
 <body>
 
 <c:set var="tree" scope="page" value="${tree}"/>
-<% 
-	JSONObject jsonT = (JSONObject) pageContext.getAttribute("tree"); 
+<div id="json_tree">
+	<% 
+	JSONObject jsonT = (JSONObject) pageContext.getAttribute("tree");
+	System.out.println(jsonT.toString());
 	out.println(jsonT.toString());
-%>
-
+	%>
+</div>
 </body>
 

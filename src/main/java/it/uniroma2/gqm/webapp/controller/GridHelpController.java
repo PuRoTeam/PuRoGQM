@@ -1,18 +1,13 @@
 package it.uniroma2.gqm.webapp.controller;
 
 import it.uniroma2.gqm.model.Goal;
-import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.GridManager;
-import it.uniroma2.gqm.service.MGOGRelationshipManager;
-import it.uniroma2.gqm.service.StrategyManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
-import org.appfuse.service.GenericManager;
-import org.appfuse.service.UserManager;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -31,32 +26,13 @@ public class GridHelpController extends BaseFormController{
 	@Autowired
     private GoalManager goalManager;
     
-    private UserManager userManager = null;
-
-    private GenericManager<Project, Long> projectManager = null;
-    
-    @Autowired
-    private StrategyManager strategyManager;
-
-    private MGOGRelationshipManager mgogRelationshipManager;
-    
     private GridManager gridManager;
     
     @Autowired
     public void setGridManager(@Qualifier("gridManager") GridManager gridManager) {
     	this.gridManager = gridManager;
     }
-    
-    @Autowired
-	public void setMgogRelationshipManager(@Qualifier("mgogRelationshipManager") MGOGRelationshipManager mgogRelationshipManager) {
-		this.mgogRelationshipManager = mgogRelationshipManager;
-	}
 
-	@Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
-        this.projectManager = projectManager;
-    }
-    
     @Autowired
     public void setGoalManager(@Qualifier("goalManager") GoalManager goalManager) {
         this.goalManager = goalManager;
@@ -69,9 +45,8 @@ public class GridHelpController extends BaseFormController{
  
     	Goal ret = goalManager.get(Long.parseLong("1"));
         String tree = gridManager.explorer(ret, "null");
-		//System.out.println(tree);
+		
         JSONObject jsonTree = new JSONObject(tree);
-
         return new ModelAndView().addObject("tree", (JSONObject)jsonTree);
     }
 
