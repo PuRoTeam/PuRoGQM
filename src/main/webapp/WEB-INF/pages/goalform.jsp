@@ -610,7 +610,7 @@
 				      buttons: {
 				        "Confirm": function() {
 				         	$(this).dialog("close");				         	
-				         	enableSelect();		
+				         	enableSelect(); //riabilito elementi disabilitati
 				         	goalForm.unbind('submit').submit();	          
 				        },
 				        Cancel: function() {
@@ -624,8 +624,10 @@
 		//posso continuare se ho cliccato su delete, su cancel, oppure se stò salvando un goal diverso da un mg senza og
 		var go_submit = (map["delete"] || map["cancel"] || (map["save"] && !mg_without_og)); 
 		
-		if(go_submit)
+		if(go_submit) {
+			enableSelect(); //riabilito elementi disabilitati
 			goalForm.unbind('submit').submit();
+		}			
 		
 		resetClickedButton(); //restto lo stato dei pulsanti
 	});
