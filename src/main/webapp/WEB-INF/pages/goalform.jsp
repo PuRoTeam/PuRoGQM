@@ -273,7 +273,7 @@
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_mg"/>
 					<div class="controls"> 
-						<select id="relationsWithMG" name="relationsWithMG" 
+						<select id="relationsWithMG" name="relationsWithMG" onchange=""
 							<c:out value="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)? 'disabled' : ''}"></c:out>
 							multiple="multiple"  style="width:500px;" >
 							<option value="-1">None</option>
@@ -299,6 +299,8 @@
 						<%--<form:errors path="relationsWithMG" cssClass="help-inline"/>--%>
 					</div>
 				</div>
+				
+				
 		        
 			    <spring:bind path="goal.activity">
 			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
@@ -363,7 +365,12 @@
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_og"/>
 					<div class="controls">
-						<form:select path="relationWithOG" onchange="" 
+						<form:select path="relationWithOG" 
+								onchange="if(this.form.childType.value != -1) { 
+				        					$('#helpbox').removeAttr('hidden');	
+				        				  } else {
+				        				  	$('#helpbox').attr('hidden', 'true');
+				        				  }" 
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedOG">							
 							<form:option value="-1">None</form:option>
@@ -381,6 +388,13 @@
 						<form:errors path="relationWithOG" cssClass="help-inline"/>
 					</div>
 				</div> 
+				
+				<div id="helpbox" hidden="true">
+					<div>Object: ${goal.relationWithOG.pk.og.object}</div>
+					<div>Scope: ${goal.relationWithOG.pk.og.scope}</div>
+					<div>Focus: ${goal.relationWithOG.pk.og.focus}</div>
+					<div>Constraints: ${goal.relationWithOG.pk.og.constraints}</div>
+				</div>
 			 
 			    <spring:bind path="goal.subject">
 			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
@@ -572,7 +586,7 @@
 	    $('#orgChild').removeAttr('disabled');
 	    $('#ostrategyChild').removeAttr('disabled');
 	});*/
-
+	
 	//Prima di sottomettere il form, riabilito i select disabilitati, per poter passare i relativi valori al controller
 	function enableSelect() {
 	    $('#childType').removeAttr('disabled');
