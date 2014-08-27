@@ -9,11 +9,9 @@
     <display:table name="goalList" class="table table-condensed table-striped table-hover" requestURI="" id="goalList" export="true" pagesize="25">
         <display:column property="id" sortable="true" href="/binarytable" media="html" paramId="id" paramProperty="id" titleKey="goal.id"/>
         <display:column property="id" media="csv excel xml pdf" titleKey="goal.id" />
-        <display:column property="parent.id" sortable="true" titleKey="goal.parent"/>
         <display:column property="description" sortable="true" titleKey="goal.description"/>
         <display:column property="scope" sortable="true" titleKey="goal.scope"/>        
         <display:column property="focus" sortable="true" titleKey="goal.focus"/>
-        <display:column property="strategy.name" sortable="true" titleKey="goal.strategy"/>
         <display:column property="goalOwner.fullName" sortable="true" titleKey="goal.go"/>
         <display:column property="goalEnactor.fullName" sortable="true" titleKey="goal.ge"/>
         <display:column property="typeAsString" sortable="true" titleKey="goal.type"/>
