@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 @Controller
 @RequestMapping("/strategyform*")
-@SessionAttributes({"currentProject","strategy","currentUser"})
+@SessionAttributes({"currentProject", "strategy", "currentUser", "goalParent", "strategyParent", "strategyParent", "strategyChildren"})
 public class StrategyFromController  extends BaseFormController {
 	
 	@Autowired
