@@ -547,6 +547,7 @@
     </form:form>
 </div>
 
+<%--
 <c:if test="${(goal.type eq 0) && (goal.status eq 'ACCEPTED') && (goal.goalEnactor eq currentUser)}">
 	<div class="span2">
 	    <h2><fmt:message key="goal.splitting"/></h2>
@@ -577,7 +578,7 @@
 	        </button>	    	
 		</form:form>    
 	</div>
-</c:if>
+</c:if>--%>
 
 <script type="text/javascript">
 
@@ -624,7 +625,7 @@
 				      buttons: {
 				        "Confirm": function() {
 				         	$(this).dialog("close");				         	
-				         	enableSelect(); //riabilito elementi disabilitati
+				         	enableSelect(); //riabilito select disabilitate
 				         	goalForm.unbind('submit').submit();	          
 				        },
 				        Cancel: function() {
@@ -639,7 +640,7 @@
 		var go_submit = (map["delete"] || map["cancel"] || (map["save"] && !mg_without_og)); 
 		
 		if(go_submit) {
-			enableSelect(); //riabilito elementi disabilitati
+			enableSelect(); //riabilito select disabilitate
 			goalForm.unbind('submit').submit();
 		}			
 		
