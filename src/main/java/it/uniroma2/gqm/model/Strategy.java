@@ -117,9 +117,10 @@ public class Strategy extends BaseObject {
 	
 	@Transient
 	public int getParentType() {
-		if(sorgParent != null)
+		//utilizzo i getter anzichè le variabili, perchè di base non vengono caricati i parent, essendo definiti come lazy
+		if(getSorgParent() != null)
 			parentType = 0;
-		else if(strategyParent != null)
+		else if(getStrategyParent() != null)
 			parentType = 1;
 		else
 			parentType = -1;		
@@ -133,6 +134,10 @@ public class Strategy extends BaseObject {
 
 	@Transient
 	public int getChildType() {
+		//Prima di verificare il tipo di figli, devo caricarli da db (di base sono caricati in modalità lazy)
+		getSorgChild();
+		getStrategyChild();
+		
 		if(sorgChild.size() > 0)
 			childType = 0;
 		else if(strategyChild.size() > 0)
