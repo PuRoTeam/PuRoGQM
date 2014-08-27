@@ -1,18 +1,24 @@
 package it.uniroma2.gqm.webapp.controller;
 
+import it.uniroma2.gqm.model.BinaryElement;
 import it.uniroma2.gqm.model.Goal;
+import it.uniroma2.gqm.model.MGOGRelationship;
+import it.uniroma2.gqm.model.Metric;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.service.BinaryTableManager;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.MGOGRelationshipManager;
 import it.uniroma2.gqm.service.MetricManager;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.appfuse.service.GenericManager;
+import org.apache.commons.lang.StringUtils;
+import org.appfuse.model.User;
 import org.appfuse.service.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -55,64 +61,104 @@ public class BinaryTableController {
 		
         String id = request.getParameter("id");
         Goal ret = null;
-        
-        Set<Goal> set = binaryManager.findOGChildren(goalManager.get(Long.parseLong("1")));
-		
-		for (Goal s : set) {
-			System.out.println(s.getDescription());
-		}
-        /*MGOGRelationship retRelation = null;
+        Set<MGOGRelationship> retRelation = new HashSet<MGOGRelationship>();
+        Set<Goal> mgs = new HashSet<Goal>();
         
         Project currentProject = (Project) session.getAttribute("currentProject");
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
 
-        /*if (!StringUtils.isBlank(id)) {
+        if (!StringUtils.isBlank(id)) {
+        	
+        	//Recupera goal selezionato
         	ret = goalManager.get(new Long(id));
-        	retRelation = mgogRelationshipManager.getAssociatedRelation(ret);
-        	ret.setRelationWithMG(retRelation);
-        }
-        
-        //Recupao la lista degli MG associati a questo OG
-        Goal mg = ret.getRelationWithMG().getPk().getMg();
-        
-        //Recupero tutte le metriche associate a 'mg'
-        List<Metric> metrics = goalManager.getMeasuredMetricByGoal(mg);
-        
-        boolean satisfy = true;
-        BinaryElement mainGoal = new BinaryElement(ret, 0);
-        List<BinaryElement> childGoal; 
-        
-        //Calcolo valore di soddisfacimento (1 o 0)
-        for(Metric m: metrics){
-        	satisfy &= metricManager.getSatisfaction(m);
-        }
-        if(satisfy)
-        	mainGoal.setValue(1);
-        
-        //TODO recuperare la lista degli OG figli di questo OG
-        List<Goal> ogs = goalManager.getOGChildren(ret);
-
-        //Salvo un elto nell'array per ogni OG figlio
-        for(Goal og: ogs){
         	
-        	mg = og.getRelationWithMG().getPk().getMg();  //Ipotizzato solo 1 MG associato possibile
-        	metrics = goalManager.getMeasuredMetricByGoal(mg);
+        	//Recupera associazioni con MG
+        	retRelation = ret.getRelationsWithMG();
         	
-        	satisfy = true;
-        	for(Metric m: metrics){
+            boolean satisfyAll = true;
+            BinaryElement mainGoal = new BinaryElement(ret, 0);
+        	
+        	//Recupero l'MG da ogni MGOGRelationship  
+        	for (MGOGRelationship mgog : retRelation) {
         		
-        		satisfy &= metricManager.getSatisfaction(m);
-        	}
-        	if(satisfy)
-    			childGoal.add(new BinaryElement(og,1));
-    		else
-    			childGoal.add(new BinaryElement(og,0));
+				mgs.add(mgog.getPk().getMg());
+				
+				//Recupero tutte le metriche associate ad ogni MG
+	            for (Goal mg : mgs) {
+	            	List<Metric> metrics = goalManager.getMeasuredMetricByGoal(mg);
+	            	
+	            	if (metrics.size() > 0) {
+	            		boolean satisfy = true;
+		            	//Calcolo valore di soddisfacimento (1 o 0)
+		                for(Metric m: metrics){
+		                	satisfy &= metricManager.getSatisfaction(m);
+		                	satisfyAll &= satisfy;
+		                }
+		                if(satisfyAll)
+		                	mainGoal.setValue(1);
+					} else {
+						mainGoal.setValue(0);
+					}
+	            	
+	    		}
+			}
+        	
+            Set<BinaryElement> childGoal = new HashSet<BinaryElement>();
+ 
+            //Recupera la lista degli OG figli di questo OG
+            Set<Goal> set = binaryManager.findOGChildren(goalManager.get(Long.parseLong(id)));
+            
+            for (Goal g : set) {
+            	
+            	mgs.clear();
+            	retRelation.clear();
+            	
+            	//Recupera associazioni con MG
+            	retRelation = g.getRelationsWithMG();
+            	
+                satisfyAll = true;
+                BinaryElement gGoal = new BinaryElement(g, 0);
+            	
+            	//Recupero l'MG da ogni MGOGRelationship  
+            	for (MGOGRelationship mgog : retRelation) {
+            		
+    				mgs.add(mgog.getPk().getMg());
+    				
+    				//Recupero tutte le metriche associate ad ogni MG
+    	            for (Goal mg : mgs) {
+    	            	List<Metric> metrics = goalManager.getMeasuredMetricByGoal(mg);
+    	            	
+    	            	boolean satisfy = true;
+    	            	if(metrics.size() > 0){
+	  	            		//Calcolo valore di soddisfacimento (1 o 0)
+	    	                for(Metric m: metrics){
+	    	                	satisfy &= metricManager.getSatisfaction(m);
+	    	                	satisfyAll &= satisfy;
+	    	                }
+	    	                if(satisfyAll) {
+	    	                	gGoal.setValue(1);
+	    	                }
+    	            	} else {
+    	            		gGoal.setValue(0);
+    	            	}
+    	    		}
+    			}
+            	childGoal.add(gGoal);
+			}
+            
+            //Stampa di debug
+            System.out.println("Figli OG di: "+ret.getDescription());
+    		for (Goal s : set) {
+    			System.out.println(s.getDescription());
+    		}
+           
+    		model.addAttribute("mainGoal", mainGoal);
+    		model.addAttribute("childGoal", childGoal);
+    		model.addAttribute("currentUser",currentUser);
+    		model.addAttribute("currentProject",currentProject);
+    		
         }
-       
-		model.addAttribute("mainGoal", mainGoal);
-		model.addAttribute("childGoal", childGoal);
-		model.addAttribute("currentUser",currentUser);*/
-
+        
         return ret;
     }
 	

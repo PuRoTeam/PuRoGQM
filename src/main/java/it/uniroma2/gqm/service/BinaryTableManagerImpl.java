@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 @Service("binaryManager")
 public class BinaryTableManagerImpl extends GenericManagerImpl<BinaryTable, Long> implements BinaryTableManager {
 
-	@SuppressWarnings("null")
 	@Override
 	public Set<Goal> findOGChildren(Object obj) {
 		
