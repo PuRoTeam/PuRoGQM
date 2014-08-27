@@ -1,25 +1,17 @@
 package it.uniroma2.gqm.webapp.controller;
 
-import it.uniroma2.gqm.model.BinaryElement;
 import it.uniroma2.gqm.model.Goal;
-import it.uniroma2.gqm.model.GoalStatus;
-import it.uniroma2.gqm.model.GoalType;
-import it.uniroma2.gqm.model.MGOGRelationship;
-import it.uniroma2.gqm.model.Metric;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.service.BinaryTableManager;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.MGOGRelationshipManager;
 import it.uniroma2.gqm.service.MetricManager;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringUtils;
-import org.appfuse.model.User;
 import org.appfuse.service.GenericManager;
 import org.appfuse.service.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,21 +31,17 @@ public class BinaryTableController {
 	@Autowired
     private GoalManager goalManager;
 	private MetricManager metricManager;
+	private UserManager userManager;
 	
-	private UserManager userManager = null;
-	private BinaryTableManager binaryManager = null;
-    private GenericManager<Project, Long> projectManager = null;
-
+	@Autowired
+	private BinaryTableManager binaryManager;
+	
+	@Autowired
 	private MGOGRelationshipManager mgogRelationshipManager;
 	
 	@Autowired
     public void setMetricManager(@Qualifier("metricManager") MetricManager metricManager) {
         this.metricManager = metricManager;
-    }
-	
-	@Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
-        this.projectManager = projectManager;
     }
 
 	@Autowired
@@ -67,6 +55,12 @@ public class BinaryTableController {
 		
         String id = request.getParameter("id");
         Goal ret = null;
+        
+        Set<Goal> set = binaryManager.findOGChildren(goalManager.get(Long.parseLong("1")));
+		
+		for (Goal s : set) {
+			System.out.println(s.getDescription());
+		}
         /*MGOGRelationship retRelation = null;
         
         Project currentProject = (Project) session.getAttribute("currentProject");
@@ -121,4 +115,5 @@ public class BinaryTableController {
 
         return ret;
     }
+	
 }
