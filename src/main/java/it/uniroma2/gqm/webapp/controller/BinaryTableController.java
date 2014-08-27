@@ -151,7 +151,10 @@ public class BinaryTableController {
     		for (Goal s : set) {
     			System.out.println(s.getDescription());
     		}
+    		
+    		Set<String> suggestions = getSuggestion(mainGoal, childGoal);
            
+    		model.addAttribute("suggestions", suggestions);
     		model.addAttribute("mainGoal", mainGoal);
     		model.addAttribute("childGoal", childGoal);
     		model.addAttribute("currentUser",currentUser);
@@ -161,5 +164,73 @@ public class BinaryTableController {
         
         return ret;
     }
+	
+	public Set<String> getSuggestion(BinaryElement b, Set<BinaryElement> setB){
+		
+		String s1 = "Enforce strategies";
+		String s2 = "Strategies not sufficient or not effective";
+		String s2b = "Assumptions wrong";
+		String s3 = "Check magnitudes (less was sufficient)";
+		String s3b = "Check root causes for achieving "; //TODO aggiungere sempre ID
+		String s4 = "Good work!!!";
+		String s5 = "Refinements wrong";
+		String s6 = "Strategies may help";
+		
+		boolean valueSetB = true;
+		Set<String> suggestions = new HashSet<String>();
+		
+		for (BinaryElement elto : setB)
+			valueSetB &= (elto.getValue() == 0);
+		
+		//If parent not achieved
+		if (b.getValue() == 0) {
+			//If all children were achieve
+			if(valueSetB){
+				//If parent's first children was Strategy
+				if(b.getGoal().getChildType() == 1) {
+					suggestions.add(s2);
+					suggestions.add(s2b);
+				//If parent's first children was Goal
+				} else {
+					suggestions.add(s5);
+				}
+			//If at least was not achieve
+			} else {
+				//If parent's first children was Strategy
+				if(b.getGoal().getChildType() == 1) {
+					suggestions.add(s1);
+				//If parent's first children was Goal
+				} else {
+					suggestions.add(s6);
+				}
+			}
+		//If parent achieved
+		} else {
+			//If all children were achieve
+			if(valueSetB){
+				//If parent's first children was Strategy
+				if(b.getGoal().getChildType() == 1) {
+					suggestions.add(s4);
+				//If parent's first children was Goal
+				} else {
+					suggestions.add(s4);
+				}
+			//If at least was not achieve	
+			} else {
+				//If parent's first children was Strategy
+				if(b.getGoal().getChildType() == 1) {
+					suggestions.add(s3);
+					suggestions.add(s3b+b.getGoal().getDescription());
+				//If parent's first children was Goal
+				} else {
+					suggestions.add(s5);
+				}
+			}
+		}
+		
+		
+		
+		return suggestions;
+	}
 	
 }
