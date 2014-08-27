@@ -26,7 +26,6 @@ import javax.validation.Valid;
 
 import java.beans.PropertyEditorSupport;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +40,9 @@ import it.uniroma2.gqm.webapp.util.RequestUtil;
 
 @Controller
 @RequestMapping("/goalform*")
-@SessionAttributes({"availableUsers","goal","currentUser","strategies","availableGoals"})
+@SessionAttributes({"currentProject", "goal", "currentUser", "visibleGESection", "modificableHeader", "availableStatus", "associableMGoals", "associableOGoals",
+					"availableUsers", "goalParent", "strategyParent", "goalChildren", "strategyChildren"})
+//@SessionAttributes({"availableUsers","goal","currentUser","strategies","availableGoals"})
 public class GoalFormController extends BaseFormController {
     	
     @Autowired
