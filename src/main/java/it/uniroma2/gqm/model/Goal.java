@@ -66,14 +66,7 @@ public class Goal extends BaseObject {
 	private Set<User> MMDMMembers = new HashSet<User>();
 	private Set<GoalQuestion> questions = new HashSet<GoalQuestion>();	
 	private Set<User> votes = new HashSet<User>();
-	//private Set<Goal> children = new HashSet<Goal>();
 	private String refinement;
-	
-	
-	
-	//private Goal associatedGoal; //necessario per visualizzare il goal associato nella lista di goal
-	private Set<MGOGRelationship> relationsWithMG = new HashSet<MGOGRelationship>();
-	private MGOGRelationship relationWithOG;
 	
 	//OG fields
 	private String activity;
@@ -81,12 +74,8 @@ public class Goal extends BaseObject {
 	private String magnitude;
 	private String timeframe;
 	private String constraints;
-	//private Strategy strategy;
 	
-	//OG hierarchy fields
-	//private int childType  = -1;
-	//private int parentType = -1;
-	
+	//OG hierarchy fields	
 	private Goal orgParent;
 	private Strategy ostrategyParent;
 	
@@ -96,11 +85,15 @@ public class Goal extends BaseObject {
 	private Set<Goal> orgChild = new HashSet<Goal>();
 	private Set<Strategy> ostrategyChild = new HashSet<Strategy>();
 	
+	private Set<Goal> associatedMGs = new HashSet<Goal>();
+	
 	//MG fields
 	private String subject;
 	private String context;
 	private String viewpoint;
 	private String impactOfVariation;
+	
+	private Goal associatedOG;
 	
 	public Goal() {
 		
@@ -488,49 +481,23 @@ public class Goal extends BaseObject {
 	public void setOstrategyChild(Set<Strategy> strategyChild) {
 		this.ostrategyChild = strategyChild;
 	}
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.og") //this ha ruolo OG nella relazione
-	public Set<MGOGRelationship> getRelationsWithMG() {
-		return relationsWithMG;
+	
+	@OneToMany(mappedBy="associatedOG")
+	public Set<Goal> getAssociatedMGs() {
+		return associatedMGs;
 	}
 
-	public void setRelationsWithMG(Set<MGOGRelationship> relationsWithMG) {
-		this.relationsWithMG = relationsWithMG;
+	public void setAssociatedMGs(Set<Goal> associatedMGs) {
+		this.associatedMGs = associatedMGs;
 	}
 
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.mg") //this ha ruolo MG nella relazione
-	public MGOGRelationship getRelationWithOG() {
-		return relationWithOG;
+	@ManyToOne
+	public Goal getAssociatedOG() {
+		return associatedOG;
 	}
 
-	public void setRelationWithOG(MGOGRelationship relationWithOG) {
-		this.relationWithOG = relationWithOG;
-	}
-	/**
-	 * Restituisce un insieme di oggetti MGOGRelationship. Se il goal è un MG, l'insieme ha al massimo un elemento.
-	 * @return Un insieme di oggetti MGOGRelationship, eventualmente nullo
-	 */
-	@Transient
-	public List<MGOGRelationship> getMGOGRelations() {
-		if(GoalType.isMG(this)) {
-			List<MGOGRelationship> ogSet = new ArrayList<MGOGRelationship>();
-			
-			MGOGRelationship relOG = getRelationWithOG();
-			if(relOG != null) {
-				ogSet.add(relOG);
-			}
-			
-			return ogSet;
-		} else if(GoalType.isOG(this)) {
-			List<MGOGRelationship> mgSet = new ArrayList<MGOGRelationship>();
-			
-			for(MGOGRelationship rel : getRelationsWithMG())
-				mgSet.add(rel);
-			
-			return mgSet;
-		}
-		
-		return null;
+	public void setAssociatedOG(Goal associatedOG) {
+		this.associatedOG = associatedOG;
 	}
 	
 	public boolean hasChildren() {

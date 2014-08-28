@@ -104,7 +104,6 @@ public class GoalFormController extends BaseFormController {
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
-        	retRelations = ret.getMGOGRelations();
         }else {
         	ret = new Goal();
         	ret.setStatus(GoalStatus.DRAFT);
@@ -149,8 +148,8 @@ public class GoalFormController extends BaseFormController {
 		associableOGoals.addAll(oGoalsAll); //popolo og associabili ad mg, ossia tutti
 			
 		for(Goal g: mGoalsAll) { //popolo mg associabili a og, ossia quelli senza relazione o in relazione con l'og corrente
-			List<MGOGRelationship> gRelations = g.getMGOGRelations(); 
-			if(gRelations.size() == 0 || retRelations.contains(gRelations.get(0))) //essendo un mg, ha al massimo una relazione
+			Goal gAssociatedOG = g.getAssociatedOG(); //og associato al goal g (che è un mg)
+			if(gAssociatedOG == null || gAssociatedOG == ret)
 				associableMGoals.add(g);
 		}
 				
@@ -598,6 +597,9 @@ public class GoalFormController extends BaseFormController {
         return getSuccessView();
     }
 
+    
+    
+    
     /**
      * Elimina un Goal e tutte le sue relazioni
      * @param g Il Goal da eliminare
