@@ -3,6 +3,13 @@
 <head>
     <title><fmt:message key="goalDetail.title"/></title>
     <meta name="menu" content="DefinitionPhaseMenu"/>
+    <style type="text/css">
+    #helpbox { 
+		position: relative;
+		padding: 5px;
+		width: 200px;
+    }
+    </style>
 </head>
  
 <div class="span2">
@@ -55,12 +62,21 @@
         		onchange="if(this.form.type.value == 0) { //ho selezionato OG, mostro divOG, e annullo la selezione del goal associato nel divMG (relationMG e relationOG non possono coesistere)
         					document.getElementById('divOG').style.display='block';
         					document.getElementById('divMG').style.display='none';
-        				  	document.getElementById('relationWithOG').value = '-1';	
+        				  	document.getElementById('relationWithOG').value = '-1';
+        				  	document.getElementById('subject').value = '';
+        				  	document.getElementById('context').value = '';
+        				  	document.getElementById('viewpoint').value = '';
+        				  	document.getElementById('impactOfVariation').value = '';
         				  } 
         				  else { //ho selezionato MG, mostro divMG, e annullo la selezione del goal associato nel divOG ((relationMG e relationOG non possono coesistere))
         				  	document.getElementById('divOG').style.display='none';
         				  	document.getElementById('divMG').style.display='block';
         				  	document.getElementById('relationsWithMG').value = '-1';
+        				  	document.getElementById('activity').value = '';
+        				  	document.getElementById('object').value = '';
+        				  	document.getElementById('magnitude').value = '';
+        				  	document.getElementById('timeframe').value = '';
+        				  	document.getElementById('constraints').value = '';
         				  }"
         		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser && empty goal.type)}">
         		
@@ -366,11 +382,7 @@
 				<appfuse:label styleClass="control-label" key="goal.associated_og"/>
 					<div class="controls">
 						<form:select path="relationWithOG" 
-								onchange="if(this.form.childType.value != -1) { 
-				        					$('#helpbox').removeAttr('hidden');	
-				        				  } else {
-				        				  	$('#helpbox').attr('hidden', 'true');
-				        				  }" 
+								onchange="showHelpBox()" 
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedOG">							
 							<form:option value="-1">None</form:option>
@@ -382,19 +394,14 @@
 									<c:otherwise>
 										<option value="${item.id}">${item.description}</option>
 									</c:otherwise>
-								</c:choose>			 
+								</c:choose>	
 							</c:forEach>
 						</form:select>
 						<form:errors path="relationWithOG" cssClass="help-inline"/>
 					</div>
 				</div> 
 				
-				<div id="helpbox" hidden="true">
-					<div>Object: ${goal.relationWithOG.pk.og.object}</div>
-					<div>Scope: ${goal.relationWithOG.pk.og.scope}</div>
-					<div>Focus: ${goal.relationWithOG.pk.og.focus}</div>
-					<div>Constraints: ${goal.relationWithOG.pk.og.constraints}</div>
-				</div>
+				
 			 
 			    <spring:bind path="goal.subject">
 			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
@@ -530,6 +537,17 @@
     <div id="dialog-confirm" title="Proceed?" hidden="true">
   		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>You are creating/modifying a Measurement Goal without associated Organizational Goal. Are you sure?</p>
 	</div>
+	
+	<div id="helpbox" title="Help box" hidden="true">
+		<c:forEach var="itemGoal" items="${associableOGoals}">
+			<div id="${itemGoal.id}" hidden="true">
+				<div>Object: ${itemGoal.object}</div>
+				<div>Scope: ${itemGoal.scope}</div>
+				<div>Focus: ${itemGoal.focus}</div>
+				<div>Constrainst: ${itemGoal.constraints}</div>
+			</div>
+		</c:forEach>
+	</div>
     
     <div class="form-actions">
         <button type="submit" onclick="setClickedButton('save')" class="btn btn-primary" name="save">
@@ -587,6 +605,33 @@
 	    $('#orgChild').removeAttr('disabled');
 	    $('#ostrategyChild').removeAttr('disabled');
 	});*/
+	var prev = -1;
+	
+	function showHelpBox(){
+		
+		var e = document.getElementById("associatedOG");
+		var current = e.options[e.selectedIndex].value;
+		
+		//If an OG is selected
+		if(current != -1){
+			if(prev != -1)
+				$('#'+prev).attr('hidden','true');
+			
+			$('#'+current).removeAttr('hidden');
+			$('#helpbox').dialog( {
+			      resizable: true,
+			      modal: false
+			    });
+			
+		//If NONE is selected
+		} else {
+			$('#helpbox').dialog( "destroy" );
+			$('#'+prev).attr('hidden','true');
+		}
+		//console.log("prev: "+prev);
+		//console.log("current: "+current);
+		prev = current;
+	}
 	
 	//Prima di sottomettere il form, riabilito i select disabilitati, per poter passare i relativi valori al controller
 	function enableSelect() {
@@ -621,7 +666,7 @@
 				$("#dialog-confirm").dialog( {
 				      resizable: false,
 				      height:200,
-				      modal: true,
+				      modal:true,
 				      buttons: {
 				        "Confirm": function() {
 				         	$(this).dialog("close");				         	
