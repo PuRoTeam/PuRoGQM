@@ -1466,9 +1466,5 @@
             <value description="ts"><![CDATA[2013-06-22 23:59:20]]></value>
             <value description="measuremento_id">9</value>            
         </row>-->            
-	</table>
-    <table name="mg_og_relationship">
-        <column>mg_id</column>
-        <column>og_id</column>                       
-    </table>       
+	</table>      
 </dataset>

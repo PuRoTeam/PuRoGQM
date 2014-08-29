@@ -15,8 +15,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -25,7 +23,6 @@ import javax.persistence.Transient;
 
 import org.appfuse.model.BaseObject;
 import org.appfuse.model.User;
-import org.hibernate.annotations.Cascade;
 
 @Entity
 @NamedQueries({
@@ -43,7 +40,8 @@ import org.hibernate.annotations.Cascade;
     )
 })
 public class Metric   extends BaseObject  implements Serializable {
-	
+
+	private static final long serialVersionUID = 7990600814484921752L;
 	private Long id;
 	private String code;
 	private String name;

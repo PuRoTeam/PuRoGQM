@@ -27,6 +27,7 @@ import org.appfuse.model.BaseObject;
     )
 })
 public class QuestionMetric extends BaseObject {
+	private static final long serialVersionUID = -5926420204193701080L;
 	private QuestionMetricPK pk;
 	private QuestionMetricStatus status;
 	private String refinement;

@@ -1,8 +1,6 @@
 package it.uniroma2.gqm.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -21,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.appfuse.model.BaseObject;
@@ -480,6 +477,7 @@ public class Goal extends BaseObject {
 		return getParentType() == 1;
 	}
 	
+	@Transient
 	public boolean isMG() {
 		if(type == null)
 			return false;
@@ -487,6 +485,7 @@ public class Goal extends BaseObject {
 		return type.intValue() == GoalType.MG.getId();
 	}
 	
+	@Transient
 	public boolean isOG() {
 		if(type == null)
 			return false;

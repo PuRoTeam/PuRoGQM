@@ -289,17 +289,20 @@
     	
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_mg"/>
-					<div class="controls"> 
-						<select id="associatedMGs" name="associatedMGs" onchange=""
-							<c:out value="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)? 'disabled' : ''}"></c:out>
-							multiple="multiple"  style="width:500px;" >
+					<div class="controls">
+						<form:select path="associatedMGs"
+								onchange="" 
+								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
+								cssStyle="width:500px" multiple="multiple" id="associatedMGs">	
 							<option value="-1">None</option>
+							<form:options items="${associableMGoals}" itemValue="id" itemLabel="description"/>
+							<%--
 							<c:forEach var="itemGoal" items="${associableMGoals}">	
 								<c:set var="itemSelected" value="false" />
 								<c:forEach var="itemRel" items="${goal.associatedMGs}">
 									<c:choose>							
 										<c:when test="${itemRel.id eq itemGoal.id}">
-											<c:set var="itemSelected" value="true" /><%-- Il goal MG è in relazione con l'OG che stiamo modificando --%>
+											<c:set var="itemSelected" value="true" />
 										</c:when>
 									</c:choose>
 								</c:forEach>
@@ -312,7 +315,8 @@
 									</c:otherwise>	
 								</c:choose>
 							</c:forEach>
-						</select>
+							--%>
+					</form:select>
 						<%--<form:errors path="associatedMGs" cssClass="help-inline"/>--%>
 					</div>
 				</div>
@@ -387,6 +391,8 @@
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedOG">							
 							<form:option value="-1">None</form:option>
+							<form:options items="${associableOGoals}" itemValue="id" itemLabel="description"/>
+			            	<%--
 			            	<c:forEach var="item" items="${associableOGoals}">
 								<c:choose>
 									<c:when test="${goal.associatedOG.id eq item.id}">
@@ -397,13 +403,12 @@
 									</c:otherwise>
 								</c:choose>	
 							</c:forEach>
+							--%>
 						</form:select>
 						<form:errors path="associatedOG" cssClass="help-inline"/>
 					</div>
 				</div> 
-				
-				
-			 
+							 
 			    <spring:bind path="goal.subject">
 			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
 			    </spring:bind>

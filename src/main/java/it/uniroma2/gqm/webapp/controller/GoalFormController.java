@@ -601,6 +601,8 @@ public class GoalFormController extends BaseFormController {
     private void handleMGOGRelationship(Goal curGoal) {
     	boolean isNew = curGoal.getId() == null;
     	
+    	curGoal.getAssociatedMGs().remove(null);
+    	
     	if(isNew)
     		handleMGOGRelationshipOfNewGoal(curGoal);
     	else

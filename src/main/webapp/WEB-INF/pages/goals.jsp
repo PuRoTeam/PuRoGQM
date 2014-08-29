@@ -18,7 +18,6 @@
         <display:column property="description" sortable="true" titleKey="goal.description"/>
         <display:column property="scope" sortable="true" titleKey="goal.scope"/>        
         <display:column property="focus" sortable="true" titleKey="goal.focus"/>
-        <%-- <display:column property="strategy" sortable="true" titleKey="goal.strategy"/> --%>
         <display:column property="goalOwner.fullName" sortable="true" titleKey="goal.go"/>
         <display:column property="goalEnactor.fullName" sortable="true" titleKey="goal.ge"/>
         <display:column property="typeAsString" sortable="true" titleKey="goal.type"/>

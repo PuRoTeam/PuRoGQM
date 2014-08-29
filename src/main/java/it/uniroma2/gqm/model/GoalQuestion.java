@@ -13,8 +13,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.appfuse.model.BaseObject;
@@ -31,7 +29,7 @@ import org.appfuse.model.BaseObject;
     )
 })
 public class GoalQuestion extends BaseObject { 
-	
+	private static final long serialVersionUID = -3542171103409189810L;
 	private GoalQuestionPK pk;
 	private GoalQuestionStatus status;
 	private String refinement;

@@ -3,7 +3,6 @@ package it.uniroma2.gqm.model;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,8 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -29,7 +26,8 @@ import org.appfuse.model.User;
     )
 })
 public class Question extends BaseObject {
-	
+
+	private static final long serialVersionUID = -5918140930681988529L;
 	private Long id;	
 	private Project project;
 	private String name;
