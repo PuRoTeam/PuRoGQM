@@ -42,11 +42,12 @@ public class GridHelpController extends BaseFormController{
     public ModelAndView onSubmit(@Valid Goal goal, BindingResult errors, HttpServletRequest request,
                            HttpServletResponse response)
     throws Exception {
- 
+
     	Goal ret = goalManager.get(Long.parseLong("1"));
         String tree = gridManager.explorer(ret, "null");
 		
         JSONObject jsonTree = new JSONObject(tree);
+        
         return new ModelAndView().addObject("tree", (JSONObject)jsonTree);
     }
 

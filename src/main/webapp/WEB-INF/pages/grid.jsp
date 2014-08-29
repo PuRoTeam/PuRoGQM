@@ -10,13 +10,32 @@
 		stroke: steelblue;
 		stroke-width: 3px;
 		}
+		
+		.node rect {
+		fill: #fff;
+		stroke: steelblue;
+		stroke-width: 3px;
+		}
 		 
 		.node text { font: 12px sans-serif; }
 		 
 		.link {
 		fill: none;
 		stroke: #ccc;
-		stroke-width: 2px;
+		stroke-width: 1px;
+		}
+		
+		div.tooltip {
+		  position: absolute;
+		  text-align: center;
+		  width: 60px;
+		  height: 12px;
+		  padding: 8px;
+		  font: 10px sans-serif;
+		  background: #ddd;
+		  border: solid 1px #aaa;
+		  border-radius: 8px;
+		  pointer-events: none;
 		}
 	</style>
 </head>
@@ -43,7 +62,9 @@ $.post(url,
 			width = 960 - margin.right - margin.left,
 			height = 500 - margin.top - margin.bottom;
 			var i = 0;
-			 
+			var widthRect = 80;
+			var heightRect = 50;
+			
 			var tree = d3.layout.tree()
 			.size([height, width]);
 			 
@@ -66,8 +87,11 @@ $.post(url,
 			links = tree.links(nodes);
 			 
 			// Normalize for fixed-depth.
-			nodes.forEach(function(d) { d.y = d.depth * 60; });
+			//nodes.forEach(function(d) { d.y = d.depth * 60;});
+			nodes.forEach(function(d) { d.y = d.depth * 100;});
 			 
+			console.log(nodes);
+			
 			// Declare the nodes
 			var node = svg.selectAll("g.node")
 			.data(nodes, function(d) { return d.id || (d.id = ++i); });
@@ -77,18 +101,91 @@ $.post(url,
 			.attr("class", "node")
 			.attr("transform", function(d) {
 			return "translate(" + d.x + "," + d.y + ")"; });
-			 
-			nodeEnter.append("circle")
-			.attr("r", 10)
-			.style("fill", "#fff");
-			 
-			nodeEnter.append("text")
+			
+			nodeEnter.append("svg:rect")
+			.attr("x", -widthRect/2)
+			.attr("y", -heightRect/2)
+			.attr("width", widthRect)
+			.attr("height", heightRect);
+			//.style("fill", "#f00");
+			
+			//Nome clickabile
+			nodeEnter.append("svg:a").attr("xlink:href", function(d){return "binarytable?id="+d.id;}).append("text")
 			.attr("y", function(d) {
-			return d.children || d._children ? -18 : 18; })
+				//return d.children || d._children ? -18 : 18; })
+				return d.children || d._children ? -7 : -7; })
 			.attr("dy", ".35em")
 			.attr("text-anchor", "middle")
 			.text(function(d) { return d.name; })
 			.style("fill-opacity", 1);
+			
+			nodeEnter.append("text")
+			.attr("y", function(d) {
+				return d.children || d._children ? 10 : 10; })
+			.attr("dy", ".35em")
+			.attr("text-anchor", "middle")
+			.text(function(d) { if(!d.type) return "OG"; else return "Strategy";})
+			.style("fill-opacity", 1);
+			
+			
+			//ONMOUSEOVER
+			/*
+			nodeEnter.append("svg:a").append("text")
+			.attr("y", function(d) {
+				return d.children || d._children ? 28 : 28; })
+			.attr("dy", ".35em")
+			.attr("text-anchor", "middle")
+			.text(function(d) { return d.name; })
+			.style("fill-opacity", 1).on("mouseover", function(d){
+				
+				d.append("circle")
+				.attr("r", 5)
+				.append("text").attr("dy", ".35em")
+				.attr("text-anchor", "middle")
+				.text(function(d) { return d.name; })
+				.style("fill-opacity", 1);
+				
+			});
+			*/
+			nodeEnter.on("click", function(d){ 
+	
+				console.log(d.name+" "+d.id);
+								
+				if(d3.select(this).selectAll("circle").size() == 0 && d.mgs != null){
+						
+					for (var i = 0; i < d.mgs.length; i++) {
+						
+						d3.select(this).append("circle")
+						.attr("r", 10).attr("cx", 60).attr("cy", 30*i);
+						
+						d3.select(this).append("text").attr("dy", ".35em").attr("x", 60).attr("y",30*i)
+						.attr("text-anchor", "middle")
+						.text(function(d) { return d.mgs[i]; });
+						
+					}
+				}
+			})
+			.on("mouseout", function(d){ 
+				if(d3.select(this).selectAll("circle").size() != 0)
+					d3.select(this).selectAll("circle").remove();
+				if(d3.select(this).selectAll("text").size() != 0)
+					d3.select(this).selectAll("text").remove();
+				d3.select(this).append("svg:a").attr("xlink:href", function(d){return "binarytable?id="+d.id;}).append("text")
+				.attr("y", function(d) {
+					return d.children || d._children ? -7 : -7; })
+				.attr("dy", ".35em")
+				.attr("text-anchor", "middle")
+				.text(function(d) { return d.name; })
+				.style("fill-opacity", 1);
+				
+				d3.select(this).append("text")
+				.attr("y", function(d) {
+					return d.children || d._children ? 10 : 10; })
+				.attr("dy", ".35em")
+				.attr("text-anchor", "middle")
+				.text(function(d) { if(!d.type) return "OG"; else return "Strategy";})
+				.style("fill-opacity", 1);
+					});
 			 
 			// Declare the links
 			var link = svg.selectAll("path.link")
