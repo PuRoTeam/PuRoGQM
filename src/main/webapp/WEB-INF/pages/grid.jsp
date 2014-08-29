@@ -89,7 +89,7 @@ $.post(url,
 			links = tree.links(nodes);
 			 
 			// Normalize for fixed-depth.
-			nodes.forEach(function(d) { d.y = d.depth * 120;});
+			nodes.forEach(function(d) { d.y = d.depth * 100;});
 			 
 			console.log(nodes);
 			
@@ -143,15 +143,19 @@ $.post(url,
 							d3.select(this).append("circle")
 							.attr("r", 10).attr("cx", 55).attr("cy", 30*i);
 							
-							d3.select(this).append("text").attr("dy", ".35em").attr("x", 55).attr("y",30*i)
+							d3.select(this).append("svg:a")
+							.attr("xlink:href", function(d){
+									return "graph?id="+d.mgs[i].identifier; 
+									})
+								.append("text").attr("dy", ".35em").attr("x", 55).attr("y",30*i)
 							.attr("text-anchor", "middle")
-							.text(function(d) { return d.mgs[i]; });
+							.text(function(d) { return d.mgs[i].description; });
 							
 						}
 					}
 				}
 			})
-			.on("mouseout", function(d){
+			.on("dblclick", function(d){
 				if(d.type == 0) {
 					if(d3.select(this).selectAll("circle").size() != 0)
 						d3.select(this).selectAll("circle").remove();
