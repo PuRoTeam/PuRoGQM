@@ -535,7 +535,7 @@ public class GoalFormController extends BaseFormController {
         		goal.getVotes().add(userManager.getUserByUsername(request.getRemoteUser()));
         	}
             
-        	handleMGOGRelationship(goal);
+        	goal = handleMGOGRelationship(goal);
         	
         	goal = goalManager.save(goal);
         	
@@ -583,13 +583,17 @@ public class GoalFormController extends BaseFormController {
 	public void removeMGOGRelationship(Goal curGoal) {
 		if(curGoal.isMG()) {
 			Goal og = curGoal.getAssociatedOG();
-			og.getAssociatedMGs().remove(curGoal);
-			goalManager.save(og);
-			curGoal.setAssociatedOG(null);
+			if(og != null) {
+				og.getAssociatedMGs().remove(curGoal);
+				goalManager.save(og);
+				curGoal.setAssociatedOG(null);
+			}
 		} else if(curGoal.isOG()) {
 			Set<Goal> mgs = curGoal.getAssociatedMGs();
-			for(Goal mg : mgs)
+			for(Goal mg : mgs) {
 				mg.setAssociatedOG(null);
+				goalManager.save(mg);
+			}
 			curGoal.getAssociatedMGs().clear();
 		}
 	}    
@@ -598,55 +602,69 @@ public class GoalFormController extends BaseFormController {
      * Gestisce le relazioni di tipo MGOG di un Goal
      * @param curGoal Il Goal da aggiornare
      */
-    private void handleMGOGRelationship(Goal curGoal) {
+    private Goal handleMGOGRelationship(Goal curGoal) {
     	boolean isNew = curGoal.getId() == null;
     	
     	curGoal.getAssociatedMGs().remove(null);
     	
     	if(isNew)
-    		handleMGOGRelationshipOfNewGoal(curGoal);
+    		curGoal = handleMGOGRelationshipOfNewGoal(curGoal);
     	else
-    		handleMGOGRelationshipOnExistingGoal(curGoal);
+    		curGoal = handleMGOGRelationshipOnExistingGoal(curGoal);
+    	
+    	return curGoal;
     }
 
     /**
      * Gestisce le relazioni di tipo MGOG di un Goal non ancora salvato su db
      * @param curGoal Il Goal da aggiornare
      */
-    private void handleMGOGRelationshipOfNewGoal(Goal curGoal) {
-		if(curGoal.isOG()) {
+    private Goal handleMGOGRelationshipOfNewGoal(Goal curGoal) {
+		if(curGoal.isOG()) { //per rendere la relazione persistente su db, devo salvare il proprietario della stessa su db
+			curGoal = goalManager.save(curGoal); //se non salvo subito curGoal, vado in eccezione perchè quando salvo i vari mg, essendo proprietari della relazione, non trovano su db curGoal
 			Set<Goal> curMGs = curGoal.getAssociatedMGs();
-			for(Goal mg : curMGs) {
+			
+			for(Goal mg : curMGs) {				
 				mg.setAssociatedOG(curGoal);
 				goalManager.save(mg);
 			}
 		}
 		else if(curGoal.isMG()) {
+			//stò creando un mg, quindi posso anche non salvare il relativo og su db, che tanto è l'mg che essendo proprietario della relazione, ha la foreign key sull'og
 			Goal og = curGoal.getAssociatedOG();
-			Set<Goal> ogMGs = og.getAssociatedMGs();
-			if(!ogMGs.contains(curGoal))
-				ogMGs.add(curGoal);
+			
+			if(og != null) { 
+				Set<Goal> ogMGs = og.getAssociatedMGs();
+				if(!ogMGs.contains(curGoal))
+					ogMGs.add(curGoal);
+			}
 		}
+		
+		return curGoal;
     }
     
     /**
      * Gestisce le relazioni di tipo MGOG di un Goal già esistente
      * @param curGoal Il Goal da aggiornare
      */
-    private void handleMGOGRelationshipOnExistingGoal(Goal curGoal) {
-		if(curGoal.isOG()) {
+    private Goal handleMGOGRelationshipOnExistingGoal(Goal curGoal) {
+		if(curGoal.isOG()) { //per rendere la relazione persistente su db, devo salvare il proprietario della stessa su db
 			Goal oldCur = goalManager.get(curGoal.getId());
 			Set<Goal> oldMGs = oldCur.getAssociatedMGs(); //associazioni salvate su db    			
 			Set<Goal> curMGs = curGoal.getAssociatedMGs(); //nuove associazioni
 			
 			for(Goal oldMG : oldMGs) {
-				if(!curMGs.contains(oldMG)) //se la vecchia associazione non è presente anche fra le nuove, la posso eliminare
-					oldMG.setAssociatedOG(null);    				
+				if(!curMGs.contains(oldMG)) { //se la vecchia associazione non è presente anche fra le nuove, la posso eliminare
+					oldMG.setAssociatedOG(null); 
+					goalManager.save(oldMG);
+				}			
 			}
 			
 			for(Goal curMG : curMGs) {
-				if(!oldMGs.contains(curMG)) //se la nuova associazione non è presente fra le vecchie, la devo aggiungere
+				if(!oldMGs.contains(curMG)) { //se la nuova associazione non è presente fra le vecchie, la devo aggiungere
 					curMG.setAssociatedOG(curGoal);
+					goalManager.save(curMG);
+				}	
 			}
 		}
 		else if(curGoal.isMG()) {
@@ -654,9 +672,11 @@ public class GoalFormController extends BaseFormController {
 			Goal oldOG = oldCur.getAssociatedOG();
 			Goal curOG = curGoal.getAssociatedOG();
 			
-			if(oldOG != curOG) //se ho modificato l'associazione, devo eliminare quella vecchia
+			if(oldOG != curOG && oldOG != null) //se ho modificato l'associazione, devo eliminare quella vecchia
 				oldOG.getAssociatedMGs().remove(oldOG);
 		}
+		
+		return curGoal;
     }
 
     /****************************************InitBinders****************************************/

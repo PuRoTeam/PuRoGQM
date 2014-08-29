@@ -433,24 +433,6 @@ public class Goal extends BaseObject {
 		this.ostrategyChild = strategyChild;
 	}
 	
-	@OneToMany(mappedBy="associatedOG")
-	public Set<Goal> getAssociatedMGs() {
-		return associatedMGs;
-	}
-
-	public void setAssociatedMGs(Set<Goal> associatedMGs) {
-		this.associatedMGs = associatedMGs;
-	}
-
-	@ManyToOne
-	public Goal getAssociatedOG() {
-		return associatedOG;
-	}
-
-	public void setAssociatedOG(Goal associatedOG) {
-		this.associatedOG = associatedOG;
-	}
-	
 	public boolean hasChildren() {
 		return getChildType() != -1;
 	}
@@ -491,5 +473,24 @@ public class Goal extends BaseObject {
 			return false;
 		
 		return type.intValue() == GoalType.OG.getId();
+	}
+	
+	@OneToMany(mappedBy="associatedOG")
+	public Set<Goal> getAssociatedMGs() {
+		return associatedMGs;
+	}
+
+	public void setAssociatedMGs(Set<Goal> associatedMGs) {
+		this.associatedMGs = associatedMGs;
+	}
+
+	//mg è proprietario della relazione, e quindi prima di salvarlo devi essere sicuro che l'og sia esistente su db
+	@ManyToOne
+	public Goal getAssociatedOG() {
+		return associatedOG;
+	}
+
+	public void setAssociatedOG(Goal associatedOG) {
+		this.associatedOG = associatedOG;
 	}
 }
