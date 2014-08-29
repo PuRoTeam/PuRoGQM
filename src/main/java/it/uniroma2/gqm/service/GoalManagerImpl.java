@@ -129,23 +129,6 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
 		return goals;
 	}
 	
-	/*@Override
-	public boolean hasChildren(Goal g){
-		if(g.getOrgChild().size() >0 || g.getOstrategyChild().size() > 0)
-			return true;
-		else
-			return false;
-	}
-	
-	@Override
-	public boolean hasParent(Goal g){
-		if (g.getOrgParent() != null || g.getOstrategyParent() != null) {
-			return true;
-		}else {
-			return false;
-		}
-	}*/
-	
 	@Override
 	public boolean rootExists(Project currentProject){
 		
@@ -155,4 +138,8 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
 			return false;
 		}
 	}
+	
+	/*public boolean contains(Goal g) {
+		return goalDao.contains(g);
+	}*/
 }

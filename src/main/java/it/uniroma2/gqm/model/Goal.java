@@ -1,8 +1,6 @@
 package it.uniroma2.gqm.model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -21,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 import org.appfuse.model.BaseObject;
@@ -51,12 +48,11 @@ public class Goal extends BaseObject {
 
 	private static final long serialVersionUID = -5289775436595676632L;
 	
-	//Common fields
+	/*****Common fields*****/
 	private String description;	
 	private Integer type;
 	private String scope;
 	private String focus;
-	//private Goal parent;
 	private User goalOwner;
 	private User goalEnactor;
 	private GoalStatus status;
@@ -66,27 +62,17 @@ public class Goal extends BaseObject {
 	private Set<User> MMDMMembers = new HashSet<User>();
 	private Set<GoalQuestion> questions = new HashSet<GoalQuestion>();	
 	private Set<User> votes = new HashSet<User>();
-	//private Set<Goal> children = new HashSet<Goal>();
 	private String refinement;
+	/*****Common fields*****/
 	
-	
-	
-	//private Goal associatedGoal; //necessario per visualizzare il goal associato nella lista di goal
-	private Set<MGOGRelationship> relationsWithMG = new HashSet<MGOGRelationship>();
-	private MGOGRelationship relationWithOG;
-	
-	//OG fields
+	/*****OG fields*****/
 	private String activity;
 	private String object;
 	private String magnitude;
 	private String timeframe;
 	private String constraints;
-	//private Strategy strategy;
 	
-	//OG hierarchy fields
-	//private int childType  = -1;
-	//private int parentType = -1;
-	
+	//OG hierarchy fields	
 	private Goal orgParent;
 	private Strategy ostrategyParent;
 	
@@ -96,11 +82,17 @@ public class Goal extends BaseObject {
 	private Set<Goal> orgChild = new HashSet<Goal>();
 	private Set<Strategy> ostrategyChild = new HashSet<Strategy>();
 	
-	//MG fields
+	private Set<Goal> associatedMGs = new HashSet<Goal>();
+	/*****OG fields*****/
+	
+	/*****MGG fields*****/
 	private String subject;
 	private String context;
 	private String viewpoint;
 	private String impactOfVariation;
+	
+	private Goal associatedOG;
+	/*****MGG fields*****/
 	
 	public Goal() {
 		
@@ -194,25 +186,11 @@ public class Goal extends BaseObject {
 
 	@Transient
 	public String getTypeAsString() {
-		if(GoalType.isMG(this))
+		if(isMG())
 			return GoalType.MG.getString();
 		else
 			return GoalType.OG.getString();
 	}
-	
-	/*
-	@Transient
-	public String getInterpretationModelAsString() {
-		if(this.interpretationModel == null)
-			return "Not specified";
-		if (this.interpretationModel == 1) {
-			return "GQM";
-		} else if (this.interpretationModel == 2) {
-			return "GQM+Strategies";
-		} else {
-			return "Not specified";
-		}
-	}*/
 
 	@Override
 	public int hashCode() {
@@ -253,18 +231,6 @@ public class Goal extends BaseObject {
 	public void setStatus(GoalStatus status) {
 		this.status = status;
 	}
-	
-	/*
-	@ManyToOne
-	@JoinColumn(name = "strategy_id", nullable = true)
-	public Strategy getStrategy() {
-		return strategy;
-	}
-
-	public void setStrategy(Strategy strategy) {
-		this.strategy = strategy;
-	}
-	*/
 	
 	@ManyToOne
 	@JoinColumn(name = "go_id", nullable = false)	
@@ -345,18 +311,6 @@ public class Goal extends BaseObject {
 		return this.project.getProjectManagers().size();
 	}
 	
-	/*
-	@ManyToOne
-	@JoinColumn(name = "parent_id", nullable = true)	
-	public Goal getParent() {
-		return parent;
-	}
-
-	public void setParent(Goal parent) {
-		this.parent = parent;
-	}
-	*/
-	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.goal")
 	public Set<GoalQuestion>  getQuestions() {
 		return questions;
@@ -427,12 +381,7 @@ public class Goal extends BaseObject {
 		
 		return childType;
 	}
-	
-	/*
-	public void setChildType(int childType) {
-		this.childType = childType;
-	}
-	*/
+
 	@Transient
 	public int getParentType() {		
 		//utilizzo i getter anzichè le variabili, perchè di base non vengono caricati i parent, essendo definiti come lazy
@@ -445,11 +394,6 @@ public class Goal extends BaseObject {
 		
 		return parentType;
 	}
-	/*
-	public void setParentType(int parentType) {
-		this.parentType = parentType;
-	}
-	 */
 	
 	@ManyToOne
 	//@JoinColumn(name="oparent_id")
@@ -488,50 +432,6 @@ public class Goal extends BaseObject {
 	public void setOstrategyChild(Set<Strategy> strategyChild) {
 		this.ostrategyChild = strategyChild;
 	}
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.og") //this ha ruolo OG nella relazione
-	public Set<MGOGRelationship> getRelationsWithMG() {
-		return relationsWithMG;
-	}
-
-	public void setRelationsWithMG(Set<MGOGRelationship> relationsWithMG) {
-		this.relationsWithMG = relationsWithMG;
-	}
-
-	@OneToOne(fetch = FetchType.LAZY, mappedBy = "pk.mg") //this ha ruolo MG nella relazione
-	public MGOGRelationship getRelationWithOG() {
-		return relationWithOG;
-	}
-
-	public void setRelationWithOG(MGOGRelationship relationWithOG) {
-		this.relationWithOG = relationWithOG;
-	}
-	/**
-	 * Restituisce un insieme di oggetti MGOGRelationship. Se il goal è un MG, l'insieme ha al massimo un elemento.
-	 * @return Un insieme di oggetti MGOGRelationship, eventualmente nullo
-	 */
-	@Transient
-	public List<MGOGRelationship> getMGOGRelations() {
-		if(GoalType.isMG(this)) {
-			List<MGOGRelationship> ogSet = new ArrayList<MGOGRelationship>();
-			
-			MGOGRelationship relOG = getRelationWithOG();
-			if(relOG != null) {
-				ogSet.add(relOG);
-			}
-			
-			return ogSet;
-		} else if(GoalType.isOG(this)) {
-			List<MGOGRelationship> mgSet = new ArrayList<MGOGRelationship>();
-			
-			for(MGOGRelationship rel : getRelationsWithMG())
-				mgSet.add(rel);
-			
-			return mgSet;
-		}
-		
-		return null;
-	}
 	
 	public boolean hasChildren() {
 		return getChildType() != -1;
@@ -557,5 +457,40 @@ public class Goal extends BaseObject {
 	@Transient
 	public boolean isParentStrategy() {
 		return getParentType() == 1;
+	}
+	
+	@Transient
+	public boolean isMG() {
+		if(type == null)
+			return false;
+		
+		return type.intValue() == GoalType.MG.getId();
+	}
+	
+	@Transient
+	public boolean isOG() {
+		if(type == null)
+			return false;
+		
+		return type.intValue() == GoalType.OG.getId();
+	}
+	
+	@OneToMany(mappedBy="associatedOG")
+	public Set<Goal> getAssociatedMGs() {
+		return associatedMGs;
+	}
+
+	public void setAssociatedMGs(Set<Goal> associatedMGs) {
+		this.associatedMGs = associatedMGs;
+	}
+
+	//mg è proprietario della relazione, e quindi prima di salvarlo devi essere sicuro che l'og sia esistente su db
+	@ManyToOne
+	public Goal getAssociatedOG() {
+		return associatedOG;
+	}
+
+	public void setAssociatedOG(Goal associatedOG) {
+		this.associatedOG = associatedOG;
 	}
 }

@@ -7,6 +7,7 @@ import javax.persistence.ManyToOne;
 
 @Embeddable
 public class QuestionMetricPK implements Serializable {
+	private static final long serialVersionUID = 8216954247562866404L;
 	private Question question;
 	private Metric metric;
 	

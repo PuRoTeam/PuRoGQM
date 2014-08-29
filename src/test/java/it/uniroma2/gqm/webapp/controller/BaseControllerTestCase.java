@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.AbstractTransactionalJUnit4Spring
                 "classpath*:/applicationContext.xml", // for modular archetypes
                 "/WEB-INF/applicationContext*.xml",
                 "/WEB-INF/dispatcher-servlet.xml"})
-public abstract class BaseControllerTestCase extends AbstractTransactionalJUnit4SpringContextTests {
+public abstract class BaseControllerTestCase extends AbstractTransactionalJUnit4SpringContextTests { 
     protected transient final Log log = LogFactory.getLog(getClass());
     private int smtpPort = 25250;
 

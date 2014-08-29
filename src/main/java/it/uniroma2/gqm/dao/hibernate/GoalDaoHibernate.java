@@ -90,5 +90,7 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
     	return q.list();
 	}
     
-    
+	/*public boolean contains(Goal g) {
+		return getSession().contains(g);
+	}*/
 }

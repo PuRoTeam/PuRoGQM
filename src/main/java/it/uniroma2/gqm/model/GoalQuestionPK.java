@@ -2,9 +2,7 @@ package it.uniroma2.gqm.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 

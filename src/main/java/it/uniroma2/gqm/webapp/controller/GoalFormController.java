@@ -34,7 +34,6 @@ import java.util.Set;
 import it.uniroma2.gqm.model.*;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.GridManager;
-import it.uniroma2.gqm.service.MGOGRelationshipManager;
 import it.uniroma2.gqm.service.StrategyManager;
 import it.uniroma2.gqm.webapp.util.RequestUtil;
 
@@ -54,8 +53,6 @@ public class GoalFormController extends BaseFormController {
     
     @Autowired
     private StrategyManager strategyManager;
-
-    private MGOGRelationshipManager mgogRelationshipManager;
     
     private GridManager gridManager;
     
@@ -63,11 +60,6 @@ public class GoalFormController extends BaseFormController {
     public void setGridManager(@Qualifier("gridManager") GridManager gridManager) {
     	this.gridManager = gridManager;
     }
-    
-    @Autowired
-	public void setMgogRelationshipManager(@Qualifier("mgogRelationshipManager") MGOGRelationshipManager mgogRelationshipManager) {
-		this.mgogRelationshipManager = mgogRelationshipManager;
-	}
 
 	@Autowired
     public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
@@ -99,12 +91,9 @@ public class GoalFormController extends BaseFormController {
         
         Project currentProject = (Project) session.getAttribute("currentProject");
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
-
-        List<MGOGRelationship> retRelations = new ArrayList<MGOGRelationship>();
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
-        	retRelations = ret.getMGOGRelations();
         }else {
         	ret = new Goal();
         	ret.setStatus(GoalStatus.DRAFT);
@@ -129,9 +118,9 @@ public class GoalFormController extends BaseFormController {
 		List<Goal> mGoalsAll = new ArrayList<Goal>(); //tutti gli mg nel progetto
 		
 		for(Goal g: allGoals) {
-			if(GoalType.isMG(g))
+			if(g.isMG())
 				mGoalsAll.add(g);
-			else if(GoalType.isOG(g))
+			else if(g.isOG())
 				oGoalsAll.add(g);
 		}
 		
@@ -149,8 +138,8 @@ public class GoalFormController extends BaseFormController {
 		associableOGoals.addAll(oGoalsAll); //popolo og associabili ad mg, ossia tutti
 			
 		for(Goal g: mGoalsAll) { //popolo mg associabili a og, ossia quelli senza relazione o in relazione con l'og corrente
-			List<MGOGRelationship> gRelations = g.getMGOGRelations(); 
-			if(gRelations.size() == 0 || retRelations.contains(gRelations.get(0))) //essendo un mg, ha al massimo una relazione
+			Goal gAssociatedOG = g.getAssociatedOG(); //og associato al goal g (che è un mg)
+			if(gAssociatedOG == null || gAssociatedOG == ret)
 				associableMGoals.add(g);
 		}
 				
@@ -245,7 +234,7 @@ public class GoalFormController extends BaseFormController {
         if (request.getParameter("delete") != null) {
         	Goal gDB = goalManager.get(goal.getId());
         	
-        	if(GoalType.isOG(gDB)){
+        	if(gDB.isOG()){
         		
         		if(gDB.hasChildren()) {
         			//TODO Attenzione!!! potrebbe non funzionare
@@ -274,7 +263,9 @@ public class GoalFormController extends BaseFormController {
             	}
         	}
    	
-        	deleteGoal(gDB);
+        	removeMGOGRelationship(gDB);
+        	
+        	goalManager.remove(gDB);
         	
             saveMessage(request, getText("goal.deleted", locale));
             
@@ -283,7 +274,7 @@ public class GoalFormController extends BaseFormController {
         	//###########################################################
         	
         	
-        	if(GoalType.isOG(goal)){
+        	if(goal.isOG()){
         		
         		goal.getOrgChild().remove(null);
             	goal.getOstrategyChild().remove(null);
@@ -544,22 +535,9 @@ public class GoalFormController extends BaseFormController {
         		goal.getVotes().add(userManager.getUserByUsername(request.getRemoteUser()));
         	}
             
-        	List<MGOGRelationship> oldMGOGRelations = new ArrayList<MGOGRelationship>();
-        	List<MGOGRelationship> newMGOGRelations = new ArrayList<MGOGRelationship>();
-        	
-        	boolean sameMGOGRelation = getNewAndOldMGOGRelationship(goal, oldMGOGRelations, newMGOGRelations);
-        	
-        	if(!sameMGOGRelation)
-        		goal = deleteOldAddNewRelationship(goal, oldMGOGRelations, newMGOGRelations);
-        	
-        	//altro codice legato di confronto relazioni
+        	goal = handleMGOGRelationship(goal);
         	
         	goal = goalManager.save(goal);
-        	
-        	//salva altre relazioni
-        	
-        	if(!sameMGOGRelation)
-        		saveNewRelationship(newMGOGRelations);
         	
             String key = (isNew) ? "goal.added" : "goal.updated";
             saveMessage(request, getText(key, locale));
@@ -597,93 +575,112 @@ public class GoalFormController extends BaseFormController {
         
         return getSuccessView();
     }
-
-    /**
-     * Elimina un Goal e tutte le sue relazioni
-     * @param g Il Goal da eliminare
-     */
-    private void deleteGoal(Goal g) {    	        	
-    	mgogRelationshipManager.removeRelations(g);
-    	//rimozione di altre relazioni
-    	goalManager.remove(g); //elimino goal da tabella Goal 
-    }
     
     /**
-     * Restituisce le relazioni di tipo MGOG vecchie e nuove del goal passato come parametro
-     * @param g Il Goal di cui recuperare le relazioni MGOG
-     * @param oldMGOGRelations Una lista a cui aggiungere le vecchie relazioni MGOG
-     * @param newMGOGRelations Una lista a cui aggiungere le nuove relazioni MGOG
-     * @return true in caso le relazioni non siano state modificate, false altrimenti
+     * Elimina i riferimenti a curGoal nei goal associati e viceversa
+     * @param curGoal Il Goal da modificare
      */
-    private boolean getNewAndOldMGOGRelationship(Goal g, List<MGOGRelationship> oldMGOGRelations, List<MGOGRelationship> newMGOGRelations) {
-    	boolean isNew = (g.getId() == null);
+	public void removeMGOGRelationship(Goal curGoal) {
+		if(curGoal.isMG()) {
+			Goal og = curGoal.getAssociatedOG();
+			if(og != null) {
+				og.getAssociatedMGs().remove(curGoal);
+				goalManager.save(og);
+				curGoal.setAssociatedOG(null);
+			}
+		} else if(curGoal.isOG()) {
+			Set<Goal> mgs = curGoal.getAssociatedMGs();
+			for(Goal mg : mgs) {
+				mg.setAssociatedOG(null);
+				goalManager.save(mg);
+			}
+			curGoal.getAssociatedMGs().clear();
+		}
+	}    
+    
+    /**
+     * Gestisce le relazioni di tipo MGOG di un Goal
+     * @param curGoal Il Goal da aggiornare
+     */
+    private Goal handleMGOGRelationship(Goal curGoal) {
+    	boolean isNew = curGoal.getId() == null;
     	
-    	List<MGOGRelationship> oldRelations = !isNew ? mgogRelationshipManager.getAssociatedRelations(g) : new ArrayList<MGOGRelationship>(); //vecchie relazioni
-        List<MGOGRelationship> newRelations = g.getMGOGRelations(); //nuove relazioni
-        newRelations.remove(null); //se l'utente ha selezionato "None" (da modificare nel javascript)
-            
-        //In initBinder3.setValue ho impostato solo un goal della relazione, devo impostare l'altro goal (ossia g)
-        //Devo eseguire questa operazione prima di confrontare oldRelations e newRelations
-        for(MGOGRelationship newRel : newRelations) {
-        	if(GoalType.isOG(g))
-        		newRel.getPk().setOg(g);
-        	else if(GoalType.isMG(g))
-        		newRel.getPk().setMg(g);
-        }
-        
-        oldMGOGRelations.addAll(oldRelations);
-        newMGOGRelations.addAll(newRelations);
-        
-        return oldMGOGRelations.equals(newMGOGRelations);
-    }
-    
-    /**
-     * Modifica l'oggetto Goal passato come parametro, eliminando le vecchie relazioni MGOG ed aggiungendo le nuove.
-     * Per confermare le modifiche del goal, è successivamente necessario salvarlo
-     * @param g Il Goal da modificare
-     * @param oldMGOGRelations La lista delle vecchie relazioni MGOG
-     * @param newMGOGRelations La lista delle nuove relazioni MGOG
-     * @return Il Goal modificato
-     */
-    public Goal deleteOldAddNewRelationship(Goal g, List<MGOGRelationship> oldMGOGRelations, List<MGOGRelationship> newMGOGRelations) {
-        //g.setRelationsWithMG(new HashSet<MGOGRelationship>());
-    	g.getRelationsWithMG().clear();
-        g.setRelationWithOG(null);
-        
-        if(g.getId() == null) //se il goal è nuovo, non ha un id, quindi quando salvo le nuove relazioni, lancia un'eccezione
-        	g = goalManager.save(g);
-        
-        for(MGOGRelationship oldRel : oldMGOGRelations)
-        	mgogRelationshipManager.remove(oldRel);
-        
-        //In initBinder3.setValue ho impostato solo un goal della relazione, devo impostare l'altro goal
-        for(MGOGRelationship newRel : newMGOGRelations) {
-        	if(GoalType.isOG(g)) {
-        		newRel.getPk().setOg(g);
-        		g.getRelationsWithMG().add(newRel);
-        	}
-        	else if(GoalType.isMG(g)) {
-        		newRel.getPk().setMg(g);
-        		g.setRelationWithOG(newRel);
-        	}
-        }
-        
-        return g;
-    }
-    
-    /**
-     * Salva le nuove relazioni MGOG nella tabella MGOGRelationship
-     * @param newMGOGRelations La lista delle nuove relazioni MGOG
-     */
-    public void saveNewRelationship(List<MGOGRelationship> newMGOGRelations) {
-        for(MGOGRelationship newRel : newMGOGRelations)
-        	mgogRelationshipManager.save(newRel); //salvo nuove relazioni in tabella relazioni	
+    	curGoal.getAssociatedMGs().remove(null);
+    	
+    	if(isNew)
+    		curGoal = handleMGOGRelationshipOfNewGoal(curGoal);
+    	else
+    		curGoal = handleMGOGRelationshipOnExistingGoal(curGoal);
+    	
+    	return curGoal;
     }
 
-    /*
-     * InitBinders
+    /**
+     * Gestisce le relazioni di tipo MGOG di un Goal non ancora salvato su db
+     * @param curGoal Il Goal da aggiornare
      */
+    private Goal handleMGOGRelationshipOfNewGoal(Goal curGoal) {
+		if(curGoal.isOG()) { //per rendere la relazione persistente su db, devo salvare il proprietario della stessa su db
+			curGoal = goalManager.save(curGoal); //se non salvo subito curGoal, vado in eccezione perchè quando salvo i vari mg, essendo proprietari della relazione, non trovano su db curGoal
+			Set<Goal> curMGs = curGoal.getAssociatedMGs();
+			
+			for(Goal mg : curMGs) {				
+				mg.setAssociatedOG(curGoal);
+				goalManager.save(mg);
+			}
+		}
+		else if(curGoal.isMG()) {
+			//stò creando un mg, quindi posso anche non salvare il relativo og su db, che tanto è l'mg che essendo proprietario della relazione, ha la foreign key sull'og
+			Goal og = curGoal.getAssociatedOG();
+			
+			if(og != null) { 
+				Set<Goal> ogMGs = og.getAssociatedMGs();
+				if(!ogMGs.contains(curGoal))
+					ogMGs.add(curGoal);
+			}
+		}
+		
+		return curGoal;
+    }
     
+    /**
+     * Gestisce le relazioni di tipo MGOG di un Goal già esistente
+     * @param curGoal Il Goal da aggiornare
+     */
+    private Goal handleMGOGRelationshipOnExistingGoal(Goal curGoal) {
+		if(curGoal.isOG()) { //per rendere la relazione persistente su db, devo salvare il proprietario della stessa su db
+			Goal oldCur = goalManager.get(curGoal.getId());
+			Set<Goal> oldMGs = oldCur.getAssociatedMGs(); //associazioni salvate su db    			
+			Set<Goal> curMGs = curGoal.getAssociatedMGs(); //nuove associazioni
+			
+			for(Goal oldMG : oldMGs) {
+				if(!curMGs.contains(oldMG)) { //se la vecchia associazione non è presente anche fra le nuove, la posso eliminare
+					oldMG.setAssociatedOG(null); 
+					goalManager.save(oldMG);
+				}			
+			}
+			
+			for(Goal curMG : curMGs) {
+				if(!oldMGs.contains(curMG)) { //se la nuova associazione non è presente fra le vecchie, la devo aggiungere
+					curMG.setAssociatedOG(curGoal);
+					goalManager.save(curMG);
+				}	
+			}
+		}
+		else if(curGoal.isMG()) {
+			Goal oldCur = goalManager.get(curGoal.getId());
+			Goal oldOG = oldCur.getAssociatedOG();
+			Goal curOG = curGoal.getAssociatedOG();
+			
+			if(oldOG != curOG && oldOG != null) //se ho modificato l'associazione, devo eliminare quella vecchia
+				oldOG.getAssociatedMGs().remove(oldOG);
+		}
+		
+		return curGoal;
+    }
+
+    /****************************************InitBinders****************************************/
+        
     @InitBinder(value="goal")
     protected void initBinder(WebDataBinder binder) {
         binder.setValidator(new GoalValidator());
@@ -821,8 +818,8 @@ public class GoalFormController extends BaseFormController {
     
     @InitBinder
     protected void initBinder6(HttpServletRequest request, ServletRequestDataBinder binder) {    	
-    	binder.registerCustomEditor(Set.class, "relationsWithMG", new AssociatedMGCollectionEditor(Set.class));
-    	binder.registerCustomEditor(MGOGRelationship.class, "relationWithOG", new AssociatedOGEditorSupport());
+    	binder.registerCustomEditor(Set.class, "associatedMGs", new AssociatedMGCollectionEditor(Set.class));
+    	binder.registerCustomEditor(Goal.class, "associatedOG", new AssociatedOGEditorSupport());
     }
 
     private class AssociatedOGEditorSupport extends PropertyEditorSupport {
@@ -832,11 +829,8 @@ public class GoalFormController extends BaseFormController {
 				Long id = new Long(text);
 
 				if(id != -1) {
-					MGOGRelationship rel = new MGOGRelationship();
-					MGOGRelationshipPK pk = new MGOGRelationshipPK();
-					pk.setOg(goalManager.get(id)); //il goal mg lo setto in onSubmit
-					rel.setPk(pk);
-					setValue(rel);	
+					Goal og = goalManager.get(id);
+					setValue(og);	
 				} else {
 					setValue(null);
 				}
@@ -851,7 +845,7 @@ public class GoalFormController extends BaseFormController {
     	
     	public void setValue(Object value) { //se la collection è nulla (perchè non ci sono elementi selezionati), la reimposto al valore di default
     		if(value == null)
-    			super.setValue(new HashSet<MGOGRelationshipPK>());
+    			super.setValue(new HashSet<Goal>());
     		else
     			super.setValue(value);    		
     	}
@@ -861,14 +855,8 @@ public class GoalFormController extends BaseFormController {
 	    		Long id = new Long((String)element);
 	    		
 	    		if(id != -1) {
-		    		Goal mg = goalManager.get(id);
-		    		
-		    		MGOGRelationship rel = new MGOGRelationship();
-		    		MGOGRelationshipPK pk = new MGOGRelationshipPK();
-		    		pk.setMg(mg);
-		    		rel.setPk(pk);
-		    		
-		    		return rel;	
+		    		Goal mg = goalManager.get(id);		    		
+		    		return mg;	
 	    		}
     		}
     		return null;
