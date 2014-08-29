@@ -22,22 +22,6 @@ public class MGOGRelationshipManagerImpl extends GenericManagerImpl<MGOGRelation
 		super(mgogRelationshipDao);
 		this.mgogRelationshipDao = mgogRelationshipDao;
 	}
-
-	@Override
-	public void removeRelations(Goal goal) { 
-		if(goal == null)
-			return;
-		
-		List<MGOGRelationship> relations =  goal.getMGOGRelations();
-		
-		for(MGOGRelationship rel : relations)
-			mgogRelationshipDao.remove(rel); //elimino le relazioni da tabella MGOGRelationship
-		
-		//elimino le relazioni dall'oggetto goal
-		goal.setRelationWithOG(null);
-		goal.getRelationsWithMG().clear();
-		//goal.setRelationsWithMG(new HashSet<MGOGRelationship>());
-	}
 	
 	@Override
 	public List<MGOGRelationship> getAssociatedRelations(Goal goal) {

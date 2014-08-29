@@ -525,4 +525,18 @@ public class Goal extends BaseObject {
 	public boolean isParentStrategy() {
 		return getParentType() == 1;
 	}
+	
+	public boolean isMG() {
+		if(type == null)
+			return false;
+		
+		return type.intValue() == GoalType.MG.getId();
+	}
+	
+	public boolean isOG() {
+		if(type == null)
+			return false;
+		
+		return type.intValue() == GoalType.OG.getId();
+	}
 }
