@@ -81,7 +81,9 @@ public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     		tree += "\""+g.getDescription()+"\"";
     		tree += ",\"parent\":";
     		tree += "\""+s+"\"";
-    		tree += ",\"id\":";
+    		tree += ",\"type\":";
+    		tree += "\""+0+"\"";
+    		tree += ",\"identifier\":";
     		tree += "\""+g.getId()+"\"";
     		
     		if(g.getRelationsWithMG().size() > 0) {
@@ -135,6 +137,8 @@ public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     		tree += "\""+stra.getName()+"\"";
     		tree += ",\"parent\":";
     		tree += "\""+s+"\"";
+    		tree += ",\"type\":";
+    		tree += "\""+2+"\"";
     		if(stra.hasChildren()) { //ha figli
     			
     			tree += ", \"children\":[";
