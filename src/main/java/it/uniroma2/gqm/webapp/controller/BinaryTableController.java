@@ -56,47 +56,39 @@ public class BinaryTableController {
 		
         String id = request.getParameter("id");
         Goal ret = null;
-        Set<MGOGRelationship> retRelation = new HashSet<MGOGRelationship>();
         Set<Goal> mgs = new HashSet<Goal>();
         
         Project currentProject = (Project) session.getAttribute("currentProject");
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
 
-        if (!StringUtils.isBlank(id)) {
-        	
+        if (!StringUtils.isBlank(id)) {        	
         	//Recupera goal selezionato
         	ret = goalManager.get(new Long(id));
         	
-        	//Recupera associazioni con MG
-        	retRelation = ret.getRelationsWithMG();
+        	//Recupera MG associati
+        	mgs = ret.getAssociatedMGs();
         	
             boolean satisfyAll = true;
             BinaryElement mainGoal = new BinaryElement(ret, 0);
-        	
-        	//Recupero l'MG da ogni MGOGRelationship  
-        	for (MGOGRelationship mgog : retRelation) {
-        		
-				mgs.add(mgog.getPk().getMg());
-				
-				//Recupero tutte le metriche associate ad ogni MG
-	            for (Goal mg : mgs) {
-	            	List<Metric> metrics = goalManager.getMeasuredMetricByGoal(mg);
-	            	
-	            	if (metrics.size() > 0) {
-	            		boolean satisfy = true;
-		            	//Calcolo valore di soddisfacimento (1 o 0)
-		                for(Metric m: metrics){
-		                	satisfy &= metricManager.getSatisfaction(m);
-		                	satisfyAll &= satisfy;
-		                }
-		                if(satisfyAll)
-		                	mainGoal.setValue(1);
-					} else {
-						mainGoal.setValue(0);
-					}
-	            	
-	    		}
-			}
+			
+			//Recupero tutte le metriche associate ad ogni MG
+            for (Goal mg : mgs) {
+            	List<Metric> metrics = goalManager.getMeasuredMetricByGoal(mg);
+            	
+            	if (metrics.size() > 0) {
+            		boolean satisfy = true;
+	            	//Calcolo valore di soddisfacimento (1 o 0)
+	                for(Metric m: metrics){
+	                	satisfy &= metricManager.getSatisfaction(m);
+	                	satisfyAll &= satisfy;
+	                }
+	                if(satisfyAll)
+	                	mainGoal.setValue(1);
+				} else {
+					mainGoal.setValue(0);
+				}
+            	
+    		}
         	
             Set<BinaryElement> childGoal = new HashSet<BinaryElement>();
  
@@ -104,40 +96,33 @@ public class BinaryTableController {
             Set<Goal> set = binaryManager.findOGChildren(goalManager.get(Long.parseLong(id)));
             
             for (Goal g : set) {
-            	
             	mgs.clear();
-            	retRelation.clear();
             	
             	//Recupera associazioni con MG
-            	retRelation = g.getRelationsWithMG();
+            	mgs = g.getAssociatedMGs();
             	
                 satisfyAll = true;
                 BinaryElement gGoal = new BinaryElement(g, 0);
-            	
-            	//Recupero l'MG da ogni MGOGRelationship  
-            	for (MGOGRelationship mgog : retRelation) {
-            		
-    				mgs.add(mgog.getPk().getMg());
-    				
-    				//Recupero tutte le metriche associate ad ogni MG
-    	            for (Goal mg : mgs) {
-    	            	List<Metric> metrics = goalManager.getMeasuredMetricByGoal(mg);
-    	            	
-    	            	boolean satisfy = true;
-    	            	if(metrics.size() > 0){
-	  	            		//Calcolo valore di soddisfacimento (1 o 0)
-	    	                for(Metric m: metrics){
-	    	                	satisfy &= metricManager.getSatisfaction(m);
-	    	                	satisfyAll &= satisfy;
-	    	                }
-	    	                if(satisfyAll) {
-	    	                	gGoal.setValue(1);
-	    	                }
-    	            	} else {
-    	            		gGoal.setValue(0);
-    	            	}
-    	    		}
-    			}
+
+				//Recupero tutte le metriche associate ad ogni MG
+	            for (Goal mg : mgs) {
+	            	List<Metric> metrics = goalManager.getMeasuredMetricByGoal(mg);
+	            	
+	            	boolean satisfy = true;
+	            	if(metrics.size() > 0){
+  	            		//Calcolo valore di soddisfacimento (1 o 0)
+    	                for(Metric m: metrics){
+    	                	satisfy &= metricManager.getSatisfaction(m);
+    	                	satisfyAll &= satisfy;
+    	                }
+    	                if(satisfyAll) {
+    	                	gGoal.setValue(1);
+    	                }
+	            	} else {
+	            		gGoal.setValue(0);
+	            	}
+	    		}
+    			
             	childGoal.add(gGoal);
 			}
             
