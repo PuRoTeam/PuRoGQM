@@ -1,7 +1,6 @@
 package it.uniroma2.gqm.service;
 
 import it.uniroma2.gqm.model.Goal;
-import it.uniroma2.gqm.model.MGOGRelationship;
 import it.uniroma2.gqm.model.Strategy;
 
 import java.util.Set;
@@ -86,14 +85,14 @@ public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     		tree += ",\"identifier\":";
     		tree += "\""+g.getId()+"\"";
     		
-    		if(g.getRelationsWithMG().size() > 0) {
+    		if(g.getAssociatedMGs().size() > 0) {
     			tree += ",\"mgs\":[";
     			int i = 0;
-    			for (MGOGRelationship mg : g.getRelationsWithMG()) {
+    			for (Goal mg : g.getAssociatedMGs()) {
     				if(i != 0)
 						tree += ",";
-    				//tree += "\""+mg.getPk().getMg().getDescription()+"\"";
-    				tree += mg.getPk().getMg().getDescription();
+    				//tree += "\""+mg.getDescription()+"\"";
+    				tree += mg.getDescription();
     				i++;
 				}
     			tree += "]";
