@@ -2,12 +2,10 @@ package it.uniroma2.gqm.webapp.controller;
 
 import it.uniroma2.gqm.model.BinaryElement;
 import it.uniroma2.gqm.model.Goal;
-import it.uniroma2.gqm.model.MGOGRelationship;
 import it.uniroma2.gqm.model.Metric;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.service.BinaryTableManager;
 import it.uniroma2.gqm.service.GoalManager;
-import it.uniroma2.gqm.service.MGOGRelationshipManager;
 import it.uniroma2.gqm.service.MetricManager;
 
 import java.util.HashSet;
@@ -41,9 +39,6 @@ public class BinaryTableController {
 	
 	@Autowired
 	private BinaryTableManager binaryManager;
-	
-	@Autowired
-	private MGOGRelationshipManager mgogRelationshipManager;
 	
 	@Autowired
     public void setMetricManager(@Qualifier("metricManager") MetricManager metricManager) {

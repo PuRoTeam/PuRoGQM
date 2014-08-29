@@ -34,7 +34,6 @@ import java.util.Set;
 import it.uniroma2.gqm.model.*;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.GridManager;
-import it.uniroma2.gqm.service.MGOGRelationshipManager;
 import it.uniroma2.gqm.service.StrategyManager;
 import it.uniroma2.gqm.webapp.util.RequestUtil;
 
@@ -54,8 +53,6 @@ public class GoalFormController extends BaseFormController {
     
     @Autowired
     private StrategyManager strategyManager;
-
-    private MGOGRelationshipManager mgogRelationshipManager;
     
     private GridManager gridManager;
     
@@ -63,11 +60,6 @@ public class GoalFormController extends BaseFormController {
     public void setGridManager(@Qualifier("gridManager") GridManager gridManager) {
     	this.gridManager = gridManager;
     }
-    
-    @Autowired
-	public void setMgogRelationshipManager(@Qualifier("mgogRelationshipManager") MGOGRelationshipManager mgogRelationshipManager) {
-		this.mgogRelationshipManager = mgogRelationshipManager;
-	}
 
 	@Autowired
     public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
@@ -99,8 +91,6 @@ public class GoalFormController extends BaseFormController {
         
         Project currentProject = (Project) session.getAttribute("currentProject");
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
-
-        List<MGOGRelationship> retRelations = new ArrayList<MGOGRelationship>();
         
         if (!StringUtils.isBlank(id)) {
         	ret = goalManager.get(new Long(id));
@@ -128,9 +118,9 @@ public class GoalFormController extends BaseFormController {
 		List<Goal> mGoalsAll = new ArrayList<Goal>(); //tutti gli mg nel progetto
 		
 		for(Goal g: allGoals) {
-			if(GoalType.isMG(g))
+			if(g.isMG())
 				mGoalsAll.add(g);
-			else if(GoalType.isOG(g))
+			else if(g.isOG())
 				oGoalsAll.add(g);
 		}
 		
@@ -244,7 +234,7 @@ public class GoalFormController extends BaseFormController {
         if (request.getParameter("delete") != null) {
         	Goal gDB = goalManager.get(goal.getId());
         	
-        	if(GoalType.isOG(gDB)){
+        	if(gDB.isOG()){
         		
         		if(gDB.hasChildren()) {
         			//TODO Attenzione!!! potrebbe non funzionare
@@ -284,7 +274,7 @@ public class GoalFormController extends BaseFormController {
         	//###########################################################
         	
         	
-        	if(GoalType.isOG(goal)){
+        	if(goal.isOG()){
         		
         		goal.getOrgChild().remove(null);
             	goal.getOstrategyChild().remove(null);
@@ -806,8 +796,8 @@ public class GoalFormController extends BaseFormController {
     
     @InitBinder
     protected void initBinder6(HttpServletRequest request, ServletRequestDataBinder binder) {    	
-    	binder.registerCustomEditor(Set.class, "relationsWithMG", new AssociatedMGCollectionEditor(Set.class));
-    	binder.registerCustomEditor(MGOGRelationship.class, "relationWithOG", new AssociatedOGEditorSupport());
+    	binder.registerCustomEditor(Set.class, "associatedMGs", new AssociatedMGCollectionEditor(Set.class));
+    	binder.registerCustomEditor(Goal.class, "associatedOG", new AssociatedOGEditorSupport());
     }
 
     private class AssociatedOGEditorSupport extends PropertyEditorSupport {
@@ -817,11 +807,8 @@ public class GoalFormController extends BaseFormController {
 				Long id = new Long(text);
 
 				if(id != -1) {
-					MGOGRelationship rel = new MGOGRelationship();
-					MGOGRelationshipPK pk = new MGOGRelationshipPK();
-					pk.setOg(goalManager.get(id)); //il goal mg lo setto in onSubmit
-					rel.setPk(pk);
-					setValue(rel);	
+					Goal og = goalManager.get(id);
+					setValue(og);	
 				} else {
 					setValue(null);
 				}
@@ -836,7 +823,7 @@ public class GoalFormController extends BaseFormController {
     	
     	public void setValue(Object value) { //se la collection è nulla (perchè non ci sono elementi selezionati), la reimposto al valore di default
     		if(value == null)
-    			super.setValue(new HashSet<MGOGRelationshipPK>());
+    			super.setValue(new HashSet<Goal>());
     		else
     			super.setValue(value);    		
     	}
@@ -846,14 +833,8 @@ public class GoalFormController extends BaseFormController {
 	    		Long id = new Long((String)element);
 	    		
 	    		if(id != -1) {
-		    		Goal mg = goalManager.get(id);
-		    		
-		    		MGOGRelationship rel = new MGOGRelationship();
-		    		MGOGRelationshipPK pk = new MGOGRelationshipPK();
-		    		pk.setMg(mg);
-		    		rel.setPk(pk);
-		    		
-		    		return rel;	
+		    		Goal mg = goalManager.get(id);		    		
+		    		return mg;	
 	    		}
     		}
     		return null;

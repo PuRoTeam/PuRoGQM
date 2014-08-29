@@ -51,12 +51,11 @@ public class Goal extends BaseObject {
 
 	private static final long serialVersionUID = -5289775436595676632L;
 	
-	//Common fields
+	/*****Common fields*****/
 	private String description;	
 	private Integer type;
 	private String scope;
 	private String focus;
-	//private Goal parent;
 	private User goalOwner;
 	private User goalEnactor;
 	private GoalStatus status;
@@ -67,8 +66,9 @@ public class Goal extends BaseObject {
 	private Set<GoalQuestion> questions = new HashSet<GoalQuestion>();	
 	private Set<User> votes = new HashSet<User>();
 	private String refinement;
+	/*****Common fields*****/
 	
-	//OG fields
+	/*****OG fields*****/
 	private String activity;
 	private String object;
 	private String magnitude;
@@ -86,14 +86,16 @@ public class Goal extends BaseObject {
 	private Set<Strategy> ostrategyChild = new HashSet<Strategy>();
 	
 	private Set<Goal> associatedMGs = new HashSet<Goal>();
+	/*****OG fields*****/
 	
-	//MG fields
+	/*****MGG fields*****/
 	private String subject;
 	private String context;
 	private String viewpoint;
 	private String impactOfVariation;
 	
 	private Goal associatedOG;
+	/*****MGG fields*****/
 	
 	public Goal() {
 		
@@ -187,25 +189,11 @@ public class Goal extends BaseObject {
 
 	@Transient
 	public String getTypeAsString() {
-		if(GoalType.isMG(this))
+		if(isMG())
 			return GoalType.MG.getString();
 		else
 			return GoalType.OG.getString();
 	}
-	
-	/*
-	@Transient
-	public String getInterpretationModelAsString() {
-		if(this.interpretationModel == null)
-			return "Not specified";
-		if (this.interpretationModel == 1) {
-			return "GQM";
-		} else if (this.interpretationModel == 2) {
-			return "GQM+Strategies";
-		} else {
-			return "Not specified";
-		}
-	}*/
 
 	@Override
 	public int hashCode() {
@@ -246,18 +234,6 @@ public class Goal extends BaseObject {
 	public void setStatus(GoalStatus status) {
 		this.status = status;
 	}
-	
-	/*
-	@ManyToOne
-	@JoinColumn(name = "strategy_id", nullable = true)
-	public Strategy getStrategy() {
-		return strategy;
-	}
-
-	public void setStrategy(Strategy strategy) {
-		this.strategy = strategy;
-	}
-	*/
 	
 	@ManyToOne
 	@JoinColumn(name = "go_id", nullable = false)	
@@ -338,18 +314,6 @@ public class Goal extends BaseObject {
 		return this.project.getProjectManagers().size();
 	}
 	
-	/*
-	@ManyToOne
-	@JoinColumn(name = "parent_id", nullable = true)	
-	public Goal getParent() {
-		return parent;
-	}
-
-	public void setParent(Goal parent) {
-		this.parent = parent;
-	}
-	*/
-	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.goal")
 	public Set<GoalQuestion>  getQuestions() {
 		return questions;
@@ -420,12 +384,7 @@ public class Goal extends BaseObject {
 		
 		return childType;
 	}
-	
-	/*
-	public void setChildType(int childType) {
-		this.childType = childType;
-	}
-	*/
+
 	@Transient
 	public int getParentType() {		
 		//utilizzo i getter anzichè le variabili, perchè di base non vengono caricati i parent, essendo definiti come lazy
@@ -438,11 +397,6 @@ public class Goal extends BaseObject {
 		
 		return parentType;
 	}
-	/*
-	public void setParentType(int parentType) {
-		this.parentType = parentType;
-	}
-	 */
 	
 	@ManyToOne
 	//@JoinColumn(name="oparent_id")

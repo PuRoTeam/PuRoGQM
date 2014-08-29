@@ -14,7 +14,7 @@ public class BinaryElement {
 	 */
 	public BinaryElement(Goal g, int v){
 		
-		if(GoalType.isOG(g)){
+		if(g.isOG()){
 			this.setGoal(g);
 			this.setValue(v);
 		}

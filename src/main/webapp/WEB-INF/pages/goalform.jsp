@@ -59,24 +59,25 @@
         <appfuse:label styleClass="control-label" key="goal.type"/>
         <div class="controls">
         	<form:select path="type"
-        		onchange="if(this.form.type.value == 0) { //ho selezionato OG, mostro divOG, e annullo la selezione del goal associato nel divMG (relationMG e relationOG non possono coesistere)
+        		onchange="if(this.form.type.value == 0) { //ho selezionato OG, mostro divOG e annullo gli eventuali campi di MG già riempiti
         					document.getElementById('divOG').style.display='block';
         					document.getElementById('divMG').style.display='none';
-        				  	document.getElementById('relationWithOG').value = '-1';
+        				  	document.getElementById('associatedOG').value = '-1';
         				  	document.getElementById('subject').value = '';
         				  	document.getElementById('context').value = '';
         				  	document.getElementById('viewpoint').value = '';
         				  	document.getElementById('impactOfVariation').value = '';
         				  } 
-        				  else { //ho selezionato MG, mostro divMG, e annullo la selezione del goal associato nel divOG ((relationMG e relationOG non possono coesistere))
+        				  else { //ho selezionato MG, mostro divMG, e annullo gli eventuali campi di OG già riempiti
         				  	document.getElementById('divOG').style.display='none';
         				  	document.getElementById('divMG').style.display='block';
-        				  	document.getElementById('relationsWithMG').value = '-1';
+        				  	document.getElementById('associatedMGs').value = '-1';
         				  	document.getElementById('activity').value = '';
         				  	document.getElementById('object').value = '';
         				  	document.getElementById('magnitude').value = '';
         				  	document.getElementById('timeframe').value = '';
         				  	document.getElementById('constraints').value = '';
+        				  	//TODO devo annullare anche i padri, figli e il tipo di padre e figlio
         				  }"
         		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser && empty goal.type)}">
         		
@@ -289,15 +290,15 @@
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_mg"/>
 					<div class="controls"> 
-						<select id="relationsWithMG" name="relationsWithMG" onchange=""
+						<select id="associatedMGs" name="associatedMGs" onchange=""
 							<c:out value="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)? 'disabled' : ''}"></c:out>
 							multiple="multiple"  style="width:500px;" >
 							<option value="-1">None</option>
 							<c:forEach var="itemGoal" items="${associableMGoals}">	
 								<c:set var="itemSelected" value="false" />
-								<c:forEach var="itemRel" items="${goal.relationsWithMG}">
+								<c:forEach var="itemRel" items="${goal.associatedMGs}">
 									<c:choose>							
-										<c:when test="${itemRel.pk.mg.id eq itemGoal.id}">
+										<c:when test="${itemRel.id eq itemGoal.id}">
 											<c:set var="itemSelected" value="true" /><%-- Il goal MG è in relazione con l'OG che stiamo modificando --%>
 										</c:when>
 									</c:choose>
@@ -312,7 +313,7 @@
 								</c:choose>
 							</c:forEach>
 						</select>
-						<%--<form:errors path="relationsWithMG" cssClass="help-inline"/>--%>
+						<%--<form:errors path="associatedMGs" cssClass="help-inline"/>--%>
 					</div>
 				</div>
 				
@@ -381,14 +382,14 @@
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_og"/>
 					<div class="controls">
-						<form:select path="relationWithOG" 
+						<form:select path="associatedOG" 
 								onchange="showHelpBox()" 
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 								cssStyle="width:400px" id="associatedOG">							
 							<form:option value="-1">None</form:option>
 			            	<c:forEach var="item" items="${associableOGoals}">
 								<c:choose>
-									<c:when test="${goal.relationWithOG.pk.og.id eq item.id}">
+									<c:when test="${goal.associatedOG.id eq item.id}">
 										<option value="${item.id}" selected="selected">${item.description}</option>
 									</c:when>
 									<c:otherwise>
@@ -397,7 +398,7 @@
 								</c:choose>	
 							</c:forEach>
 						</form:select>
-						<form:errors path="relationWithOG" cssClass="help-inline"/>
+						<form:errors path="associatedOG" cssClass="help-inline"/>
 					</div>
 				</div> 
 				

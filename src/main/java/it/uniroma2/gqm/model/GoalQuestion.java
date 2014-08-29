@@ -23,7 +23,7 @@ import org.appfuse.model.BaseObject;
 @Entity
 @Table(name = "goal_question")
 @AssociationOverrides({ @AssociationOverride(name = "pk.question", joinColumns = @JoinColumn(name = "question_id")),
-						@AssociationOverride(name = "pk.goal", joinColumns = @JoinColumn(name = "goal_id")) })
+						@AssociationOverride(name = "pk.goal", joinColumns = @JoinColumn(name = "goal_id")) }) 
 @NamedQueries({
     @NamedQuery(
             name = "findGoalQuestion",

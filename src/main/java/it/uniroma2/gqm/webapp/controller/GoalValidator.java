@@ -1,11 +1,7 @@
 package it.uniroma2.gqm.webapp.controller;
 
 import it.uniroma2.gqm.model.Goal;
-import it.uniroma2.gqm.model.GoalType;
-import it.uniroma2.gqm.service.GoalManager;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
@@ -35,7 +31,7 @@ public class GoalValidator implements Validator {
 	@Override
 	public void validate(Object arg0, Errors errors) {
 		Goal g = (Goal) arg0;  
-		if(GoalType.isMG(g)){
+		if(g.isMG()){
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "subject","subject", "Subject is a required field for a Measurement Goal.");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "context","context", "Context is a required field for a Measurement Goal.");
 			ValidationUtils.rejectIfEmptyOrWhitespace(errors, "viewpoint","viewpoint", "Viewpoint is a required field for a Measurement Goal.");
