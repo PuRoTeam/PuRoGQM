@@ -93,7 +93,7 @@ public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     				if(i != 0)
 						tree += ",";
     				//tree += "\""+mg.getPk().getMg().getDescription()+"\"";
-    				tree += mg.getPk().getMg().getDescription();
+    				tree += "{\"description\":"+mg.getPk().getMg().getDescription()+",\"identifier\":"+mg.getPk().getMg().getId()+"}";
     				i++;
 				}
     			tree += "]";
