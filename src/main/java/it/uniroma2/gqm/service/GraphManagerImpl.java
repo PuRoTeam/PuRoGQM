@@ -28,55 +28,44 @@ public class GraphManagerImpl extends GenericManagerImpl<BinaryTable, Long> impl
 		//Has Questions
 		if(g.getQuestions().size() > 0) { 
 			
-			tree += ", \"questions\":[";
+			tree += ", \"children\":[";
 			Set<Question> questions = new HashSet<Question>();
+			
 			for (GoalQuestion gq : g.getQuestions()) {
 				questions.add(gq.getQuestion());
-				
-				tree += "\"parent\":";
-				tree += "\""+g.getDescription()+"\"";
-				tree += ",\"name\":";
 				int i = 0;
 				for (Question q : questions) {
 					if(i != 0)
 						tree += ",";
-					tree += "\""+q.getName()+"\"";
+					tree += "{\"parent\":\""+g.getDescription()+"\",\"name\":\""+q.getName()+"\"";
 					
 					//Has metrics
 					if(q.getMetrics().size() > 0) {
 						
-						tree += ", \"metrics\":[";
+						tree += ", \"children\":[";
 						Set<Metric> metrics = new HashSet<Metric>();
 						for(QuestionMetric qm : q.getMetrics()) {
 							metrics.add(qm.getMetric());
-							
-							tree += "\"parent\":";
-							tree += "\""+q.getName()+"\"";
-							tree += ",\"name\":";
 							int j = 0;
 							for (Metric m : metrics) {
 								if(j != 0)
 									tree +=",";
-								tree += "\""+m.getName()+"\"";
+								tree += "{\"parent\":\""+q.getName()+"\",\"name\":\""+m.getName()+"\"}";
 								j++;
 							}
-							tree += "]}";
-							
 						}			
-						
+						tree += "]}";
 					} else {
 						tree += "}";
 					} 
 				}
-				tree += "]}";
-			}			
-		
-				
-			
+			}	
+			tree += "]}";
 		} else { //non ha figli
 			tree += "}";
 		}
-    		
+
+		System.out.println(tree);
 		return tree;
 	}
 

@@ -95,11 +95,11 @@ $.post(url, {id: $("#identifier").text()},
 				  .on("click", click);
 			
 			  nodeEnter.append("circle")
-				  .attr("r", 1e-6)
+				  .attr("r", 12)
 				  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 			
 			  nodeEnter.append("text")
-				  .attr("x", function(d) { return d.children || d._children ? -13 : 13; })
+				  .attr("x", function(d) { return d.children || d._children ? 9 : 9; })
 				  .attr("dy", ".35em")
 				  .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
 				  .text(function(d) { return d.name; })
@@ -111,7 +111,7 @@ $.post(url, {id: $("#identifier").text()},
 				  .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 			
 			  nodeUpdate.select("circle")
-				  .attr("r", 10)
+				  .attr("r", 12)
 				  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 			
 			  nodeUpdate.select("text")
@@ -124,7 +124,7 @@ $.post(url, {id: $("#identifier").text()},
 				  .remove();
 			
 			  nodeExit.select("circle")
-				  .attr("r", 1e-6);
+				  .attr("r", 12);
 			
 			  nodeExit.select("text")
 				  .style("fill-opacity", 1e-6);

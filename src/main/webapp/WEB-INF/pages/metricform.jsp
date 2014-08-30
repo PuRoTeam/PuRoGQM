@@ -238,7 +238,7 @@
 			<c:set var="goalset" value="${map[question.id]}"></c:set>
 				<c:forEach var="goal" items="${goalset}">
 	
-	        		<div id="${question.id}" hidden="true">
+	        		<div id="${question.id}" hidden="true"><b>OG: ${question.id}</b> 
 						<div>Magnitude: ${goal.timeframe}</div>
 						<div>Timeframe: ${goal.magnitude}</div>
 					</div>
@@ -270,26 +270,29 @@
 		
 		var e = document.getElementById("questions");
 		var selectedOptions = getSelectValues(e);
-		
-		//If an OG is selected
-		if(selectedOptions.length > 0){
+		if(selectedOptions[0] != "") {
 			
-			for(var i=0, optLen= selectedOptions.length; i<optLen; i++) {
-				$('#'+selectedOptions[i].id).attr('hidden', 'true');
+			if(selectedOptions.length > 0){
+				
+				for(var i=0, optLen= selectedOptions.length; i<optLen; i++) {
+					$('#'+selectedOptions[i].substring(0,1)).attr('hidden', 'true');
+				}
+				
+				$('#imbox').dialog( {
+				      resizable: true,
+				      modal: false
+				    });
+				
+				//$('#imbox').removeAttr('hidden');
+				
+				for(var i=0, optLen= selectedOptions.length; i<optLen; i++) {
+					$('#'+selectedOptions[i].substring(0,1)).removeAttr('hidden');
+				}
+				
+			//If NONE is selected
+			} else {
+				$('#imbox').dialog( "destroy" );
 			}
-			
-			$('#imbox').dialog( {
-			      resizable: true,
-			      modal: false
-			    });
-			
-			for(var i=0, optLen= selectedOptions.length; i<optLen; i++) {
-				$('#'+selectedOptions[i].id).removeAttr('hidden');
-			}
-			
-		//If NONE is selected
-		} else {
-			$('#imbox').dialog( "destroy" );
 		}
 		//console.log("prev: "+prev);
 		//console.log("current: "+current);
@@ -306,7 +309,7 @@
 	    opt = options[i];
 
 	    if (opt.selected) {
-	      result.push(opt.value || opt.text);
+	      result.push(opt.value);// || opt.text);
 	    }
 	  }
 	  return result;
