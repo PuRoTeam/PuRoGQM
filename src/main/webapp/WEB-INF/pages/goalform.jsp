@@ -62,14 +62,12 @@
         		onchange="if(this.form.type.value == 0) { //ho selezionato OG, mostro divOG e annullo gli eventuali campi di MG già riempiti
         					document.getElementById('divOG').style.display='block';
         					document.getElementById('divMG').style.display='none';
-        					//document.getElementById('divGE').style.display='none';
         					
         					resetMGFields();
         				  } 
         				  else { //ho selezionato MG, mostro divMG, e annullo gli eventuali campi di OG già riempiti
         				  	document.getElementById('divOG').style.display='none';
         				  	document.getElementById('divMG').style.display='block';
-        				  	//document.getElementById('divGE').style.display='block';
         				  	document.getElementById('parentOrg').style.display='none';
 				        	document.getElementById('parentStra').style.display='none';
         				  	document.getElementById('childOrg').style.display='none';
@@ -424,53 +422,42 @@
 			</form:select>            	
             <form:errors path="goalOwner" cssClass="help-inline"/>
         </div>
-    </div>    
-
-	<%--<c:choose>
-	   	<c:when test="${goal.type eq 1}">
-	    	<div id="divGE" >
-		</c:when>
-		<c:otherwise>
-			<div id="divGE" hidden="true">
-		</c:otherwise>
-    </c:choose>	
-	 --%>
-			    <div class="control-group">
-			        <appfuse:label styleClass="control-label" key="goal.ge"/>
-			        <div class="controls">        	
-						<form:select path="goalEnactor.id" id="goalEnactor" onchange=""  disabled="${ ((goal.status ne 'DRAFT') ||  goal.goalOwner ne currentUser) ? 'true':'false'}">
-							<form:options items="${availableUsers}" itemValue="id" itemLabel="fullName"   />
-						</form:select>            
-			            <form:errors path="goalEnactor" cssClass="help-inline"/>
-			        </div>
-			    </div>   
+    </div>
+	    <div class="control-group">
+	        <appfuse:label styleClass="control-label" key="goal.ge"/>
+	        <div class="controls">        	
+				<form:select path="goalEnactor.id" id="goalEnactor" onchange=""  disabled="${ ((goal.status ne 'DRAFT') ||  goal.goalOwner ne currentUser) ? 'true':'false'}">
+					<form:options items="${availableUsers}" itemValue="id" itemLabel="fullName"   />
+				</form:select>            
+	            <form:errors path="goalEnactor" cssClass="help-inline"/>
+	        </div>
+	    </div>   
 		    
-				<c:if test="${visibleGESection}">
-				
-				    <div class="control-group">
-				        <appfuse:label styleClass="control-label" key="goal.qs"/>
-				        <div class="controls">        	
-						    <form:select path="QSMembers" multiple="true"  size="6" disabled="${(goal.goalEnactor ne currentUser) || (goal.status eq 'APPROVED')}">
-						    	<form:options items="${availableUsers}" itemLabel="fullName" itemValue="id"/>	
-						    </form:select>       
-				            <form:errors path="QSMembers" cssClass="help-inline"/>
-				        </div>
-				    </div>   
-				
-					<spring:bind path="goal.MMDMMembers">
-				    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-				    </spring:bind>
-				        <appfuse:label styleClass="control-label" key="goal.mmdm"/>
-				        <div class="controls">
-				        	<form:select path="MMDMMembers" onchange="" disabled="${(goal.goalEnactor ne currentUser) || (goal.status eq 'APPROVED')}">        		
-				        		<form:options items="${availableUsers}" itemValue="id" itemLabel="fullName"   />								
-							</form:select>
-				            <form:errors path="MMDMMembers" cssClass="help-inline"/>
-				        </div>
-				    </div>
-				            
-				</c:if>	
-		<%--</div>--%>
+	<c:if test="${visibleGESection}">
+	
+	    <div class="control-group">
+	        <appfuse:label styleClass="control-label" key="goal.qs"/>
+	        <div class="controls">        	
+			    <form:select path="QSMembers" multiple="true"  size="6" disabled="${(goal.goalEnactor ne currentUser) || (goal.status eq 'APPROVED')}">
+			    	<form:options items="${availableUsers}" itemLabel="fullName" itemValue="id"/>	
+			    </form:select>       
+	            <form:errors path="QSMembers" cssClass="help-inline"/>
+	        </div>
+	    </div>   
+	
+		<spring:bind path="goal.MMDMMembers">
+	    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+	    </spring:bind>
+	        <appfuse:label styleClass="control-label" key="goal.mmdm"/>
+	        <div class="controls">
+	        	<form:select path="MMDMMembers" onchange="" disabled="${(goal.goalEnactor ne currentUser) || (goal.status eq 'APPROVED')}">        		
+	        		<form:options items="${availableUsers}" itemValue="id" itemLabel="fullName"   />								
+				</form:select>
+	            <form:errors path="MMDMMembers" cssClass="help-inline"/>
+	        </div>
+	    </div>
+	            
+	</c:if>	
 	
     <spring:bind path="goal.status">
     <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
@@ -592,7 +579,6 @@
 	  	document.getElementById('context').value = '';
 	  	document.getElementById('viewpoint').value = '';
 	  	document.getElementById('impactOfVariation').value = '';
-	  	document.getElementById('goalEnactor').selectedIndex = '-1';
 	}
 	
 	function resetOGFields() {
@@ -609,9 +595,6 @@
 		document.getElementById('childType').value = '-1';
 		document.getElementById('orgChild').selectedIndex = '-1';
 		document.getElementById('ostrategyChild').selectedIndex = '-1';
-		
-		//devo anche riselezionare il primo utente della lista come possibile goal enactor
-		//document.getElementById('goalEnactor').selectedIndex = '0';
 	}
 	
 	var prev = -1;

@@ -107,9 +107,9 @@ public class GoalFormController extends BaseFormController {
 		boolean modificableHeader = ( (ret.getStatus() == GoalStatus.DRAFT || ret.getStatus() == GoalStatus.FOR_REVIEW) &&  
 									 currentUser.equals(ret.getGoalOwner()));
 		
-		// the detail section is visible only if the status is not DRAFT and PROPOSED
+		//La sezione dedicata al Goal Enactor è visibile solo se il goal è in uno stato diverso da DRAFT e PROPOSED e se è di tipo MG
 		boolean visibleGESection = !(ret.getStatus() == GoalStatus.DRAFT || 
-					ret.getStatus() == GoalStatus.PROPOSED)/* && ret.isMG()*/;
+					ret.getStatus() == GoalStatus.PROPOSED) && ret.isMG();
 		
 		List<Goal> allGoals = goalManager.findByProject(currentProject); //tutti i goal nel progetto
 		List<Strategy> allStrategies = strategyManager.findByProject(currentProject); //tutte le strategie nel progetto
@@ -529,7 +529,7 @@ public class GoalFormController extends BaseFormController {
         	//###########################################################
         	
         	goal.setGoalOwner(userManager.get(goal.getGoalOwner().getId()));
-        	//if(goal.isMG())
+        	
         	goal.setGoalEnactor(userManager.get(goal.getGoalEnactor().getId()));
         	
         	if("true".equalsIgnoreCase(request.getParameter("vote"))) {
