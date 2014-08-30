@@ -22,6 +22,10 @@ public class GraphManagerImpl extends GenericManagerImpl<BinaryTable, Long> impl
 		String tree = "{";
 		tree += "\"name\":";
 		tree += "\""+g.getDescription()+"\"";
+		tree += ",\"identifier\":";
+		tree += "\""+g.getId()+"\"";
+		tree += ",\"type\":";
+		tree += "\""+0+"\"";
 		tree += ",\"parent\":";
 		tree += "\"null\"";
 		
@@ -38,6 +42,7 @@ public class GraphManagerImpl extends GenericManagerImpl<BinaryTable, Long> impl
 					if(i != 0)
 						tree += ",";
 					tree += "{\"parent\":\""+g.getDescription()+"\",\"name\":\""+q.getName()+"\"";
+					tree += ",\"identifier\":\""+g.getId()+"\",\"type\":\""+1+"\"";
 					
 					//Has metrics
 					if(q.getMetrics().size() > 0) {
@@ -50,7 +55,8 @@ public class GraphManagerImpl extends GenericManagerImpl<BinaryTable, Long> impl
 							for (Metric m : metrics) {
 								if(j != 0)
 									tree +=",";
-								tree += "{\"parent\":\""+q.getName()+"\",\"name\":\""+m.getName()+"\"}";
+								tree += "{\"parent\":\""+q.getName()+"\",\"name\":\""+m.getName()+"\"";
+								tree += ",\"identifier\":\""+q.getId()+"\",\"type\":\""+2+"\"}";
 								j++;
 							}
 						}			
