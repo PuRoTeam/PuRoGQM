@@ -53,6 +53,7 @@ public class BinaryTableController {
         this.userManager = userManager;
     }
 	
+	@Autowired
 	public void setGridManager(@Qualifier("gridManager") GridManager gridManager) {
 		this.gridManager = gridManager;
 	}
