@@ -138,6 +138,8 @@ public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements G
     		tree += "\""+s+"\"";
     		tree += ",\"type\":";
     		tree += "\""+2+"\"";
+    		tree += ",\"identifier\":";
+    		tree += "\""+stra.getId()+"\"";
     		if(stra.hasChildren()) { //ha figli
     			
     			tree += ", \"children\":[";
