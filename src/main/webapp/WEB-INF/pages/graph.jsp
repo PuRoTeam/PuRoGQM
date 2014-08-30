@@ -95,14 +95,20 @@ $.post(url, {id: $("#identifier").text()},
 				  .on("click", click);
 			
 			  nodeEnter.append("circle")
-				  .attr("r", 12)
+				  .attr("r", 13)
 				  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 			
 			  nodeEnter.append("text")
-				  .attr("x", function(d) { return d.children || d._children ? 9 : 9; })
-				  .attr("dy", ".35em")
-				  .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
-				  .text(function(d) { return d.name; })
+				  .attr("x", function(d) { return d.children || d._children ? 0 : 0; })
+				  .attr("dy", ".35em").attr("text-anchor", "middle")
+				  //.attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+				  .text(function(d) { 
+					  if(d.type == 0) 
+						  return "MG"+d.identifier; 
+					  else if(d.type==1) 
+						  return "Q"+d.identifier; 
+					  else 
+						  return "M"+d.identifier; })
 				  .style("fill-opacity", 1e-6);
 			
 			  // Transition nodes to their new position.
@@ -111,7 +117,7 @@ $.post(url, {id: $("#identifier").text()},
 				  .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; });
 			
 			  nodeUpdate.select("circle")
-				  .attr("r", 12)
+				  .attr("r", 13)
 				  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 			
 			  nodeUpdate.select("text")
@@ -124,7 +130,7 @@ $.post(url, {id: $("#identifier").text()},
 				  .remove();
 			
 			  nodeExit.select("circle")
-				  .attr("r", 12);
+				  .attr("r", 13);
 			
 			  nodeExit.select("text")
 				  .style("fill-opacity", 1e-6);

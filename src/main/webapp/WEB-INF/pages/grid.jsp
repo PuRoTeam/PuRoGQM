@@ -122,7 +122,7 @@ $.post(url,
 				return d.children || d._children ? -7 : -7; })
 			.attr("dy", ".35em")
 			.attr("text-anchor", "middle")
-			.text(function(d) { return d.name; })
+			.text(function(d) { if(d.type == 0) return "OG"+d.identifier; else return "S"+d.identifier; })
 			.style("fill-opacity", 1);
 			
 			nodeEnter.append("text")
@@ -141,15 +141,15 @@ $.post(url,
 						for (var i = 0; i < d.mgs.length; i++) {
 							
 							d3.select(this).append("circle")
-							.attr("r", 10).attr("cx", 55).attr("cy", 30*i);
+							.attr("r", 15).attr("cx", 58).attr("cy", 30*i);
 							
 							d3.select(this).append("svg:a")
 							.attr("xlink:href", function(d){
 									return "graph?id="+d.mgs[i].identifier; 
 									})
-								.append("text").attr("dy", ".35em").attr("x", 55).attr("y",30*i)
+								.append("text").attr("dy", ".35em").attr("x", 58).attr("y",30*i)
 							.attr("text-anchor", "middle")
-							.text(function(d) { return d.mgs[i].description; });
+							.text(function(d) { return "MG"+d.mgs[i].identifier; });
 							
 						}
 					}
@@ -167,7 +167,7 @@ $.post(url,
 						return d.children || d._children ? -7 : -7; })
 					.attr("dy", ".35em")
 					.attr("text-anchor", "middle")
-					.text(function(d) { return d.name; })
+					.text(function(d) { if(d.type == 0) return "OG"+d.identifier; else return "S"+d.identifier; })
 					.style("fill-opacity", 1);
 					
 					d3.select(this).append("text")
