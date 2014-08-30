@@ -6,8 +6,10 @@ import it.uniroma2.gqm.model.Metric;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.service.BinaryTableManager;
 import it.uniroma2.gqm.service.GoalManager;
+import it.uniroma2.gqm.service.GridManager;
 import it.uniroma2.gqm.service.MetricManager;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -36,6 +38,7 @@ public class BinaryTableController {
     private GoalManager goalManager;
 	private MetricManager metricManager;
 	private UserManager userManager;
+	private GridManager gridManager;
 	
 	@Autowired
 	private BinaryTableManager binaryManager;
@@ -50,6 +53,10 @@ public class BinaryTableController {
         this.userManager = userManager;
     }
 	
+	public void setGridManager(@Qualifier("gridManager") GridManager gridManager) {
+		this.gridManager = gridManager;
+	}
+	
 	@ModelAttribute
     @RequestMapping(method = RequestMethod.GET)
     protected Goal showTable(HttpServletRequest request,HttpSession session, Model model) throws Exception {
@@ -59,12 +66,16 @@ public class BinaryTableController {
         Set<Goal> mgs = new HashSet<Goal>();
         
         Project currentProject = (Project) session.getAttribute("currentProject");
-        User currentUser = userManager.getUserByUsername(request.getRemoteUser());
-
-        if (!StringUtils.isBlank(id)) {        	
-        	//Recupera goal selezionato
-        	ret = goalManager.get(new Long(id));
-        	
+        User currentUser = userManager.getUserByUsername(request.getRemoteUser());        
+        
+        if(StringUtils.isBlank(id))
+        	return null;
+        
+        //Recupera goal selezionato
+        ret = goalManager.get(new Long(id));
+        boolean hasPermission = checkPermission(currentUser, ret);
+        
+        if (hasPermission) {
         	//Recupera MG associati
         	mgs = ret.getAssociatedMGs();
         	
@@ -141,9 +152,44 @@ public class BinaryTableController {
     		model.addAttribute("currentProject",currentProject);
     		
         }
+        //else return null?
         
         return ret;
     }
+	
+	/**
+	 * Verifica i permessi dell'utente che vuole visualizzare la Binary Table.
+	 * Un Project Manager può vedere i risultati di tutti i goal dei progetti di cui è Manager
+	 * Un Goal owner può vedere i risultati di tutti i goal di cui è proprietario e relativi figli
+	 * Un Goal enactor può vedere i risultati di tuti i goal di cui è enactor e relativi figli
+	 * @param curUser Utente che vuole visualizzare i risultati
+	 * @param curGoal Goal di cui si vogliono visualizzare i risultati
+	 * @return
+	 */
+	private boolean checkPermission(User curUser, Goal curGoal) {
+		Project curProject = curGoal.getProject();
+		
+		if(curProject.getProjectManagers().contains(curUser)) { //sono project manager
+			return true;
+		} else {
+			if(curGoal.getGoalOwner().equals(curUser) || curGoal.getGoalEnactor().equals(curUser)) //sono owner o enactor del goal
+				return true;
+			
+			List<Goal> allGoals = goalManager.findByProject(curProject);
+			List<Goal> userGoals = new ArrayList<Goal>(); //tutti i goal di cui sono owner o enactor
+			
+			for(Goal g : allGoals) {
+				if(g.getGoalOwner().equals(curUser) || g.getGoalEnactor().equals(curUser))
+					userGoals.add(g);
+			}
+			
+			for(Goal g : userGoals) {
+				if(gridManager.isGrandChild(curGoal, g)) //se curGoal è figlio di un goal (o è un goal) di cui sono responsabile (come owner o enactor)
+					return true;
+			}
+		}
+		return false;
+	}
 	
 	public Set<String> getSuggestion(BinaryElement b, Set<BinaryElement> setB){
 		
