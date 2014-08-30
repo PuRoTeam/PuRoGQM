@@ -205,7 +205,7 @@
 			    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
 			    <appfuse:label styleClass="control-label" key="metric.questions"/>
 	        	<div class="controls">
-	        		<select id="questions" name="questions" multiple="multiple"  style="width:500px;" >
+	        		<select id="questions" name="questions" multiple="multiple"  style="width:500px;" onchange="showIMBox()">
 						<option value="">-- None --</option>
 						<c:forEach var="item" items="${availableQuestions}">
 							<c:set var="itemSelected" value="false" />
@@ -232,6 +232,20 @@
 	    </spring:bind>
 	</c:if>	
 	
+	<div id="imbox" title="Interpretation model help box" hidden="true">
+		<c:set var="map" value="${map}"></c:set>
+		<c:forEach var="question" items="${availableQuestions}">
+			<c:set var="goalset" value="${map[question.id]}"></c:set>
+				<c:forEach var="goal" items="${goalset}">
+	
+	        		<div id="${question.id}" hidden="true">
+						<div>Magnitude: ${goal.timeframe}</div>
+						<div>Timeframe: ${goal.magnitude}</div>
+					</div>
+	
+	        	</c:forEach>
+  		</c:forEach>
+	</div>
        
     <div class="form-actions">
         <c:if test="${metric.metricOwner eq currentUser || empty metric.id}">
@@ -251,6 +265,53 @@
     </form:form>
 </div>
 <script type="text/javascript">
+
+	function showIMBox(){
+		
+		var e = document.getElementById("questions");
+		var selectedOptions = getSelectValues(e);
+		
+		//If an OG is selected
+		if(selectedOptions.length > 0){
+			
+			for(var i=0, optLen= selectedOptions.length; i<optLen; i++) {
+				$('#'+selectedOptions[i].id).attr('hidden', 'true');
+			}
+			
+			$('#imbox').dialog( {
+			      resizable: true,
+			      modal: false
+			    });
+			
+			for(var i=0, optLen= selectedOptions.length; i<optLen; i++) {
+				$('#'+selectedOptions[i].id).removeAttr('hidden');
+			}
+			
+		//If NONE is selected
+		} else {
+			$('#imbox').dialog( "destroy" );
+		}
+		//console.log("prev: "+prev);
+		//console.log("current: "+current);
+	}
+	
+	// Return an array of the selected opion values
+	// select is an HTML select element
+	function getSelectValues(select) {
+	  var result = [];
+	  var options = select && select.options;
+	  var opt;
+
+	  for (var i=0, iLen=options.length; i<iLen; i++) {
+	    opt = options[i];
+
+	    if (opt.selected) {
+	      result.push(opt.value || opt.text);
+	    }
+	  }
+	  return result;
+	}
+	
     $(document).ready(function() {
         $("input[type='text']:visible:enabled:first", document.forms['metricForm']).focus();
     });

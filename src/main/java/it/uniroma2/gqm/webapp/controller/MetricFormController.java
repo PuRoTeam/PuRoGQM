@@ -1,18 +1,7 @@
 package it.uniroma2.gqm.webapp.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.GoalQuestion;
-import it.uniroma2.gqm.model.GoalQuestionPK;
-import it.uniroma2.gqm.model.GoalQuestionStatus;
 import it.uniroma2.gqm.model.Metric;
 import it.uniroma2.gqm.model.MetricTypeEnum;
 import it.uniroma2.gqm.model.Project;
@@ -22,9 +11,19 @@ import it.uniroma2.gqm.model.QuestionMetricPK;
 import it.uniroma2.gqm.model.QuestionMetricStatus;
 import it.uniroma2.gqm.model.Scale;
 import it.uniroma2.gqm.model.Unit;
-import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.MetricManager;
 import it.uniroma2.gqm.service.QuestionManager;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.appfuse.model.User;
@@ -103,6 +102,21 @@ public class MetricFormController  extends BaseFormController {
         	ret = new Metric();
         	ret.setProject(currentProject);
         }
+        
+        List<Question> availableQuestions = makeAvailableQuestions(ret,projectManager.get(currentProject.getId()),currentUser);
+        Set<Goal> relatedOGs = new HashSet<Goal>();
+        HashMap<Long, Set<Goal>> map = new HashMap<Long, Set<Goal>>();
+        
+        for (Question q : availableQuestions) {
+        	relatedOGs.clear();
+        	for (GoalQuestion gq : q.getGoals()) {
+        		if(gq.getGoal().getRelationWithOG() != null)
+					relatedOGs.add(gq.getGoal().getRelationWithOG().getPk().getOg());
+			}
+        	if(relatedOGs.size() > 0)
+        		map.put(q.getId(), relatedOGs);
+		}
+        
         model.addAttribute("currentProject",currentProject);
         model.addAttribute("currentUser",currentUser);
         model.addAttribute("units",unitManager.getAll());
@@ -116,7 +130,8 @@ public class MetricFormController  extends BaseFormController {
         
         System.out.println("availableMetrics ------>" + metricManager.findByProject(currentProject));
         //model.addAttribute("availableGoals",makeAvailableGoals(ret,currentUser));
-        model.addAttribute("availableQuestions",makeAvailableQuestions(ret,projectManager.get(currentProject.getId()),currentUser));
+        model.addAttribute("availableQuestions", availableQuestions);
+        model.addAttribute("map", map);
         return ret;
     }
 
