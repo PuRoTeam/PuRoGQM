@@ -110,8 +110,8 @@ public class MetricFormController  extends BaseFormController {
         for (Question q : availableQuestions) {
         	relatedOGs.clear();
         	for (GoalQuestion gq : q.getGoals()) {
-        		if(gq.getGoal().getRelationWithOG() != null)
-					relatedOGs.add(gq.getGoal().getRelationWithOG().getPk().getOg());
+        		if(gq.getGoal().getAssociatedOG() != null)
+					relatedOGs.add(gq.getGoal().getAssociatedOG());
 			}
         	if(relatedOGs.size() > 0)
         		map.put(q.getId(), relatedOGs);
