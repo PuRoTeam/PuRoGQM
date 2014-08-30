@@ -426,7 +426,7 @@
         </div>
     </div>    
 
-	<c:choose>
+	<%--<c:choose>
 	   	<c:when test="${goal.type eq 1}">
 	    	<div id="divGE" >
 		</c:when>
@@ -434,7 +434,7 @@
 			<div id="divGE" hidden="true">
 		</c:otherwise>
     </c:choose>	
-
+	 --%>
 			    <div class="control-group">
 			        <appfuse:label styleClass="control-label" key="goal.ge"/>
 			        <div class="controls">        	
@@ -470,7 +470,7 @@
 				    </div>
 				            
 				</c:if>	
-			</div>
+		<%--</div>--%>
 	
     <spring:bind path="goal.status">
     <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
