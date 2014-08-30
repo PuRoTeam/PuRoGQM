@@ -62,22 +62,20 @@
         		onchange="if(this.form.type.value == 0) { //ho selezionato OG, mostro divOG e annullo gli eventuali campi di MG già riempiti
         					document.getElementById('divOG').style.display='block';
         					document.getElementById('divMG').style.display='none';
-        				  	document.getElementById('associatedOG').value = '-1';
-        				  	document.getElementById('subject').value = '';
-        				  	document.getElementById('context').value = '';
-        				  	document.getElementById('viewpoint').value = '';
-        				  	document.getElementById('impactOfVariation').value = '';
+        					//document.getElementById('divGE').style.display='none';
+        					
+        					resetMGFields();
         				  } 
         				  else { //ho selezionato MG, mostro divMG, e annullo gli eventuali campi di OG già riempiti
         				  	document.getElementById('divOG').style.display='none';
         				  	document.getElementById('divMG').style.display='block';
-        				  	document.getElementById('associatedMGs').value = '-1';
-        				  	document.getElementById('activity').value = '';
-        				  	document.getElementById('object').value = '';
-        				  	document.getElementById('magnitude').value = '';
-        				  	document.getElementById('timeframe').value = '';
-        				  	document.getElementById('constraints').value = '';
-        				  	//TODO devo annullare anche i padri, figli e il tipo di padre e figlio
+        				  	//document.getElementById('divGE').style.display='block';
+        				  	document.getElementById('parentOrg').style.display='none';
+				        	document.getElementById('parentStra').style.display='none';
+        				  	document.getElementById('childOrg').style.display='none';
+				        	document.getElementById('childStra').style.display='none';
+        				  	
+        				  	resetOGFields();
         				  }"
         		disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser && empty goal.type)}">
         		
@@ -133,7 +131,7 @@
 				<appfuse:label styleClass="control-label" key="goal.parentType"/>
 				</spring:bind>
 					<div class="controls"> 
-						<form:select path="parentType"
+						<form:select path="parentType" id="parentType"
 								onchange="if(this.form.parentType.value == 0) {
 				        					document.getElementById('parentOrg').style.display='block';
 				        					document.getElementById('parentStra').style.display='none';
@@ -173,7 +171,7 @@
 							<appfuse:label styleClass="control-label" key="goal.org.parent"/>
 							</spring:bind>
 								<div class="controls" > 
-									<form:select  path="orgParent" onchange=""
+									<form:select  path="orgParent" id="orgParent" onchange=""
 											disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 											cssStyle="width:400px" >
 												<form:option value="-1">None</form:option>
@@ -197,7 +195,7 @@
 							<appfuse:label styleClass="control-label" key="goal.strategies.parent"/>
 							</spring:bind>
 								<div class="controls"> 
-									<form:select path="ostrategyParent" onchange=""
+									<form:select path="ostrategyParent" id="ostrategyParent" onchange=""
 											disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
 											cssStyle="width:400px" >
 												<form:option value="-1">None</form:option>
@@ -211,7 +209,7 @@
 				<div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.childType"/>
 					<div class="controls"> 
-						<form:select path="childType" 
+						<form:select path="childType" id="childType"
 								onchange="if(this.form.childType.value == 0) { 
 				        					document.getElementById('childOrg').style.display='block';
 				        					document.getElementById('childStra').style.display='none';
@@ -251,7 +249,7 @@
 							<appfuse:label styleClass="control-label" key="goal.org.child"/>
 							</spring:bind>
 							<div class="controls"> 
-									<form:select path="orgChild" multiple="true" onchange=""
+									<form:select path="orgChild" id="orgChild" multiple="true" onchange=""
 											disabled="true"
 											cssStyle="width:400px" >
 												<form:option value="-1">None</form:option>
@@ -275,7 +273,7 @@
 							<appfuse:label styleClass="control-label" key="goal.strategies.child"/>
 							</spring:bind>
 								<div class="controls"> 
-									<form:select path="ostrategyChild" multiple="true" onchange=""
+									<form:select path="ostrategyChild" id="ostrategyChild" multiple="true" onchange=""
 											disabled="true"
 											cssStyle="width:400px" >
 												<form:option value="-1">None</form:option>
@@ -290,34 +288,13 @@
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_mg"/>
 					<div class="controls">
-						<form:select path="associatedMGs"
-								onchange="" 
+						<form:select path="associatedMGs" id="associatedMGs" onchange="" 
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
-								cssStyle="width:500px" multiple="multiple" id="associatedMGs">	
+								cssStyle="width:500px" multiple="multiple">	
 							<option value="-1">None</option>
 							<form:options items="${associableMGoals}" itemValue="id" itemLabel="description"/>
-							<%--
-							<c:forEach var="itemGoal" items="${associableMGoals}">	
-								<c:set var="itemSelected" value="false" />
-								<c:forEach var="itemRel" items="${goal.associatedMGs}">
-									<c:choose>							
-										<c:when test="${itemRel.id eq itemGoal.id}">
-											<c:set var="itemSelected" value="true" />
-										</c:when>
-									</c:choose>
-								</c:forEach>
-								<c:choose>							
-									<c:when test="${itemSelected eq true}">
-										<option value="${itemGoal.id}" selected="selected">${itemGoal.description}</option>
-									</c:when>
-									<c:otherwise>
-										<option value="${itemGoal.id}">${itemGoal.description}</option>
-									</c:otherwise>	
-								</c:choose>
-							</c:forEach>
-							--%>
 					</form:select>
-						<%--<form:errors path="associatedMGs" cssClass="help-inline"/>--%>
+						<form:errors path="associatedMGs" cssClass="help-inline"/>
 					</div>
 				</div>
 				
@@ -386,24 +363,12 @@
 		        <div class="control-group">
 				<appfuse:label styleClass="control-label" key="goal.associated_og"/>
 					<div class="controls">
-						<form:select path="associatedOG" 
+						<form:select path="associatedOG" id="associatedOG"
 								onchange="showHelpBox()" 
 								disabled="${!((goal.status eq 'DRAFT' || goal.status eq 'FOR_REVIEW') && goal.goalOwner eq currentUser)}"
-								cssStyle="width:400px" id="associatedOG">							
+								cssStyle="width:400px">							
 							<form:option value="-1">None</form:option>
 							<form:options items="${associableOGoals}" itemValue="id" itemLabel="description"/>
-			            	<%--
-			            	<c:forEach var="item" items="${associableOGoals}">
-								<c:choose>
-									<c:when test="${goal.associatedOG.id eq item.id}">
-										<option value="${item.id}" selected="selected">${item.description}</option>
-									</c:when>
-									<c:otherwise>
-										<option value="${item.id}">${item.description}</option>
-									</c:otherwise>
-								</c:choose>	
-							</c:forEach>
-							--%>
 						</form:select>
 						<form:errors path="associatedOG" cssClass="help-inline"/>
 					</div>
@@ -461,42 +426,51 @@
         </div>
     </div>    
 
-    <div class="control-group">
-        <appfuse:label styleClass="control-label" key="goal.ge"/>
-        <div class="controls">        	
-			<form:select path="goalEnactor.id" onchange=""  disabled="${ ((goal.status ne 'DRAFT') ||  goal.goalOwner ne currentUser) ? 'true':'false'}">
-				<form:options items="${availableUsers}" itemValue="id" itemLabel="fullName"   />
-			</form:select>            
-            <form:errors path="goalEnactor" cssClass="help-inline"/>
-        </div>
-    </div>   
-    
-	<c:if test="${visibleGESection}">
-	
-	    <div class="control-group">
-	        <appfuse:label styleClass="control-label" key="goal.qs"/>
-	        <div class="controls">        	
-			    <form:select path="QSMembers" multiple="true"  size="6" disabled="${(goal.goalEnactor ne currentUser) || (goal.status eq 'APPROVED')}">
-			    	<form:options items="${availableUsers}" itemLabel="fullName" itemValue="id"/>	
-			    </form:select>       
-	            <form:errors path="QSMembers" cssClass="help-inline"/>
-	        </div>
-	    </div>   
-	
-		<spring:bind path="goal.MMDMMembers">
-	    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
-	    </spring:bind>
-	        <appfuse:label styleClass="control-label" key="goal.mmdm"/>
-	        <div class="controls">
-	        	<form:select path="MMDMMembers" onchange="" disabled="${(goal.goalEnactor ne currentUser) || (goal.status eq 'APPROVED')}">        		
-	        		<form:options items="${availableUsers}" itemValue="id" itemLabel="fullName"   />								
-				</form:select>
-	            <form:errors path="MMDMMembers" cssClass="help-inline"/>
-	        </div>
-	    </div>
-	            
-	</c:if>
-	
+	<c:choose>
+	   	<c:when test="${goal.type eq 1}">
+	    	<div id="divGE" >
+		</c:when>
+		<c:otherwise>
+			<div id="divGE" hidden="true">
+		</c:otherwise>
+    </c:choose>	
+
+			    <div class="control-group">
+			        <appfuse:label styleClass="control-label" key="goal.ge"/>
+			        <div class="controls">        	
+						<form:select path="goalEnactor.id" id="goalEnactor" onchange=""  disabled="${ ((goal.status ne 'DRAFT') ||  goal.goalOwner ne currentUser) ? 'true':'false'}">
+							<form:options items="${availableUsers}" itemValue="id" itemLabel="fullName"   />
+						</form:select>            
+			            <form:errors path="goalEnactor" cssClass="help-inline"/>
+			        </div>
+			    </div>   
+		    
+				<c:if test="${visibleGESection}">
+				
+				    <div class="control-group">
+				        <appfuse:label styleClass="control-label" key="goal.qs"/>
+				        <div class="controls">        	
+						    <form:select path="QSMembers" multiple="true"  size="6" disabled="${(goal.goalEnactor ne currentUser) || (goal.status eq 'APPROVED')}">
+						    	<form:options items="${availableUsers}" itemLabel="fullName" itemValue="id"/>	
+						    </form:select>       
+				            <form:errors path="QSMembers" cssClass="help-inline"/>
+				        </div>
+				    </div>   
+				
+					<spring:bind path="goal.MMDMMembers">
+				    <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
+				    </spring:bind>
+				        <appfuse:label styleClass="control-label" key="goal.mmdm"/>
+				        <div class="controls">
+				        	<form:select path="MMDMMembers" onchange="" disabled="${(goal.goalEnactor ne currentUser) || (goal.status eq 'APPROVED')}">        		
+				        		<form:options items="${availableUsers}" itemValue="id" itemLabel="fullName"   />								
+							</form:select>
+				            <form:errors path="MMDMMembers" cssClass="help-inline"/>
+				        </div>
+				    </div>
+				            
+				</c:if>	
+			</div>
 	
     <spring:bind path="goal.status">
     <div class="control-group${(not empty status.errorMessage) ? ' error' : ''}">
@@ -611,6 +585,35 @@
 	    $('#orgChild').removeAttr('disabled');
 	    $('#ostrategyChild').removeAttr('disabled');
 	});*/
+	
+	function resetMGFields() {
+	  	document.getElementById('associatedOG').value = '-1';
+	  	document.getElementById('subject').value = '';
+	  	document.getElementById('context').value = '';
+	  	document.getElementById('viewpoint').value = '';
+	  	document.getElementById('impactOfVariation').value = '';
+	  	document.getElementById('goalEnactor').selectedIndex = '-1';
+	}
+	
+	function resetOGFields() {
+	  	document.getElementById('associatedMGs').value = '-1';
+	  	document.getElementById('activity').value = '';
+	  	document.getElementById('object').value = '';
+	  	document.getElementById('magnitude').value = '';
+	  	document.getElementById('timeframe').value = '';
+	  	document.getElementById('constraints').value = '';
+	  	
+	  	document.getElementById('parentType').value = '-1';
+		document.getElementById('orgParent').selectedIndex = '-1';
+		document.getElementById('ostrategyParent').selectedIndex = '-1';
+		document.getElementById('childType').value = '-1';
+		document.getElementById('orgChild').selectedIndex = '-1';
+		document.getElementById('ostrategyChild').selectedIndex = '-1';
+		
+		//devo anche riselezionare il primo utente della lista come possibile goal enactor
+		//document.getElementById('goalEnactor').selectedIndex = '0';
+	}
+	
 	var prev = -1;
 	
 	function showHelpBox(){
