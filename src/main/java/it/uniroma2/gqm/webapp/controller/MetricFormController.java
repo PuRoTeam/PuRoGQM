@@ -104,14 +104,17 @@ public class MetricFormController  extends BaseFormController {
         }
         
         List<Question> availableQuestions = makeAvailableQuestions(ret,projectManager.get(currentProject.getId()),currentUser);
-        Set<Goal> relatedOGs = new HashSet<Goal>();
         HashMap<Long, Set<Goal>> map = new HashMap<Long, Set<Goal>>();
         
+        //per ogni question, recupero il goal mg a cui sono è associata e aggiungo nella hashmap l'og associato (se mg non "orfano")
         for (Question q : availableQuestions) {
-        	relatedOGs.clear();
-        	for (GoalQuestion gq : q.getGoals()) {
-        		if(gq.getGoal().getAssociatedOG() != null)
-					relatedOGs.add(gq.getGoal().getAssociatedOG());
+        	Set<Goal> relatedOGs = new HashSet<Goal>();
+        	for (GoalQuestion gq : q.getGoals()) { //gli mg a cui la question è stata associata
+        		Goal associatedOG = gq.getGoal().getAssociatedOG();
+        		
+        		if(associatedOG != null) {
+        			relatedOGs.add(associatedOG);
+        		}
 			}
         	if(relatedOGs.size() > 0)
         		map.put(q.getId(), relatedOGs);

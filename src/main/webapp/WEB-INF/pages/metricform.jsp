@@ -238,7 +238,7 @@
 			<c:set var="goalset" value="${map[question.id]}"></c:set>
 				<c:forEach var="goal" items="${goalset}">
 	
-	        		<div id="${question.id}" hidden="true"><b>OG: ${question.id}</b> 
+	        		<div id="${question.id}" hidden="true"><b>OG: ${goal.id}</b> 
 						<div>Magnitude: ${goal.timeframe}</div>
 						<div>Timeframe: ${goal.magnitude}</div>
 					</div>
@@ -270,12 +270,14 @@
 		
 		var e = document.getElementById("questions");
 		var selectedOptions = getSelectValues(e);
+		console.log(selectedOptions);
 		if(selectedOptions[0] != "") {
 			
 			if(selectedOptions.length > 0){
 				
-				for(var i=0, optLen= selectedOptions.length; i<optLen; i++) {
-					$('#'+selectedOptions[i].substring(0,1)).attr('hidden', 'true');
+				//reimposto tutte le opzioni della select a hidden
+				for(var i=0, optLen= e.length; i<optLen; i++) {
+					$('#'+e.options[i].value.substring(0,1)).attr('hidden', 'true');
 				}
 				
 				$('#imbox').dialog( {
@@ -289,13 +291,13 @@
 					$('#'+selectedOptions[i].substring(0,1)).removeAttr('hidden');
 				}
 				
-			//If NONE is selected
-			} else {
+			
+			} else { //if no options are selected
 				$('#imbox').dialog( "destroy" );
 			}
+		} else { //If NONE is selected
+			$('#imbox').dialog( "destroy" );
 		}
-		//console.log("prev: "+prev);
-		//console.log("current: "+current);
 	}
 	
 	// Return an array of the selected opion values
