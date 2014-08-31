@@ -6,10 +6,8 @@ import javax.servlet.http.HttpSession;
 
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.model.Question;
-import it.uniroma2.gqm.service.GoalManager;
+import it.uniroma2.gqm.service.ProjectManager;
 import it.uniroma2.gqm.service.QuestionManager;
-
-import org.appfuse.service.GenericManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -24,16 +22,16 @@ public class QuestionController {
     @Autowired
     private QuestionManager questionManager;
 
-    private GenericManager<Project, Long> projectManager = null;
+    private ProjectManager projectManager = null;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
     
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView handleRequest(HttpSession session) throws Exception {
-        Project currentProject = (Project) session.getAttribute("currentProject");
+        Project currentProject = projectManager.getCurrentProject(session);
 		List<Question> ret = questionManager.findByProject(currentProject);
 		return new ModelAndView().addObject(ret);
 	}

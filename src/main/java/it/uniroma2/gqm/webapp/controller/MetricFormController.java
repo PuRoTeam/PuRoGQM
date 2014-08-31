@@ -12,6 +12,7 @@ import it.uniroma2.gqm.model.QuestionMetricStatus;
 import it.uniroma2.gqm.model.Scale;
 import it.uniroma2.gqm.model.Unit;
 import it.uniroma2.gqm.service.MetricManager;
+import it.uniroma2.gqm.service.ProjectManager;
 import it.uniroma2.gqm.service.QuestionManager;
 
 import java.util.ArrayList;
@@ -54,10 +55,10 @@ public class MetricFormController  extends BaseFormController {
 	@Autowired
 	private QuestionManager questionManager;
 	private UserManager userManager = null;
-    private GenericManager<Project, Long> projectManager = null;
+	private ProjectManager projectManager = null;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
     
@@ -92,7 +93,7 @@ public class MetricFormController  extends BaseFormController {
         String id = request.getParameter("id");
         Metric ret = null;
 
-        Project currentProject = (Project)session.getAttribute("currentProject");
+        Project currentProject = projectManager.getCurrentProject(session);
         
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
         

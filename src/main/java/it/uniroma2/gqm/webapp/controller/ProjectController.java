@@ -1,24 +1,21 @@
 package it.uniroma2.gqm.webapp.controller;
 
-
-import org.appfuse.service.GenericManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import it.uniroma2.gqm.model.*;
+import it.uniroma2.gqm.service.ProjectManager;
 
 @Controller
 @RequestMapping("/projects*")
 public class ProjectController {
-    private GenericManager<Project, Long> projectManager;
+	private ProjectManager projectManager = null;
  
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
  

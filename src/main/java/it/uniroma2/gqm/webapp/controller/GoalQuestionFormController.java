@@ -12,6 +12,7 @@ import it.uniroma2.gqm.model.GoalQuestion;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.model.Question;
 import it.uniroma2.gqm.service.GoalManager;
+import it.uniroma2.gqm.service.ProjectManager;
 import it.uniroma2.gqm.service.QuestionManager;
 
 import org.apache.commons.lang.StringUtils;
@@ -39,12 +40,13 @@ public class GoalQuestionFormController extends BaseFormController {
     
     private UserManager userManager = null;
 
-    private GenericManager<Project, Long> projectManager = null;
+    private ProjectManager projectManager = null;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
+    
     @Autowired
     public void setGoalManager(@Qualifier("goalManager") GoalManager goalManager) {
         this.goalManager = goalManager;
@@ -71,7 +73,7 @@ public class GoalQuestionFormController extends BaseFormController {
         GoalQuestion ret = null;
         
 
-        Project currentProject = (Project) session.getAttribute("currentProject");
+        Project currentProject = projectManager.getCurrentProject(session);
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
        
         if (!StringUtils.isBlank(goalId) && !StringUtils.isBlank(questionId)) {

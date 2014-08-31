@@ -18,12 +18,11 @@ import javax.persistence.OneToMany;
 
 import org.appfuse.model.BaseObject;
 import org.appfuse.model.User;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
 
 @Entity
 public class Project extends BaseObject  implements Serializable{
+	private static final long serialVersionUID = -944346145252151052L;
+	
 	private Long id;
 	private String name;
 	private String description;

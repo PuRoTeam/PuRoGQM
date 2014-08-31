@@ -2,10 +2,9 @@ package it.uniroma2.gqm.webapp.controller;
 
 import javax.servlet.http.HttpSession;
 
-import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.service.GoalManager;
+import it.uniroma2.gqm.service.ProjectManager;
 
-import org.appfuse.service.GenericManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -20,20 +19,20 @@ import org.springframework.web.servlet.ModelAndView;
 public class BinaryListController {
 	
 	private GoalManager goalManager;
-
+	private ProjectManager projectManager = null;
+	
 	@Autowired
 	public void setGoalManager(@Qualifier("goalManager") GoalManager goalManager) {
 		this.goalManager = goalManager;
 	}
-
-    private GenericManager<Project, Long> projectManager = null;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
+	
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView handleRequest(HttpSession session) throws Exception {
-		return new ModelAndView().addObject(goalManager.getOrganizationalGoal( (Project)session.getAttribute("currentProject")));
+		return new ModelAndView().addObject(goalManager.getOrganizationalGoal(projectManager.getCurrentProject(session)));
 	}
 }

@@ -2,9 +2,8 @@ package it.uniroma2.gqm.webapp.controller;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.appfuse.service.GenericManager;
 
-import it.uniroma2.gqm.model.Project;
+import it.uniroma2.gqm.service.ProjectManager;
 import it.uniroma2.gqm.webapp.listener.StartupListener;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,10 +36,10 @@ import java.util.List;
 public class ReloadController {
     private transient final Log log = LogFactory.getLog(ReloadController.class);
 
-    private GenericManager<Project, Long> projectManager = null;
+    private ProjectManager projectManager = null;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
     

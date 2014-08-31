@@ -5,6 +5,7 @@ import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.model.Strategy;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.GridManager;
+import it.uniroma2.gqm.service.ProjectManager;
 import it.uniroma2.gqm.service.StrategyManager;
 
 import java.beans.PropertyEditorSupport;
@@ -20,7 +21,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.appfuse.model.User;
-import org.appfuse.service.GenericManager;
 import org.appfuse.service.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,7 +43,7 @@ public class StrategyFromController  extends BaseFormController {
 	private StrategyManager strategyManager;
 	@Autowired
     private GoalManager goalManager;
-    private GenericManager<Project, Long> projectManager = null;
+	private ProjectManager projectManager = null;
     private UserManager userManager = null;
     
     private GridManager gridManager;
@@ -54,7 +54,7 @@ public class StrategyFromController  extends BaseFormController {
     }
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
 
@@ -73,7 +73,7 @@ public class StrategyFromController  extends BaseFormController {
     throws Exception {
         String id = request.getParameter("id");
         Strategy ret = null; 
-        Project currentProject = (Project) session.getAttribute("currentProject");
+        Project currentProject = projectManager.getCurrentProject(session);;
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
         
         if (!StringUtils.isBlank(id)) {

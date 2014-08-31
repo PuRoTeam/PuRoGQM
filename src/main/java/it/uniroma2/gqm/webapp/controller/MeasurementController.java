@@ -3,9 +3,7 @@ package it.uniroma2.gqm.webapp.controller;
 import it.uniroma2.gqm.model.Measurement;
 import it.uniroma2.gqm.service.MeasurementManager;
 
-import org.appfuse.Constants;
 import org.appfuse.dao.SearchException;
-import org.appfuse.service.GenericManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ExtendedModelMap;

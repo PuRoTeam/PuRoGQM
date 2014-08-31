@@ -12,7 +12,6 @@
         <display:column property="id" sortable="true" href="/goalsatisfaction" media="html"
             paramId="g" paramProperty="id" titleKey="goal.id"/>
         <display:column property="id" media="csv excel xml pdf" titleKey="goal.id" />
-        <display:column property="parent.id" sortable="true" titleKey="goal.parent"/>
         <display:column property="description" sortable="true" titleKey="goal.description"/>
         <display:column property="type" sortable="true" titleKey="goal.type"/>      
         <display:column property="focus" sortable="true" titleKey="goal.focus"/>

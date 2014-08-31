@@ -1,13 +1,11 @@
 package it.uniroma2.gqm.webapp.controller;
 
 import it.uniroma2.gqm.model.*;
-import it.uniroma2.gqm.service.GoalManager;
+import it.uniroma2.gqm.service.ProjectManager;
 
 import org.apache.commons.lang.StringUtils;
 import org.appfuse.model.User;
-import org.appfuse.service.GenericManager;
 import org.appfuse.service.UserManager;
- 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
@@ -20,7 +18,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
- 
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,13 +30,13 @@ import java.util.Locale;
 @RequestMapping("/projectform*")
 @SessionAttributes({"availableUsers","currentUser"})
 public class ProjectFormController extends BaseFormController {
-    private GenericManager<Project, Long> projectManager = null;
+	private ProjectManager projectManager = null;
 
     @Autowired
     private UserManager userManager;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
  

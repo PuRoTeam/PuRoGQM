@@ -3,7 +3,6 @@ package it.uniroma2.gqm.webapp.controller;
 
 import org.apache.commons.lang.StringUtils;
 import org.appfuse.model.User;
-import org.appfuse.service.GenericManager;
 import org.appfuse.service.UserManager;
  
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,15 +19,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.SessionAttributes;
  
 
+
 import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.GoalQuestion;
 import it.uniroma2.gqm.model.GoalQuestionPK;
 import it.uniroma2.gqm.model.GoalQuestionStatus;
-import it.uniroma2.gqm.model.GoalStatus;
-import it.uniroma2.gqm.model.GoalType;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.model.Question;
 import it.uniroma2.gqm.service.GoalManager;
+import it.uniroma2.gqm.service.ProjectManager;
 import it.uniroma2.gqm.service.QuestionManager;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,10 +49,10 @@ public class QuestionFormController extends BaseFormController {
 	@Autowired
 	private GoalManager goalManager;
 	private UserManager userManager = null;
-    private GenericManager<Project, Long> projectManager = null;
+	private ProjectManager projectManager = null;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
     
@@ -77,7 +76,7 @@ public class QuestionFormController extends BaseFormController {
     protected Question showForm(HttpServletRequest request, HttpSession session, Model model) throws Exception {
         String id = request.getParameter("id");
         Question ret = null;
-        Project currentProject = (Project) session.getAttribute("currentProject");
+        Project currentProject = projectManager.getCurrentProject(session);
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
         
         if (!StringUtils.isBlank(id)) {

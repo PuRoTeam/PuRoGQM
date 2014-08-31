@@ -7,15 +7,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import it.uniroma2.gqm.model.Goal;
-import it.uniroma2.gqm.model.GoalQuestion;
 import it.uniroma2.gqm.model.Metric;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.model.Question;
 import it.uniroma2.gqm.model.QuestionMetric;
 import it.uniroma2.gqm.model.QuestionMetricStatus;
-import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.MetricManager;
+import it.uniroma2.gqm.service.ProjectManager;
 import it.uniroma2.gqm.service.QuestionManager;
 
 import org.apache.commons.lang.StringUtils;
@@ -47,10 +45,10 @@ public class QuestionMetricFormController extends BaseFormController {
     
     private UserManager userManager = null;
 
-    private GenericManager<Project, Long> projectManager = null;
+    private ProjectManager projectManager = null;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
 
@@ -73,7 +71,7 @@ public class QuestionMetricFormController extends BaseFormController {
         String metricId = request.getParameter("metricId");
         QuestionMetric ret = null;
         
-        Project currentProject = (Project) session.getAttribute("currentProject");
+        Project currentProject = projectManager.getCurrentProject(session);
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
        
         if (!StringUtils.isBlank(questionId) && !StringUtils.isBlank(metricId)) {

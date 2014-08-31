@@ -1,6 +1,5 @@
 package it.uniroma2.gqm.webapp.controller;
 
-import org.apache.commons.lang.StringUtils;
 import org.appfuse.Constants;
 import org.appfuse.model.User;
 import org.appfuse.service.RoleManager;

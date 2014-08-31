@@ -1,16 +1,11 @@
 package it.uniroma2.gqm.webapp.controller;
 
 import it.uniroma2.gqm.model.Measurement;
-import it.uniroma2.gqm.model.Metric;
-import it.uniroma2.gqm.model.MetricTypeEnum;
 import it.uniroma2.gqm.model.Project;
-import it.uniroma2.gqm.model.Scale;
-import it.uniroma2.gqm.model.Unit;
 import it.uniroma2.gqm.service.MeasurementManager;
 import it.uniroma2.gqm.service.MetricManager;
-import it.uniroma2.gqm.service.QuestionManager;
+import it.uniroma2.gqm.service.ProjectManager;
 
-import java.util.ArrayList;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +14,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.appfuse.model.User;
-import org.appfuse.service.GenericManager;
 import org.appfuse.service.UserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -42,10 +36,10 @@ public class MeasurementFormController extends BaseFormController {
     private MeasurementManager measurementManager;
     
 	private UserManager userManager = null;
-    private GenericManager<Project, Long> projectManager = null;
+	private ProjectManager projectManager = null;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
     
@@ -67,7 +61,7 @@ public class MeasurementFormController extends BaseFormController {
         String id = request.getParameter("id");
         Measurement ret = null;
 
-        Project currentProject = (Project)session.getAttribute("currentProject");
+        Project currentProject = projectManager.getCurrentProject(session);
         
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());
         

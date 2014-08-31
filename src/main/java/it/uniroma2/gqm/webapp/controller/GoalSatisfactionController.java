@@ -4,14 +4,13 @@ import java.util.List;
 
 import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.Metric;
-import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.MetricManager;
+import it.uniroma2.gqm.service.ProjectManager;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.appfuse.service.GenericManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -38,16 +37,17 @@ public class GoalSatisfactionController {
 		this.goalManager = goalManager;
 	}
 
-    private GenericManager<Project, Long> projectManager = null;
+	private ProjectManager projectManager = null;
     
     @Autowired
-    public void setProjectManager(@Qualifier("projectManager") GenericManager<Project, Long> projectManager) {
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
         this.projectManager = projectManager;
     }
+    
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView handleRequest(HttpSession session,
 			@RequestParam(required = false, value = "g") String query) throws Exception {
-		ModelAndView model =new ModelAndView().addObject(goalManager.getMeasuredGoal((Project)session.getAttribute("currentProject")));
+		ModelAndView model =new ModelAndView().addObject(goalManager.getMeasuredGoal(projectManager.getCurrentProject(session)));
 		if(!StringUtils.isEmpty(query)){
 			Goal selectedGoal = goalManager.get(new Long(query));
 			model.addObject("currentGoal", selectedGoal);

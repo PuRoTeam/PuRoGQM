@@ -8,6 +8,7 @@ import it.uniroma2.gqm.service.BinaryTableManager;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.GridManager;
 import it.uniroma2.gqm.service.MetricManager;
+import it.uniroma2.gqm.service.ProjectManager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,6 +40,7 @@ public class BinaryTableController {
 	private MetricManager metricManager;
 	private UserManager userManager;
 	private GridManager gridManager;
+	private ProjectManager projectManager = null;
 	
 	@Autowired
 	private BinaryTableManager binaryManager;
@@ -58,6 +60,11 @@ public class BinaryTableController {
 		this.gridManager = gridManager;
 	}
 	
+    @Autowired
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
+        this.projectManager = projectManager;
+    }
+	
 	@ModelAttribute
     @RequestMapping(method = RequestMethod.GET)
     protected Goal showTable(HttpServletRequest request,HttpSession session, Model model) throws Exception {
@@ -66,7 +73,7 @@ public class BinaryTableController {
         Goal ret = null;
         Set<Goal> mgs = new HashSet<Goal>();
         
-        Project currentProject = (Project) session.getAttribute("currentProject");
+        Project currentProject = projectManager.getCurrentProject(session);
         User currentUser = userManager.getUserByUsername(request.getRemoteUser());        
         
         if(StringUtils.isBlank(id))
