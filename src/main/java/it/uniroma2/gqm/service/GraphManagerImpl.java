@@ -35,37 +35,38 @@ public class GraphManagerImpl extends GenericManagerImpl<BinaryTable, Long> impl
 			tree += ", \"children\":[";
 			Set<Question> questions = new HashSet<Question>();
 			
+			
 			for (GoalQuestion gq : g.getQuestions()) {
 				questions.add(gq.getQuestion());
-				int i = 0;
-				for (Question q : questions) {
-					if(i != 0)
-						tree += ",";
-					tree += "{\"parent\":\""+g.getDescription()+"\",\"name\":\""+q.getName()+"\"";
-					tree += ",\"identifier\":\""+g.getId()+"\",\"type\":\""+1+"\"";
+			}
+			int i = 0;
+			for (Question q : questions) {
+				if(i != 0)
+					tree += ",";
+				tree += "{\"parent\":\""+g.getDescription()+"\",\"name\":\""+q.getName()+"\"";
+				tree += ",\"identifier\":\""+g.getId()+"\",\"type\":\""+1+"\"";
+				i++;
+				//Has metrics
+				if(q.getMetrics().size() > 0) {
 					
-					//Has metrics
-					if(q.getMetrics().size() > 0) {
-						
-						tree += ", \"children\":[";
-						Set<Metric> metrics = new HashSet<Metric>();
-						for(QuestionMetric qm : q.getMetrics()) {
-							metrics.add(qm.getMetric());
-							int j = 0;
-							for (Metric m : metrics) {
-								if(j != 0)
-									tree +=",";
-								tree += "{\"parent\":\""+q.getName()+"\",\"name\":\""+m.getName()+"\"";
-								tree += ",\"identifier\":\""+q.getId()+"\",\"type\":\""+2+"\"}";
-								j++;
-							}
-						}			
-						tree += "]}";
-					} else {
-						tree += "}";
-					} 
-				}
-			}	
+					tree += ", \"children\":[";
+					Set<Metric> metrics = new HashSet<Metric>();
+					for(QuestionMetric qm : q.getMetrics()) {
+						metrics.add(qm.getMetric());
+					}
+					int j = 0;
+					for (Metric m : metrics) {
+						if(j != 0)
+							tree +=",";
+						tree += "{\"parent\":\""+q.getName()+"\",\"name\":\""+m.getName()+"\"";
+						tree += ",\"identifier\":\""+q.getId()+"\",\"type\":\""+2+"\"}";
+						j++;
+					}
+					tree += "]}";
+				} else {
+					tree += "}";
+				} 
+			}
 			tree += "]}";
 		} else { //non ha figli
 			tree += "}";
