@@ -2,7 +2,9 @@ package it.uniroma2.gqm.dao.hibernate;
 
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import org.appfuse.dao.UserDao;
 import org.appfuse.dao.hibernate.GenericDaoHibernate;
@@ -88,6 +90,14 @@ public class GoalDaoHibernate extends GenericDaoHibernate<Goal, Long> implements
 	public List<Goal> findByProject(Long id) {
 		     	Query q =  getSession().getNamedQuery("findGoalByProject").setLong("project_id", id);
     	return q.list();
+	}
+
+	@Override
+	public List<Goal> getOrganizationalGoal(Long projectId) {
+		Map<String, Object> maps = new Hashtable<String, Object>();
+		maps.put("project_id", projectId);
+		List<Goal> goals= findByNamedQuery("findOrganizationalGoal", maps);
+		return goals;
 	}
     
 	/*public boolean contains(Goal g) {

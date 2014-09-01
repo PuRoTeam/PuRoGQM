@@ -123,10 +123,7 @@ public class GoalManagerImpl extends GenericManagerImpl<Goal, Long> implements G
 	
 	@Override
 	public List<Goal> getOrganizationalGoal(Project currentProject){
-		Map<String, Object> maps = new Hashtable<String, Object>();
-		maps.put("project_id", currentProject.getId());
-		List<Goal> goals= goalDao.findByNamedQuery("findOrganizationalGoal", maps);
-		return goals;
+		return goalDao.getOrganizationalGoal(currentProject.getId());
 	}
 	
 	@Override

@@ -1,17 +1,29 @@
 package it.uniroma2.gqm.service;
 
+import it.uniroma2.gqm.dao.GoalDao;
 import it.uniroma2.gqm.model.Goal;
+import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.model.Strategy;
 
+import java.util.List;
 import java.util.Set;
 
 import org.appfuse.service.impl.GenericManagerImpl;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service("gridManager")
 public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements GridManager{
 
+	GoalDao goalDao;
+	
+    @Autowired
+    public GridManagerImpl(GoalDao goalDao) {
+        super(goalDao);
+        this.goalDao = goalDao;
+    }
+	
 	@Override
     public boolean isGrandChild(Object grandChild, Object grandParent) {
 		if(grandParent == grandChild) //prima di controllare eventuali figli, verifico di non aver già trovato il nipote
@@ -68,6 +80,18 @@ public class GridManagerImpl extends GenericManagerImpl<Goal, Long> implements G
 
     	return false; //se ho controllato me stesso e tutti i figli, allora non c'è più niente da fare
     }
+	
+	@Override
+	public Goal getOGRoot(Project project) {
+		List<Goal> allOGs = goalDao.getOrganizationalGoal(project.getId());
+		
+		for(Goal g : allOGs) {
+			if(!g.hasParent())
+				return g;
+		}
+		
+		return null;
+	}
 	
 	public String explorer(Object obj, String s){
 		

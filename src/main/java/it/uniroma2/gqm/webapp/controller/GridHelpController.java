@@ -3,9 +3,11 @@ package it.uniroma2.gqm.webapp.controller;
 import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.service.GoalManager;
 import it.uniroma2.gqm.service.GridManager;
+import it.uniroma2.gqm.service.ProjectManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import org.json.JSONObject;
@@ -28,6 +30,8 @@ public class GridHelpController extends BaseFormController{
     
     private GridManager gridManager;
     
+    private ProjectManager projectManager;
+    
     @Autowired
     public void setGridManager(@Qualifier("gridManager") GridManager gridManager) {
     	this.gridManager = gridManager;
@@ -38,11 +42,17 @@ public class GridHelpController extends BaseFormController{
         this.goalManager = goalManager;
     }
     
+    @Autowired
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
+        this.projectManager = projectManager;
+    }
+    
     @RequestMapping(method = RequestMethod.POST)
     public ModelAndView onSubmit(@Valid Goal goal, BindingResult errors, HttpServletRequest request,
-                           HttpServletResponse response) throws Exception {
+                           HttpServletResponse response, HttpSession session) throws Exception {
 
-    	Goal ret = goalManager.get(Long.parseLong("1")); //TODO inserire ROOT
+    	//Goal ret = goalManager.get(Long.parseLong("1")); //TODO inserire ROOT
+    	Goal ret = gridManager.getOGRoot(projectManager.getCurrentProject(session));
         String tree = gridManager.explorer(ret, "null");
 		
         JSONObject jsonTree = new JSONObject(tree);
