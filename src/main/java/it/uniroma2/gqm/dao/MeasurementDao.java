@@ -9,4 +9,5 @@ import org.appfuse.dao.GenericDao;
 
 public interface MeasurementDao  extends GenericDao<Measurement, Long> {
 	public List<Measurement> findMeasuremntsByMetric(Metric metric);
+	public List<Measurement> findByProject(Long id);
 }

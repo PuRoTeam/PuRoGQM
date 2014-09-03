@@ -1,7 +1,6 @@
 package it.uniroma2.gqm.model;
 
 import java.io.Serializable;
-import java.lang.annotation.Documented;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -31,6 +30,15 @@ import org.hibernate.search.annotations.Indexed;
     @NamedQuery(
             name = "findMeasuremntsByMetric",
             query = "select m from Measurement m  where m.metric.id= :metric_id order by m.collectingDate, m.collectingTime "
+    ),
+    @NamedQuery(
+            name = "findMeasurementByProject",
+            query = "select distinct m from Measurement m inner join m.metric mt " +
+            		"inner join mt.questions qm " + 
+            		"inner join qm.pk.question q " +
+            		"inner join q.goals gq " +
+            		"inner join gq.pk.goal g " +
+            		"where g.project.id= :project_id"
     )
 })
 public class Measurement extends BaseObject implements Serializable {

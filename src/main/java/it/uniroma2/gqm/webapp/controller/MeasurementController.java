@@ -1,10 +1,14 @@
 package it.uniroma2.gqm.webapp.controller;
 
+import javax.servlet.http.HttpSession;
+
 import it.uniroma2.gqm.model.Measurement;
 import it.uniroma2.gqm.service.MeasurementManager;
+import it.uniroma2.gqm.service.ProjectManager;
 
 import org.appfuse.dao.SearchException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ExtendedModelMap;
 import org.springframework.ui.Model;
@@ -18,10 +22,16 @@ import org.springframework.web.servlet.ModelAndView;
 public class MeasurementController {
     @Autowired
     private MeasurementManager measurementManager;
-	
-	
+    
+    private ProjectManager projectManager = null;
+    
+    @Autowired
+    public void setProjectManager(@Qualifier("projectManager") ProjectManager projectManager) {
+        this.projectManager = projectManager;
+    }
+    
     @RequestMapping(method = RequestMethod.GET)
-    public ModelAndView handleRequest(@RequestParam(required = false, value = "q") String query) throws Exception {
+    public ModelAndView handleRequest(@RequestParam(required = false, value = "q") String query, HttpSession session) throws Exception {
         Model model = new ExtendedModelMap();
         
         if(query != null && !query.equals("")) {
@@ -34,7 +44,7 @@ public class MeasurementController {
                 model.addAttribute("measurementList",measurementManager.getAll());
             }
         } else {
-        	model.addAttribute("measurementList",measurementManager.getAll());
+        	model.addAttribute("measurementList",measurementManager.findByProject(projectManager.getCurrentProject(session)));
         }	
 
         return new ModelAndView("measurements", model.asMap());
