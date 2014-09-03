@@ -40,7 +40,7 @@
 				<div id="child">
 					<c:choose>
 						<c:when test="${childGoal.goal.childType == -1}">
-							<a>${childGoal.goal.description}</a>
+							<a>OG${childGoal.goal.id}</a>
 			    			<div>${childGoal.value}</div>
 						</c:when>
 			    		<c:otherwise>
