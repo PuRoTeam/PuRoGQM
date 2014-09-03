@@ -23,14 +23,20 @@ public class MeasurementController {
     @RequestMapping(method = RequestMethod.GET)
     public ModelAndView handleRequest(@RequestParam(required = false, value = "q") String query) throws Exception {
         Model model = new ExtendedModelMap();
-        try {
-        	System.out.println("Search query start: " + query);
-            model.addAttribute("measurementList", measurementManager.search(query, Measurement.class));
-            System.out.println("Search query end: " + query);
-        } catch (SearchException se) {
-            model.addAttribute("searchError", se.getMessage());
-            model.addAttribute("measurementList",measurementManager.getAll());
-        }
+        
+        if(query != null && !query.equals("")) {
+            try {
+            	System.out.println("Search query start: " + query);
+                model.addAttribute("measurementList", measurementManager.search(query, Measurement.class));
+                System.out.println("Search query end: " + query);
+            } catch (SearchException se) {
+                model.addAttribute("searchError", se.getMessage());
+                model.addAttribute("measurementList",measurementManager.getAll());
+            }
+        } else {
+        	model.addAttribute("measurementList",measurementManager.getAll());
+        }	
+
         return new ModelAndView("measurements", model.asMap());
     }	
 }

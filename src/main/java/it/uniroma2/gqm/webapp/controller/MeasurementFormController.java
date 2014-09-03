@@ -1,11 +1,14 @@
 package it.uniroma2.gqm.webapp.controller;
 
+import it.uniroma2.gqm.model.Goal;
 import it.uniroma2.gqm.model.Measurement;
+import it.uniroma2.gqm.model.Metric;
 import it.uniroma2.gqm.model.Project;
 import it.uniroma2.gqm.service.MeasurementManager;
 import it.uniroma2.gqm.service.MetricManager;
 import it.uniroma2.gqm.service.ProjectManager;
 
+import java.beans.PropertyEditorSupport;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,6 +23,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -93,6 +98,11 @@ public class MeasurementFormController extends BaseFormController {
             }
         }
  
+        if(measurement.getMetric() == null) {
+        	errors.rejectValue("metric", "metric", "Metric field cannot be blank!"); 
+        	return "measurementform";
+        }
+        
         log.debug("entering 'onSubmit' method...");
  
         boolean isNew = (measurement.getId() == null);
@@ -113,5 +123,20 @@ public class MeasurementFormController extends BaseFormController {
         return success;
     }
 
+    @InitBinder
+    protected void initBinder1(HttpServletRequest request, ServletRequestDataBinder binder) {
+    	binder.registerCustomEditor(Metric.class, "metric", new MetricEditorSupport());
+    }
 
+    private class MetricEditorSupport extends PropertyEditorSupport {
+		@Override
+		public void setAsText(String text) throws IllegalArgumentException {
+			if(text != null && !StringUtils.isBlank(text)) {		
+				Long id = new Long(text);
+				Metric m = metricManager.get(id);
+				setValue(m);
+			} else
+				setValue(null);
+		}
+    }
 }

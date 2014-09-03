@@ -22,7 +22,7 @@
     </spring:bind>
         <appfuse:label styleClass="control-label" key="measurement.metric"/>
         <div class="controls">
-   			<form:select path="metric.id" multiple="false" disabled="${measurement.measurementOwner ne currentUser && not empty measurement.id}">
+   			<form:select path="metric" multiple="false" disabled="${measurement.measurementOwner ne currentUser && not empty measurement.id}">
    				<form:option value="" label="None"/>
 		    	<form:options items="${availableMetrics}" itemValue="id" itemLabel="name"/>
 		    </form:select>		
