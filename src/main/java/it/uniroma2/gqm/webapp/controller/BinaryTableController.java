@@ -138,6 +138,8 @@ public class BinaryTableController {
     	                }
     	                if(satisfyAll) {
     	                	gGoal.setValue(1);
+    	                } else {
+    	                	gGoal.setValue(0);
     	                }
 	            	} else {
 	            		gGoal.setValue(0);
