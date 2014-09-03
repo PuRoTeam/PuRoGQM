@@ -33,7 +33,7 @@
 		    <h2><fmt:message key="binaryTable.heading"/></h2>
     
 			<div id="main">
-		   		<a href="binarytable?id=${mainGoal.goal.id}">${mainGoal.goal.description}</a>
+		   		<a href="binarytable?id=${mainGoal.goal.id}">OG${mainGoal.goal.id}</a>
 		   		<div>${mainGoal.value}</div>
 		  	</div>
 			<c:forEach var="childGoal" items="${childGoal}" step="1" begin="0" end="${childGoal.size()}">
@@ -44,7 +44,7 @@
 			    			<div>${childGoal.value}</div>
 						</c:when>
 			    		<c:otherwise>
-			    			<a href="binarytable?id=${childGoal.goal.id}">${childGoal.goal.description}</a>
+			    			<a href="binarytable?id=${childGoal.goal.id}">OG${childGoal.goal.id}</a>
 			    			<div>${childGoal.value}</div>
 			    		</c:otherwise>
 		    		</c:choose>

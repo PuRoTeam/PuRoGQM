@@ -213,8 +213,13 @@ public class BinaryTableController {
 		boolean valueSetB = true;
 		Set<String> suggestions = new HashSet<String>();
 		
-		for (BinaryElement elto : setB)
-			valueSetB &= (elto.getValue() == 0);
+		for (BinaryElement elto : setB){
+			if(elto.getValue() == 0)
+				valueSetB &= false;
+			else
+				valueSetB &= true;
+		}
+			
 		
 		//If parent not achieved
 		if (b.getValue() == 0) {
@@ -254,7 +259,7 @@ public class BinaryTableController {
 				//If parent's first children was Strategy
 				if(b.getGoal().getChildType() == 1) {
 					suggestions.add(s3);
-					suggestions.add(s3b+b.getGoal().getDescription());
+					suggestions.add(s3b+"OG"+b.getGoal().getId());
 				//If parent's first children was Goal
 				} else {
 					suggestions.add(s5);
