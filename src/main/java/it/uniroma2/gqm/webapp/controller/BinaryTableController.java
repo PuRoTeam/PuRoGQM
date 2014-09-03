@@ -103,6 +103,8 @@ public class BinaryTableController {
 	                }
 	                if(satisfyAll)
 	                	mainGoal.setValue(1);
+	                else
+	                	mainGoal.setValue(0);
 				} else {
 					mainGoal.setValue(0);
 				}

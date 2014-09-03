@@ -254,7 +254,7 @@ public class Metric   extends BaseObject  implements Serializable {
 	@Transient
 	public boolean isConditionReached(){
 		boolean ret = false;
-		Double value = null;
+		//Double value = null;
 		if(this.satisfyingConditionValue != null  && this.satisfyingConditionOperation != null 
 				&& satisfyingConditionOperation != SatisfyingConditionOperationEnum.NONE){
 			switch (this.satisfyingConditionOperation){
@@ -284,32 +284,32 @@ public class Metric   extends BaseObject  implements Serializable {
 	public Double getMeasuredValue(){
 		Double value = Double.NaN;
 		try {
-			System.out.println("Metric: " + this.getCode() + " 1" + " value= "  + value);
+			//System.out.println("Metric: " + this.getCode() + " 1" + " value= "  + value);
 			if(collectingType == CollectingTypeEnum.MULTIPLE_VALUE ){
-				System.out.println("Metric: " + this.getCode() + " 2" + " value= "  + value);
+				//System.out.println("Metric: " + this.getCode() + " 2" + " value= "  + value);
 				if(measurements!=null){
-					System.out.println("Metric: " + this.getCode() + " 3" + " value= "  + value);
+					//System.out.println("Metric: " + this.getCode() + " 3" + " value= "  + value);
 					Iterator<Measurement> it = measurements.iterator();
 					int n = 0;
 					double sum = 0;
-					System.out.println("Metric: " + this.getCode() + " 4" + " value= "  + value);
+					//System.out.println("Metric: " + this.getCode() + " 4" + " value= "  + value);
 					while (it.hasNext()) {
-						System.out.println("Metric: " + this.getCode() + " 5" + " value= "  + value);
+						//System.out.println("Metric: " + this.getCode() + " 5" + " value= "  + value);
 						Double v = ((Measurement) it.next()).getValue();	
-						System.out.println("Metric: " + this.getCode() + " 6" + " value= "  + value);
+						//System.out.println("Metric: " + this.getCode() + " 6" + " value= "  + value);
 						n++;
 						sum+=v;
 					}
-					System.out.println("Metric: " + this.getCode() + " 7" + " value= "  + value);
+					//System.out.println("Metric: " + this.getCode() + " 7" + " value= "  + value);
 					value = sum/n;
-					System.out.println("Metric: " + this.getCode() + " 8" + " value= "  + value);
+					//System.out.println("Metric: " + this.getCode() + " 8" + " value= "  + value);
 				}
 			} else {
 				// It's a composite metrics...
 				if(metricA != null && metricA.getId() != null && 
 						metricB != null && metricB.getId() != null && 
 						operation != null){ 
-					System.out.println("Metric: " + this.getCode() + " 9" + " value= "  + value);
+					//System.out.println("Metric: " + this.getCode() + " 9" + " value= "  + value);
 					if(operation == OperationEnum.ADDITION) {
 						value = metricA.getMeasuredValue() + metricB.getMeasuredValue();
 					}else if(operation == OperationEnum.DIVISION) {
@@ -319,26 +319,26 @@ public class Metric   extends BaseObject  implements Serializable {
 					}else if(operation == OperationEnum.MULTIPLICATION) {
 						value = metricA.getMeasuredValue() * metricB.getMeasuredValue();
 					}
-					System.out.println("Metric: " + this.getCode() + " 10" + " value= "  + value);
+					//System.out.println("Metric: " + this.getCode() + " 10" + " value= "  + value);
 				} else {
-					System.out.println("Metric: " + this.getCode() + " 11" + " value= "  + value);
+					//System.out.println("Metric: " + this.getCode() + " 11" + " value= "  + value);
 					if(measurements!=null){
-						System.out.println("Metric: " + this.getCode() + " 12" + " value= "  + value);
+						//System.out.println("Metric: " + this.getCode() + " 12" + " value= "  + value);
 						Iterator<Measurement> it = measurements.iterator();
 						int n = 0;
 						double sum = 0;
-						System.out.println("Metric: " + this.getCode() + " 13" + " value= "  + value);
+						//System.out.println("Metric: " + this.getCode() + " 13" + " value= "  + value);
 						
 						while (it.hasNext()) {
-							System.out.println("Metric: " + this.getCode() + " 14" + " value= "  + value);
+							//System.out.println("Metric: " + this.getCode() + " 14" + " value= "  + value);
 							Double v = ((Measurement) it.next()).getValue();						
 							n++;
 							sum+=v;
 						}
 						if(n>0){
-							System.out.println("Metric: " + this.getCode() + " 15" + " value= "  + value);
+							//System.out.println("Metric: " + this.getCode() + " 15" + " value= "  + value);
 							value = sum/n;
-							System.out.println("Metric: " + this.getCode() + " 16" + " value= "  + value);
+							//System.out.println("Metric: " + this.getCode() + " 16" + " value= "  + value);
 						}
 					}
 				}				
