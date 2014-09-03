@@ -98,7 +98,14 @@ $.post(url, {id: $("#identifier").text()},
 				  .attr("r", 13)
 				  .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 			
-			  nodeEnter.append("text")
+			  nodeEnter.append("svg:a").attr("xlink:href", function(d){
+					if(d.type == 0) 
+						return "goalform?id="+d.identifier; 
+					else if(d.type==1) 
+						return "questionform?id="+d.identifier; 
+					else 
+						return "metricform?id="+d.identifier;
+					}).append("text")
 				  .attr("x", function(d) { return d.children || d._children ? 0 : 0; })
 				  .attr("dy", ".35em").attr("text-anchor", "middle")
 				  //.attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
