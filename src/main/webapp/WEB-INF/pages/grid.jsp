@@ -116,7 +116,7 @@ $.post(url,
 				if(d.type == 0) 
 					return "binarytable?id="+d.identifier; 
 				else 
-					return "#";
+					return "strategyform?id="+d.identifier;
 				}).append("text")
 			.attr("y", function(d) {
 				return d.children || d._children ? -7 : -7; })
