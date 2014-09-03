@@ -16,16 +16,16 @@
        	<Item name="ViewProject" title="menu.planningPhase.projects" page="/projects"/>
        </Menu>
        <Menu name="DefinitionPhaseMenu" title="menu.definitionPhase" description="GQM Definition Phase" roles="ROLE_ADMIN,ROLE_USER" page="/goals">
-       		<Item name="ViewStrategies" title="menu.definitionPhase.strategies" page="/strategies"/>
-            <Item name="ViewGoals" title="menu.definitionPhase.goals" page="/goals"/>
+       		<Item name="ViewGoals" title="menu.definitionPhase.goals" page="/goals"/>
             <Item name="ViewQuestions" title="menu.definitionPhase.questions" page="/questions"/>
             <Item name="ViewMetrics" title="menu.definitionPhase.metrics" page="/metrics"/>
-            <Item name="ViewGrid" title="menu.definitionPhase.grid" page="/grid"/>
-            <Item name="ViewBinaryTable" title="menu.definitionPhase.binaryTable" page="/binarylist"/>
+            <Item name="ViewStrategies" title="menu.definitionPhase.strategies" page="/strategies"/>
        </Menu> 
        <Menu name="DataCollectionPhaseMenu" title="menu.dataCollectionPhase" description="GQM Data Collection Phase" roles="ROLE_ADMIN,ROLE_USER" page="/measurements"/>
        <Menu name="InterpretationPhaseMenu" title="menu.interpretationPhase" description="GQM Interpretation Phase" roles="ROLE_ADMIN,ROLE_USER" page="/interpretation">
-       		<Item name="GoalSatisfaction" title="menu.interpretationPhase.goalSatisfaction" page="/goalsatisfaction"/>
+       		<Item name="ViewGrid" title="menu.definitionPhase.grid" page="/grid"/>
+            <Item name="ViewBinaryTable" title="menu.definitionPhase.binaryTable" page="/binarylist"/>
+            <Item name="GoalSatisfaction" title="menu.interpretationPhase.goalSatisfaction" page="/goalsatisfaction"/>
        </Menu>       
        <Menu name="Logout" title="user.logout" page="/logout" roles="ROLE_ADMIN,ROLE_USER"/>
     </Menus>
