@@ -23,8 +23,8 @@
        </Menu> 
        <Menu name="DataCollectionPhaseMenu" title="menu.dataCollectionPhase" description="GQM Data Collection Phase" roles="ROLE_ADMIN,ROLE_USER" page="/measurements"/>
        <Menu name="InterpretationPhaseMenu" title="menu.interpretationPhase" description="GQM Interpretation Phase" roles="ROLE_ADMIN,ROLE_USER" page="/interpretation">
-       		<Item name="ViewGrid" title="menu.definitionPhase.grid" page="/grid"/>
-            <Item name="ViewBinaryTable" title="menu.definitionPhase.binaryTable" page="/binarylist"/>
+       		<Item name="ViewGrid" title="menu.interpretationPhase.grid" page="/grid"/>
+            <Item name="ViewBinaryTable" title="menu.interpretationPhase.binaryTable" page="/binarylist"/>
             <Item name="GoalSatisfaction" title="menu.interpretationPhase.goalSatisfaction" page="/goalsatisfaction"/>
        </Menu>       
        <Menu name="Logout" title="user.logout" page="/logout" roles="ROLE_ADMIN,ROLE_USER"/>

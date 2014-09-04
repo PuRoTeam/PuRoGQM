@@ -1,7 +1,7 @@
 <%@ include file="/common/taglibs.jsp"%>
 <head>
     <title><fmt:message key="binaryTable.title"/></title>
-    <meta name="menu" content="DefinitionPhaseMenu"/>
+    <meta name="menu" content="InterpretationPhaseMenu"/>
 </head>
 <div class="span10">
     <h2><fmt:message key='binaryTable.heading'/></h2>

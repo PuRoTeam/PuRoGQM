@@ -1,7 +1,7 @@
 <%@ include file="/common/taglibs.jsp"%>
 <head>
     <title><fmt:message key="goalDetail.title"/></title>
-    <meta name="menu" content="DefinitionPhaseMenu"/>
+    <meta name="menu" content="InterpretationPhaseMenu"/>
     <script src="http://d3js.org/d3.v3.min.js"></script>
      <style>
  
